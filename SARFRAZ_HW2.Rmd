@@ -1,0 +1,154 @@
+---
+title: "SARFRAZ_HW2"
+author: "Hussain Sarfraz"
+date: "11/8/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(tidyverse)
+library(dplyr)
+```
+
+# Problem 1: Exploring the gapminder data
+### Question 1
+To to load the gapminder data I need to install and load the **dslabs package**. I then used the **data()** function to load the gapminder data.
+
+```{r}
+library(dslabs)
+data(gapminder) 
+
+gapminder %>%
+  view()
+```
+
+### Question 2
+The object class/type of the gapminder data is **data.frame**
+
+```{r}
+class(gapminder)
+```
+
+### Question 3
+There are **10545 rows** and **9 columns** in the gapminder dataframe.
+
+```{r}
+nrow(gapminder)
+ncol(gapminder)
+```
+
+### Question 4
+I used the **colnames()** function to print out all the column names in the gapminder dataframe.
+
+```{r}
+colnames(gapminder)
+```
+
+### Question 5
+The columns **life_expectancy** and **fertility** do not have any attributes. They both show null values when the **attributes()** function is used on both columns. 
+
+```{r}
+attributes(gapminder$life_expectancy)
+attributes(gapminder$fertility)
+```
+
+### Question 6
+There could be no hidden attributes in this dataframe for many reasons. The first reason is that the person who was creating the dataframe forgot to add in attributes to some of the columns. The second reason is that the columns **life_expectancy** and **fertility** did not have any particular groupings or numbers that were a part of different categories.
+
+### Question 7
+The population size of Norway in 1962 is **3638791**. I reached this answer by first looking at the data frame through the **view()** function and using the default filter options that were in R for dataframes that are seen through the **view()** function. From there I figured out what row number and column number I need to use in breacket notation to get the Norway population number in 1962.
+
+```{r}
+gapminder %>%
+  view()
+
+gapminder[496,6]
+```
+
+### Question 8
+The first command filters in the data shows people with life expectancies below 40. The second command filters show people that had a life expectancy below 40 in the 21st century.
+
+**Haiti** is a country in the 21st century that had a life expectancy below zero. 
+
+**NOTE**: I have used the head() function to easily display my output in R Markdown. When I displayed the data by default a lot of space was taken in the output which is why I used the head() function to reduce the output size.   
+```{r}
+gapminder[gapminder$life_expectancy < 40 ,] %>%
+  head(10)
+
+gapminder[gapminder$life_expectancy < 40 & gapminder$year > 2000,] %>%
+  head(10)
+```
+
+# Problem 2: College Majors (**Part A**)
+### Question 1
+I loaded the **readr** library since it reads excel/csv files and **recent_grads** is a excel/csv file. To assign the csv data to a object I needed to set up my working directory correctly. 
+
+```{r}
+setwd("C:/Users/hussainsarfraz/Desktop/DATA 210")
+recent_grads <-  read_csv('recent-grads.csv')
+```
+
+### Question 2
+```{r}
+dim(recent_grads)
+class(recent_grads)
+rownames(recent_grads)
+colnames(recent_grads)
+```
+
+### Question 3
+There are attributes in the dataframe **recent_grads**. Although this is true, there are no attributes for the columns in the **recent_grads** dataframe. There are no hidden attributes in the column because the **recent_grads** dataframe is a imported CSV file and a CSV file does not have the capabilities to store in column attributes. 
+
+```{r}
+attributes(recent_grads)
+```
+
+# Problem 2: College Majors (**Part B**)
+### Question 1
+The college major with the highest median income is **Petroleum Engineering** (110,000) and the college major with the lowest median income is **Library Science** (22,000). **Petroleum Engineering** is in the **Engineering** major category and **Library Science** is in the **Education** major category.
+
+To find this answer I used the **which.max()** and **which.min()** functions inside the bracket notation so I can find the row that has the lowest and highest median income.
+
+```{r}
+which.max(recent_grads$Median)
+recent_grads[which.max(recent_grads$Median), ]
+
+which.min(recent_grads$Median)
+recent_grads[which.min(recent_grads$Median), ]
+```
+
+### Question 2
+The average median salary for **Engineering** major categories is **57,382.76**. The average median salary for **Education** major categories is **32,350**.
+
+I used the **mean()** function because the question was asking me to find the **average median salary**. So I had to find the average of all the medians which essentially means to calculate the mean of all median salaries. 
+
+```{r}
+mean(recent_grads$Median[recent_grads$Major_category == "Engineering"])
+
+mean(recent_grads$Median[recent_grads$Major_category == "Education"])
+```
+
+### Question 3
+The professions with the top 10 highest median income are majority **Engineering** categories/professions. The professions with the top 10 highest share of women are mainly in the **Education**, **Health**, and **Psychology** categories.
+
+To answer this problem I created 2 variables. The first variable in **two_income** and it is a object that stores the top 10 professions that have the highest median income. The second variable is **share_of_women:** which is a object that stores the top 10 professions with the highest share of women.
+
+**NOTE**: I only used bracket notation for the **top_income** object. When I used bracket notation on the **share_of_women** object I got the error: **"x Can't convert from <double> to <integer> due to loss of precision."**. I tried to search for a solution online but could not find any solution that made sense to me which is why I decided to stick to what I learned in DATA 101 and answer the question. 
+
+```{r}
+top_income <- recent_grads[desc(recent_grads$Median), ] %>%
+  head(10) %>%
+  view()
+
+share_of_women <- recent_grads %>%
+  arrange(desc(ShareWomen)) %>%
+  head(10) 
+
+top_income
+share_of_women
+```
+
+### Question 4
+Yes, women are unrepresentative in STEM fields because in the **top_income** dataset there are a small percentage of women who are in STEM fields. However, in the **share_of_women** data set there is a stronger presence/participation skills to **Education**, **Health**, and **Psychology** categories and non-STEM relatied categories. 
