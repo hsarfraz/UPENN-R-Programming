@@ -1,0 +1,101 @@
+---
+title: "A Simple Example of a R Markdown Document"
+author: ''
+date: ''
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE) 
+library(tidyverse) 
+library(nycflights13)
+```
+
+
+To show you how to use R Markdown, I've made a simple document. This is a very simple introduction to the basics of R Markdown. You should look both at the .rmd document in RStudio, as well as at the output. This way, you'll see how the R Markdown document maps into the finished output, which is very useful. 
+
+There are three basic output formats: HTML, Word, and PDF. I typically use either HTML or Word, as the PDF conversion engine is a bit wonky. Note that to output your files to Word you need to have Microsoft Word installed on your computer, and to output to PDF, you need to have a complete latex installation. 
+
+I can write simple text as plain text in RStudio. I can also *italicize text,* which I do by putting it an asterisk ( \*, which is just shift-8) before and after the text. Likewise, to **bold text**, I put two asterisks before and after the text. 
+
+I can also include output from R in a paragraph as I am writing. For example, I can say that our data in the NYC flights dataset contains data on `r nrow(flights)` flights from the 3 NYC area airports in 2013. To do this, I loaded the libraries I needed in my initial code chunk (the tidyverse & the nycflights13 libraries), and then included the command to find the number of rows in an in-line code segment. In markdown, an in-line code segment is produced by \` r YOUR_COMMAND \`. This symbol ( \` ) is called the back-tick or grave accent, and on my keyboard, it is the same key as the tilde (~). So here, I included \` r nrow(flights) \` in the appropriate place in my text to give the answer (`r nrow(flights)`). But note that R prints the result, rather the code itself, which is very nice! 
+
+If I want headers in my document, I begin the line with a hash (\#); a sub-header is just two hashes (\##). To have a bulleted list, I begin a row with an asterisk \*, to have a sub-list, I just indent. For a numbered list, just begin with the number 1. So, for example: 
+ 
+# This is a header 
+
+## This is a sub-header 
+
+* This is a list 
+    * This is a sub-list 
+
+1. This is a numbered list 
+1. The numbers automatically increase in the output. 
+
+So note that while, in the RMarkdown document, I write `1.` at the start of each line, but when I look at the output document, it comes as a numbered list (1, 2, 3, etc.). 
+
+If you look at the RMarkdown file itself, rather than the output, you'll notice that if I want to print a special character in my display document, I *must* precede it by a backslash (\\). What are the special characters? These are characters that have some other function in RMarkdown: 
+
+* The hash (\#), which sets off headers 
+* The asterisk (\*), which italicizes/bolds text 
+* The back-tick (\`), which introduces an R code chunk 
+* The dollar sign (\$), which is used to tell RMarkdown that you're going to write out mathematical functions like $\bar{x} = \frac{\sum x_i}{n}$ 
+
+The backslash just tells RMarkdown that I want to print the character itself, rather than invoke its function in the document. 
+
+I can also include a code chunk where R Markdown shows me both the code itself and the R output. This is extremely useful for class handouts, or for homeworks. For example, suppose I wanted to summarize the variables in the cars dataset (another one of R's built-in datastets, useful here because it's very small). To do that, I can do one of two things: 
+
+1. I click on the "Insert" button in the toolbar, and select "R" (which loads an R code chunk)
+1. I type the following: 
+
+<pre><code>```{r}
+Your code goes here 
+```</code></pre>
+
+So that's 3 back-ticks (\`\`\`) + {r}, which opens the coding environment, your R code, and then three more back ticks, which closes the coding environment. If you've done this correctly, the chunk will be light gray in RStudio. 
+
+So now I can summarize the cars dataset: 
+
+```{r}
+summary(cars) 
+```
+
+If I just want the output---without the code---I can set the option echo=FALSE in my call to R (look carefully at the syntax in the R Markdown document so you see how to do this). So, for example, this code block just gives us the output: 
+
+```{r, echo=FALSE}
+summary(cars) 
+```
+
+You can also include plots as well. For example, suppose I wanted to use the mpg and plot the relationship between engine size and fuel efficiency (we did this in our lecture on ggplot). I can do that and include the plot in my R Markdown document: 
+
+```{R}
+ggplot(data=mpg) +
+  geom_point(mapping = aes(x=displ, y=hwy))
+``` 
+
+So as you can see, there's a tremendous amount you can do with R Markdown, and you may well want to use it to write up your homeworks---indeed, I like it so much that I often use it to create handouts for classes where I'm using R (as I've done for some of the handouts in this class). 
+ 
+If you want more details on how to use RMarkdown, there are a number of great resources you can consult: 
+
+* Our textbook, especially Chapter 29, has a number of cool features 
+* The [Online help files for RMarkdown](https://rmarkdown.rstudio.com)  
+* The [RMarkdown Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf), which has many of the most commonly used functions 
+* [RMarkdown: The Definitive Guide](https://bookdown.org/yihui/rmarkdown/) truly is the definitive guide by the key author of this program, though note that it's written by a programmer for other programmers. 
+ 
+I also find it very helpful to close my R Markdown document with a section that includes all of the code I included in the document. This is especially nice when you're creating a homework assignment, or a handout for class, so that students (or your professor!) can see all of the code you used. To do that, you include a final code chunk: 
+
+```{r}`r ''` 
+{r ref.label=knitr::all_labels(), echo = T, eval = F}
+```
+
+For a discussion of why this generates a record of your code, see https://yihui.name/en/2018/09/code-appendix/. But if you don't care about the details (you shouldn't, really), then just know that this will print out the code in your document. I usually include it as an appendix at the end of my documents. 
+
+Now you've seen a bit of what RMarkdown can do. At this point, go ahead and Knit this file so you can see what the output looks like, and you can compare it to this document. Then start making your own RMarkdown documents and see what it can do for you! 
+
+## Appendix: All code used to make this document 
+
+```{r ref.label=knitr::all_labels(), echo = T, eval = F}
+```
+
