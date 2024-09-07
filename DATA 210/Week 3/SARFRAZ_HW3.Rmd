@@ -1,0 +1,281 @@
+---
+title: "SARFRAZ_HW3"
+author: "Hussain Sarfraz"
+date: "11/14/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(tidyverse)
+library(dplyr)
+```
+
+# Question 1
+## Part A
+
+I launched the **readr** library and then set my working directory. I then created the **recent_grads** object to store the data in the **recent-grads.csv** file.
+
+The **recent_grads** object has **173 rows** and **21 columns**. The functions **nrow()** and **ncol()** helped me get to this answer.
+
+The unit of analysis for the data is that each row represents a single/different college major.
+
+```{r}
+setwd("C:/Users/hussainsarfraz/Desktop/DATA 210")
+recent_grads <-  read_csv('recent-grads.csv')
+
+nrow(recent_grads)
+ncol(recent_grads)
+```
+
+## Part B
+
+The **recent_grads** object is divided into 30 different major categories. I reached this answer through the **unique()** function which displays the differnt values that a column has.
+
+**Engineering** is a major category that appears in 29 rows meaning it is a category that has the most majors in it. I did think about the possibility of a major being repeated in this dataset but that was not a issue since each row represents a different major meaning there are no repeats.
+
+There are **29 majors** in the Engineering category and I have displayed all of them through the **table()** function.
+
+```{r}
+unique(recent_grads$Major_category) #result: 30 different major categories
+
+table(recent_grads$Major_category) #Engineering appears in 29 rows
+
+table(recent_grads[recent_grads$Major_category == 'Engineering', ]$Major)
+```
+
+## Part C
+
+Through using the **sum()** function I can see that there are **3,895,228** women included in this dataset.
+
+To find the percentage of women in this dataset I first needed to calculate the overall total of all participants (this number was **6,771,654**). I then divided the total number of women over the total number of participants.
+
+When I got the two numbers I then had to convert it to a percentage in which I divided **3,895,228** over **6,771,654** and I got **57.52255** as a percent. This percentage tells us that there are more women than men in this dataset. 
+
+```{r}
+sum(recent_grads$Women,na.rm=T)
+
+sum(recent_grads$Total,na.rm=T)
+
+sum(recent_grads$Women,na.rm=T)/sum(recent_grads$Total,na.rm=T) *100
+```
+
+## Part D
+Using the **arrange()** function I was able to see which major had the highest number of women graduates and which major had the lowest. The major with the highest number of women graduates has a percentage of **96.89537%** and the subject is **Early Childhood Education**. The major with the lowest number of women graduates has a percentage of **0%** and the subject is **Industrial Arts & Consumer Services**.
+
+```{r}
+recent_grads %>%
+  arrange(desc(ShareWomen)) #sorts from high to low
+
+recent_grads %>%
+  arrange(ShareWomen) #sorts from lowest to high
+```
+
+## Part E
+
+**46,3230** people in the **recent_grads** dataset have majored in a major that was in the Health category. I arrived at this answer by using the **sum()** function and picking the rows that have a major category as **Health**. I then used these rows and added up all the values in the **total** column.
+
+**63.64419** percent of all people who have majored in a major that was in a health category have a **full-time** job. I got this by dividing the total number of people (these people have a major in the health category) who have a full-time job over the total number of people who have degree in the health category.
+
+**49.30985** percent of all people who have majored in a major that was in a health category have a **year-round** job. For this answer I used the same logic that I described in the previous paragraph.
+
+```{r}
+sum(recent_grads[recent_grads$Major_category == "Health", ]$Total)
+
+sum(recent_grads[recent_grads$Major_category == "Health", ]$Full_time)/sum(recent_grads[recent_grads$Major_category == "Health", ]$Total) *100
+
+sum(recent_grads[recent_grads$Major_category == "Health", ]$Full_time_year_round)/sum(recent_grads[recent_grads$Major_category == "Health", ]$Total) *100
+
+```
+
+## Part F
+
+I created a variable **recentgrads_w_percentilediff** which calculated the percentile difference/spread between the 75th and 25th percentile of income earned by people who recived each major. The column name that stored the difference value is called **percentile_diff**. I also created another column called **Unemployment_rate** which just multiplied the percentages by 100.
+
+The major that had the largest spread in salaries is **ASTRONOMY AND ASTROPHYSICS**. I reached this answer by first creating another object called **unemployment_less6** which only has the rows where the unemployment rate is less than 6. I then used the **arrange()** function to sort the **percentile_diff** column from largest to smallest to get the major that has the largest spread. 
+
+```{r}
+recentgrads_w_percentilediff <- recent_grads %>%
+  mutate(percentile_diff = P75th - P25th,
+         Unemployment_rate = Unemployment_rate *100) 
+
+unemployment_less6 <- recentgrads_w_percentilediff[recentgrads_w_percentilediff$Unemployment_rate < 6, ] 
+
+unemployment_less6 %>%
+  arrange(desc(percentile_diff)) 
+```
+
+# Question 2
+
+To start answering the questions I first need to load the RData file that was attached to this problem. When looking at the environment I can see that the dataset stored in this file is called **exit**.
+
+```{r}
+load("C:/Users/hussainsarfraz/Desktop/DATA 210/exit-poll-2016.RData")
+```
+
+## Part A
+
+The unit of observation in this survey data is that each row represents a person who voted for the November 2016 election.
+
+The dataset does not contain exactly one row for every observation. The dataset currently has **5,914 rows** because each voter's row is repeated which doubles the row amount. This means that the dataset is long and need to be wide. To do this I first compared row 1 and 2 in the dataset to see if there are any columms that have the same values. It turned out that the values in the **favorable.cand** column needed to be their own column name and the values in the **favorable.rating** column need to be values under the newly made columns. I stored these changes in the **exit_tidy** object.
+
+To check if there is one row per respondent I used the **nrow()** function and found out that there are now **2,957 rows** in the dataset. This was correct since there were **2,957** responders in this dataset.
+
+Since I made two new columns (**clinton** and **trump**) in the **exit_tidy** dataset I also decided to make the column values make sense since they were just numbers listed. I used the **attr()** function to directly work with the attributes since I only wanted to access a vector of all the labels/descriptions for the column and nothing else. I created a object called **clinton.trump_rating** which stored the vector of all the labels and descriptions for the **clinton** and **trump** column. I then changed the values stored in both columns by using the **factor()** function.
+
+```{r}
+#exit[1,] == exit[2,]
+exit_tidy <- spread(exit,
+                 key = favorable.cand,
+                 value = favorable.rating)
+
+nrow(exit_tidy)
+
+#attr(exit$favorable.rating, "labels")
+clinton.trump_rating <- attr(exit$favorable.rating, "labels")
+
+#factor(exit_tidy$clinton , labels=names(clinton.trump_rating))
+exit_tidy$clinton <- factor(exit_tidy$clinton,
+                            labels=names(clinton.trump_rating))
+
+#factor(exit_tidy$trump , labels=names(clinton.trump_rating))
+exit_tidy$trump <- factor(exit_tidy$trump,
+                            labels=names(clinton.trump_rating))
+```
+
+## Part B
+
+Before I answered this question I looked at the attributes of the **educ.hs** and **educ.somecoll** column to see if both columns had the same attributes and if the **gather()** function was appropriate to use on these columns.
+
+The data was in a wide format so to change it to a long format I used the **gather()** function. After I placed all the columns into two columns I had to shorten the data down further since there were many rows that were repeated as a result of using the **gather()** function.
+
+To start off with my cleaning process I removed rows that had a zero in the **educ.value** column. I did this because the respondants only picked one education level and that was indicated by a one so it was point less to keep the rows that had a zero since that data was just repeated. After doing this I also noticed that not all rows were removed so I removed any duplicate rows in the **id** column.
+
+I then made the **educ.column** values (that are in a row where **educ.value==99**) equal **NA** to remove any further repeated data since some participants left more than one option blank. I used **exit_tidy$educ.value <- NULL** to cancel all the rows that had the **educ.column** equal NA. Doing this reduced the row size of the dataset to its original amount. 
+
+
+```{r}
+#attributes(exit$educ.hs)
+#attributes(exit$educ.somecoll)
+
+exit_tidy <- gather(exit_tidy,
+       key = 'educ.column',
+       value = 'educ.value',
+       c('educ.hs','educ.somecoll','educ.bach','educ.postgrad'))
+
+#removing rows that have zero                   
+exit_tidy <- exit_tidy[!(exit_tidy$educ.value==0),]
+
+#duplicated(exit_tidy$id)
+#removing rows which are repeated
+exit_tidy <- exit_tidy[!duplicated(exit_tidy$id), ]
+
+# making the educ.column values that are in a row where educ.value==99 equal NA
+exit_tidy$educ.column[exit_tidy$educ.value==99] <- NA
+
+# removed the educ.value column because at this point we have removed all the rows that
+# people did not answer in the education section and can now see what answer each 
+# participant has given in terms of education
+exit_tidy$educ.value <- NULL
+
+#unique(exit_tidy$educ.column)
+exit_tidy$educ.column[exit_tidy$educ.column=='educ.hs'] <- 'hs'
+exit_tidy$educ.column[exit_tidy$educ.column=='educ.somecoll'] <- 'some college'
+exit_tidy$educ.column[exit_tidy$educ.column=='educ.bach'] <- 'bachelors'
+exit_tidy$educ.column[exit_tidy$educ.column=='educ.postgrad'] <- 'postgrad'
+                                 
+```
+
+## Part C
+
+I split the **sex.age.race** column by using the **separate()** function. I then used the **unique()** function to see if there were any missing/unknown values in the newly separated columns. For the **sex** and **age** column I did notice that there were some unusual values which is why I replaced those values with **NA**. But for the **race** column I did not notice any missing/unknown value which is why I did not make any changes to the **race** column (besides splitting it up of course).
+
+```{r}
+exit_tidy <- separate(exit_tidy,
+         col='sex.age.race',
+         into = c('sex','age','race'),
+         sep = ' ') 
+
+unique(exit_tidy$sex)
+unique(exit_tidy$age)
+unique(exit_tidy$race)
+
+exit_tidy$sex[exit_tidy$sex=='unknown'] <- NA
+exit_tidy$age[exit_tidy$age=='-999'] <- NA
+```
+
+## Part D
+
+To answer this question I first changed the values in the **PRSPA16** column to include the proper labels (the ones that make sense) in the column. I then used the **unique()** function to see what candidates I need to sort out. I then used the **mutate()** function to create the column **third.party** I then repeated this process to make sure the correct information is displayed in the column and deleted the **PRSPA16** column.
+
+```{r}
+# attr(exit$PRSPA16,'labels')
+participant.candidate.vote <- attr(exit$PRSPA16,'labels')
+
+# factor(exit_tidy$PRSPA16 , labels=names(participant.candidate.vote))
+exit_tidy$PRSPA16 <- factor(exit_tidy$PRSPA16 ,
+                            labels=names(participant.candidate.vote))
+
+# view(exit_tidy)
+unique(exit_tidy$third.party)
+
+exit_tidy <- exit_tidy %>%
+  mutate(third.party = PRSPA16,
+         third.party = ifelse((PRSPA16 == 'Donald Trump'| PRSPA16 == 'Hillary Clinton'),
+                              '0','1'),
+         third.party = ifelse((PRSPA16 == 'Did not vote'),
+                            NA, third.party)) 
+
+# removing PRSPA16 column
+exit_tidy$PRSPA16 <- NULL
+```
+
+## Part E
+
+```{r}
+# view(exit_tidy)
+
+attributes(exit$married)
+unique(exit_tidy$married)
+
+exit_tidy$married[exit_tidy$married==1] <- 'married'
+exit_tidy$married[exit_tidy$married==0] <- 'not married'
+```
+
+## Part F
+
+```{r}
+
+# attributes(exit$PHIL3)
+# attr(exit$PHIL3,'labels')
+political.standing <- attr(exit$PHIL3,'labels')
+exit_tidy$PHIL3 <- factor(exit_tidy$PHIL3 ,
+                            labels=names(political.standing))
+
+# attributes(exit$partyid)
+# attr(exit$partyid,'labels')
+political.party.standing <- attr(exit$partyid,'labels')
+exit_tidy$partyid <- factor(exit_tidy$partyid ,
+                          labels=names(political.party.standing))
+
+unique(exit_tidy$PHIL3)
+unique(exit_tidy$partyid)
+```
+
+## Part G
+
+I had a final look through the dataset and changed the column names so they can be easier to understand.
+
+**NOTE:** The column names were picked by me.
+
+```{r}
+exit_tidy <- rename(exit_tidy,
+                    vote_participant_id = id,
+                    political_party_standing = PHIL3,
+                    political_standing = partyid,
+                    education = educ.column,
+                    voting_candidate_category = third.party)
+
+```
+

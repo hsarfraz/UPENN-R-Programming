@@ -1,0 +1,376 @@
+---
+title: "SARFRAZ_HW4"
+author: "Hussain Sarfraz"
+date: "11/18/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(readxl)
+library(tidyverse)
+library(dplyr)
+```
+
+# Question 1
+## Problem 1
+
+I set up my working directory through the **setwd()** function and then created an object **education_long** which stores in the data in the **education_long.csv** file.
+
+**NOTE:** When I load more datasets in my code I would not need to re-establish the same working directory since I have already done it here.
+
+```{r}
+setwd("C:/Users/hussainsarfraz/Desktop/DATA 210")
+education_long <-  read_csv('education_long.csv')
+```
+
+## Problem 2
+
+To convert the data into **wide** format I used the **spread()** function and used the values stored in the **year** column to make new column names. The values under the **College_Completion_Rate** column would then be used to fill in the newly made columns.
+
+I chose the **Year** column as the key because I noticed that most of the values under the **Year** column were repeated and there were not many different values under the column as compared to the **College_Completion_Rate** column.
+
+```{r}
+education_long_tidy <- spread(education_long,
+                              key = Year,
+                              value = College_Completion_Rate)
+```
+
+## Problem 3
+
+I created a new object called **poverty_report_sheet2** which read in the 2nd sheet in the **PovertyReport.xlsx** file. I added a comma and **sheet=2** after the file name to let R know which specific sheet I wanted to import from the dataset. I also used **read_xlsx()** instead of **read_csv()** since I was reading in a **xlsx** file and not a **csv** file.
+
+**NOTE:** I did not set up a working directory here because the **PovertyReport.xlsx** was stored in the same file destination that I specified in the working directory in **problem 1**
+
+```{r}
+poverty_report_sheet2 <-  read_xlsx('PovertyReport.xlsx', sheet=2)
+```
+
+## Problem 4
+
+I used the **select()** function to pick the columns that I wanted to see in my dataset. In this case it was columns that stored in data of education completion rates from 2017 (**2013-2017_Rural | 2013-2017_Total | 2013-2017_Urban**). I also included the **name** column since this would specify which state has what type of education completion rate.
+
+```{r}
+education_long_tidy <- education_long_tidy %>%
+  select('Name',
+         `2013-2017_Rural`,
+         `2013-2017_Total`,
+         `2013-2017_Urban`)
+```
+
+## Problem 5
+
+I used the **merge()** function to perform the **inner join** of the **education_long_tidy** and **poverty_report_sheet2** datasets. I did a **inner join** because I wanted to only view the values that were matched in the two datasets. If I used any other type of join then I would have had rows that would have some **NA** values because there was no commonality of the rows key with the other dataset. 
+
+Basically, what I am trying to say is that I used the **anti_join()** function to see the rows that had no match between the two datasets. The result that I got was a row in the **education_long_tidy** dataset which had the **United States** under the **name** column. In the **poverty_report_sheet2** dataset **United States** was not listed under the **name** column which meant that if I did not perform a **inner merge/join** then the dataset would include the row which had **United States** under the name column. This would create confusion when analyzing the data since majority of this row would include **NA** values and my main objective was to identify the commonality between (aka the **key** between the two datasets) the two datasets and see how I can use that for further analysis.
+
+```{r}
+education_poverty_join <- merge(x = education_long_tidy, 
+                                y = poverty_report_sheet2, 
+                                by = 'Name')
+
+#I used this function to see the rows that do not match between the 2 datasets
+
+#anti_join(x = education_long_tidy, 
+#          y = poverty_report_sheet2, 
+#          by = 'Name')
+```
+
+## Problem 6
+
+I have divided this problem into three parts and each part shows a analysis of one of the three graphs that I have made.
+
+**NOTE:** For this problem I tried to overlap all three graphs on top of each other for easier visualization but I realized that the graph looked clustered and some points overlapped with each other. Because of this I decided to display each graph separately. I also launched the **gridExtra** library and used the **grid.arrange()** function to place the graphs side by side, but when I did this I noticed the graphs were hard to analyze since they were really small.
+
+> College Completion Rate for Rural Individuals Graph
+
+When looking at the **College Completion Rate for Rural Individuals** graph I noticed that all the points were under **40%** of the **college completion rate percentage**. This means that not many individuals living in a rural area complete their college level education. Additionally, as the **poverty percentage rate** increased the **college completion rate percentage** decreased. This means that the more poor a individual is the less chance there is for the individual to complete their college level education. The individuals I am referring to are people who live in **rural areas**.
+
+```{r}
+education_poverty_join %>%
+  ggplot(mapping = aes(x=Percent,y=`2013-2017_Rural`)) +
+  geom_point(color='blue') +
+  geom_smooth(color='black') +
+  xlab("Poverty Percentage Rate") + 
+  ylab("College Completion Rate") +
+  ggtitle("College Completion Rate for Rural Individuals") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 10)) 
+```
+
+> College Completion Rate for Urban Individuals Graph
+
+When looking at the **College Completion Rate for Urban Individuals** graph I noticed that majority of the points were under **45%** of the **college completion rate percentage**. This number is much slightly larger than the **40%** in the **College Completion Rate for Rural Individuals** graph. This slight difference implies that people who live in **urban cities** are more likely to complete their college level education despite being in a certain level of poverty. This observation is also verified by looking at the line of best fit since it gradually decreases as the poverty level increases. Majority of the points in this graph are between **30-40%** of the **college completion rate percentage**, while in the **College Completion Rate for Rural Individuals** graph the distribution of points were even and some points were under **20%** of the **college completion rate percentage**. These observations tell us that many people living in poverty who are in **urban cities** have a higher chance of completing their college education as compared to individuals living in **rural cites**. A possible explanation for this is that there are more opportuites/scholarships given to the poor to continue their education in **urban cities** as compared to **rural cities**. Another reason is that in **rural cities** the demand for a college education is not valued and is not a requirement to enter the job feild which is why many individuals who live in **rural areas** do not complete their college level education.
+
+**NOTE:** There is one outlier that has a **college completion rate** of **60%** but I did not include this point in my overall analysis since it does not represent the overall graph.  
+
+```{r}
+education_poverty_join %>%
+    ggplot(mapping = aes(x=Percent,y=`2013-2017_Urban`)) +
+    geom_point(color='dark green') +
+    geom_smooth(color='black') +
+    xlab("Poverty Percentage Rate") + 
+    ylab("College Completion Rate") +
+    ggtitle("College Completion Rate for Urban Individuals") +
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5)) +
+    theme(axis.text.x = element_text(size = 10),
+          axis.text.y = element_text(size = 10),
+          axis.title.x = element_text(size = 8),
+          axis.title.y = element_text(size = 8),
+          plot.title = element_text(size = 10))  
+```
+
+> College Completion Rate for Rural and Urban Individuals Graph
+
+When looking at the **College Completion Rate for Rural and Urban Individuals** graph I noticed that the graph looked similar to the **College Completion Rate for Urban Individuals** graph. The only difference I noticed was most of the points are between **20-40%** of the **college completion rate percentage**. 
+
+```{r}
+education_poverty_join %>%
+    ggplot(mapping = aes(x=Percent,y=`2013-2017_Total`)) +
+    geom_point(color='red') +
+    geom_smooth(color='black') +
+    xlab("Poverty Percentage Rate") + 
+    ylab("College Completion Rate") +
+    ggtitle("College Completion Rate for Rural and Urban Individuals") +
+    theme_bw() +
+    theme(plot.title = element_text(hjust = 0.5)) +
+    theme(axis.text.x = element_text(size = 10),
+          axis.text.y = element_text(size = 10),
+          axis.title.x = element_text(size = 8),
+          axis.title.y = element_text(size = 8),
+          plot.title = element_text(size = 10)) 
+```
+
+# Question 2
+## Problem 1
+
+created two objects. **NYC_2006_2012** contains the dataset of a list of schools in New York City. **NYC_2010_SAT** contains a list of SAT results for NYC schools in the 2009-2010 academic year. 
+
+```{r}
+NYC_2006_2012 <- read_csv('2006_-_2012_School_Demographics_and_Accountability_Snapshot.csv')
+NYC_2010_SAT <- read_csv('SAT__College_Board__2010_School_Level_Results.csv')
+
+```
+
+## Problem 2
+
+I used the **filter()** function to only get the school data from the 2009-2010 academic year. I created a new object called **NYC_2009_2010** which would store this data.
+
+**NOTE:** The current dimensions for the **NYC_2009_2010** dataset is:
+
+* 1475 rows
+* 38 columns
+
+```{r}
+NYC_2009_2010 <- NYC_2006_2012 %>%
+  filter(schoolyear == '20092010')
+
+dim(NYC_2009_2010)
+```
+
+## Problem 3
+
+This is because the **NYC_2009_2010** dataset includes all type of schools from 2009-2010. High schoolers only take the **SAT** which means that in order for the **NYC_2009_2010** dataset to have the same dimensions as the **NYC_2010_SAT** dataset I would need to filter the **NYC_2009_2010** dataset to only include high schools (**grades 9-12**).
+
+> **NA** values in the columns before **grade9** column
+
+I reached this conclusion by first running the code below which showed me if there were any **NA** values in the columns before the **grade9** column. I noticed that the majority of the rows had **NA** values in the columns below:
+
+* prek
+* k
+* grade1
+* grade2
+* grade3
+* grade4
+* grade5
+* grade6
+* grade7
+* grade8
+
+The **filter(!is.na(grade9) & !is.na(grade10) & !is.na(grade11) & !is.na(grade12))** command let me know that the **grade9, 10 , 11 , and 12** columns were filled in when I was performing this function because I used the **!is.na()** function which gets the values in a column that have values. 
+
+Looking at this dataset let me know that the reason there were **NA** values for many columns is that each school taught certain grade levels. There are some cases (**such as row 5**) where all the values are filled and in these cases the school actually taught from a grade below **grade 9** to **grade 12** (for **row 5** this would be from **kindergarden to grade 12**). Looking at this helped me formulate my filter function for my further lines that I am going to use.
+
+```{r}
+NYC_2009_2010 %>% 
+  filter(!is.na(grade9) & !is.na(grade10) & !is.na(grade11) & !is.na(grade12)) %>%
+  transmute(prek,k,grade1,grade2,grade3,grade4,grade5,grade6,grade7,grade8,grade9,grade10,grade11,grade12) 
+```
+
+> **NA** values in the **grade9 | grade10 | grade11 | grade12** column
+
+There are also some **NA** values in the **grade9 | grade10 | grade11 | grade12** columns. I used the following statement to reach this conclusion. Knowing this helped me realize that there are some high schools that have missing data and I need to keep this in mind when performing my filter to only include high schools. 
+
+```{r}
+NYC_2009_2010 %>% 
+  filter(is.na(grade9) | is.na(grade10)| is.na(grade11) | is.na(grade12)) %>%
+  transmute(grade7,grade8,grade9,grade10,grade11,grade12) %>%
+  arrange(desc(grade10))
+```
+
+## Problem 4
+
+Based off the work I did in **problem 3** I updated the **NYC_2009_2010** dataset to only include high schools. **!is.na()** only displays columns that have a value. The **or ( | )** operator in the **filter()** function helped me overcome the issue of **NA** values occurring in the  **grade9 | grade10 | grade11 | grade12** columns.
+
+I then removed these columns below since I am now focusing on the columns from **grade 9 - 12**:
+
+* prek
+* k
+* grade1
+* grade2
+* grade3
+* grade4
+* grade5
+* grade6
+* grade7
+* grade8
+
+**NOTE:** After making the changes to the **NYC_2009_2010** dataset it now has:
+
+* 450 rows
+* 28 columns
+
+```{r}
+NYC_2009_2010 <- NYC_2009_2010 %>% 
+  filter(!is.na(grade9) | !is.na(grade10) | !is.na(grade11) | !is.na(grade12))
+
+NYC_2009_2010$prek <- NYC_2009_2010$k <- NYC_2009_2010$grade1 <- NULL  
+NYC_2009_2010$grade2 <- NYC_2009_2010$grade3 <- NYC_2009_2010$grade4 <- NULL 
+NYC_2009_2010$grade5 <- NYC_2009_2010$grade6 <- NYC_2009_2010$grade7 <- NULL 
+NYC_2009_2010$grade8 <- NULL 
+
+dim(NYC_2009_2010)
+```
+
+## Problem 5
+
+I decided to use a **inner merge/join** between the **NYC_2009_2010** and **NYC_2010_SAT** dataset because I wanted to only include the rows that had a match between the two datasets. If I were to include rows that did not have a match between the two datasets then there would be inaccurately in my data since many columns and rows would have a group of **NA** values which is not really helpful since the SAT test score data can not be seen or other information about the school. 
+
+For this merge I decided to use **DBN** as the unique identifier/key since **DBN** represents the unique code for each school. I noticed that the school names under the **name** column for both datasets would sometimes have the same name or different name. The **DBN** column ensures that I am correctly joining the right schools with each other and am not doing any mistake in joining. 
+
+I used the **anti_join()** function to see if there are any rows in the dataset that do not have any match based off the key. 
+
+**NOTE:** After the **inner join/merge** the dimensions of the **NYC_2009_2010** is:
+
+* 417 rows
+* 33 columns
+
+```{r}
+# used this function to see if there are any unmatched values between the 2 datasets
+#anti_join(x = NYC_2009_2010 , 
+#              y = NYC_2010_SAT, 
+#              by = 'DBN',
+#              all = F)
+
+NYC_2009_2010 <- merge(x = NYC_2009_2010, 
+              y = NYC_2010_SAT , 
+              by = 'DBN',
+              all = F)
+
+
+dim(NYC_2009_2010)
+```
+
+## Problem 6
+
+I have divided this problem into five parts and each part shows a analysis of one of the four graphs that I have made. The last/fifth part is my overall conclusion and analysis of my findings. 
+
+**NOTE:** For this problem I tried to overlap all four graphs on top of each other for easier visualization but I realized that the graph looked clustered and some points overlapped with each other. Because of this I decided to display each graph separately. I also launched the **gridExtra** library and used the **grid.arrange()** function to place the graphs side by side, but when I did this I noticed the graphs were hard to analyze since they were really small.
+
+> Performance of Hispanics on the SAT Reading Section
+
+By looking at this dataset I can see that schools with a less percentage of Hispanics tend to have higher SAT critical reading scores. As the percentage of Hispanics increase in the school the schools average SAT score gradually decreases to around **400**. Also, in this graph most of the points/schools are around the **300-500** SAT score range.
+
+```{r}
+NYC_2009_2010 %>%
+  ggplot(mapping = aes(x=hispanic_per,y=`Critical Reading Mean`)) +
+  geom_point(color='blue') +
+  geom_smooth(color='black') +
+  xlab("Percentage of Race in School") + 
+  ylab("School Average SAT Critical Reading Score") +
+  ggtitle("Performance of Hispanics on the SAT Reading Section") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 10)) 
+```
+
+> Performance of Blacks on the SAT Reading Section
+
+The results of this graph are similar to the results of the **Performance of Hispanics on the SAT Reading Section** graph. Schools with a less percentage of blacks have a higher SAT score and as the percentage of Blacks in schools increases the average SAT reading score decreases. Like the **Performance of Hispanics on the SAT Reading Section** graph most of the points/schools are around the **300-500** SAT reading range. 
+```{r}
+NYC_2009_2010 %>%
+  ggplot(mapping = aes(x=black_per,y=`Critical Reading Mean`)) +
+  geom_point(color='brown') +
+  geom_smooth(color='black') +
+  xlab("Percentage of Race in School") + 
+  ylab("School Average SAT Critical Reading Score") +
+  ggtitle("Performance of Blacks on the SAT Reading Section") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 10)) 
+```
+
+> Performance of Whites on the SAT Reading Section
+
+When I was looking at this graph I noticed the results were the opposite as compared to the **Performance of Hispanics on the SAT Reading Section** and **Performance of Blacks on the SAT Reading Section** graphs. Schools with a less percentage of whites have a low average SAT critical reading score (around **300-500**). But as the percentage of whites increase in the school then the average SAT score increases. 
+
+```{r}
+NYC_2009_2010 %>%
+  ggplot(mapping = aes(x=white_per,y=`Critical Reading Mean`)) +
+  geom_point(color='purple') +
+  geom_smooth(color='black') +
+  xlab("Percentage of Race in School") + 
+  ylab("School Average SAT Critical Reading Score") +
+  ggtitle("Performance of Whites on the SAT Reading Section") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 10)) 
+```
+
+> Performance of Asians on the SAT Reading Section
+
+When looking at this graph I noticed that the results are similar to the **Performance of Whites on the SAT Reading Section** graph. Schools with a less percentage of Asians have a low average SAT critical reading score (around **300-500**). As the number of Asians increase then the average SAT critical reading score increases (just like what was shown in the **Performance of Whites on the SAT Reading Section** graph).
+
+```{r}
+NYC_2009_2010 %>%
+  ggplot(mapping = aes(x=asian_per,y=`Critical Reading Mean`)) +
+  geom_point(color='red') +
+  geom_smooth(color='black') +
+  xlab("Percentage of Race in School") + 
+  ylab("School Average SAT Critical Reading Score") +
+  ggtitle("Performance of Asians on the SAT Reading Section") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 10)) 
+```
+
+> **Conclusion**
+
+According to my analysis after looking at each graph. Schools that have the most races of Hispanics and Blacks are most likely going to have the lowest average SAT reading score. This could be happening because maybe there is less funding and resources that are given to schools which have mostly students who belong to the Hispanic or Black race. Because of this, the schools can not prepare their students to score high on the SAT (particularly the critical reading section.)
+
+On the other hand, schools that have a majority of students who belong to the white and Asian race score high on the SAT critical reading section. This could be happening because there is more funding and resources given to these schools which allows them to prepare their students for the SAT exam. 
+
+One thing I would like to see is the different income levels of each school or the  profile of the students so I can observe if the schools that have mostly Hispanic and Black races are scoring low on the SAT due to financial or home stress. 

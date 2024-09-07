@@ -1,0 +1,124 @@
+---
+title: "SARFRAZ_HW7"
+author: "Hussain Sarfraz"
+date: "12/12/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(anesrake)
+library(weights)
+library(tidyverse)
+```
+
+# Question 1
+
+## Part A
+
+I want to understand the effect that felony convictions and incarcerations have on voter registration. Comparing the voting rates between former-felons and non-felons would help me see if there is any difference between the voting rates for former-felons and non-felons. When I make this observation I can then think and brainstorm of many potential reasons that might explain the voting difference. As discussed in the article **"Can Incarcerated Felons be (Re)integrated into the Political System?” (pages 915 through 917 in gerber, et al 2015.pdf)**, one reason for the voting difference is that felons are afraid to vote or do not know about their eligibility to vote.
+
+In conclusion, this research design can help me make a list of various hypothesis as to why there is a difference of votes between former-felons and non-felons. I would then need to dig in deeper and verify if my hypothesis/assumptions were correct. I would need to conduct more experiments to understand the problem further and verify the initial hypothesizes. So one drawback of this research design is that I can not fully understand the root cause as to why there is a voting difference between former-felons and non-felons.
+
+## Part B
+
+> i
+
+The authors are interested in studying about what causes former-felons to not vote/have such low voting rates. The results of the experiment show that the voting rate of former-felons increased when they were sent a letter of their eligibility to vote by the governor. 
+
+> ii
+
+The treatment were the former-felons who received a letter which confirmed their eligibility to vote while the control were the former-felons who received no eligibility latter of confirmation.
+
+There were **2 treatments** that received a letter which confirmed the former felons eligibility to vote except there was a small altercation in the letter sent to the two treatment groups. Comparisons of the 2 treatment conditions allows us to assess "whether the expanded assurances in one condition might have a larger effect on behavior" **“Can Incarcerated Felons be (Re)integrated into the Political System?” (page 917 in gerber, et al 2015.pdf)**. In other words, can the additional words of assurance in one letter affect the voting rates of former-felons?
+
+The control group did not receive a "placebo treatment which excluded information about eligibility to register while repainting the general information related to the upcoming election and civic duty appeal" **(page 917 in gerber, et al 2015.pdf)**. In this experiment, the participants in the control condition were not contacted. This means that the comparison of the behavior of those in the treatment condition to those in the control condition estimates the total effect on released felons of an "encouragement to register and vote, rather than the separate effects of these aspects of the treatment letter" **(page 917 in gerber, et al 2015.pdf)**.
+
+**NOTE:** The letters used in both treatment groups were similar, except for this section **(page 917 in gerber, et al 2015.pdf)**: 
+
+- According to the current election rules, once
+you have successfully registered, you will not
+have to explain why you were previously unreg
+istered when you show up to vote on Election
+Day. Election officials at the polling place will
+also not ask you any questions about your past.
+You will be treated with the same respect due to
+all of those who vote in Connecticut's elections.
+(Boldface type in original.)
+We note that both treatment
+
+> iii
+
+The authors used a **block randomization strategy** because complete randomization/coin-flip was used on different sub-groups on the former felons data. Individuals were randomly assigned to 3 groups (1 control and 2 treatment groups). In each of these groups the assignment was within blocks defined for individual crimes to ensure balance across conditions. Leftover cases that could not be blocked were independently and randomly selected. When the control and treatment groups were compared there was no imbalances on age, time served in prison, time since release from prison, and 2008 turnout behavior **(pages 915 through 917 in gerber, et al 2015.pdf)**. 
+
+## Part C
+
+```{r}
+setwd("C:/Users/hussainsarfraz/Desktop/DATA 210")
+
+load("felons.RData")
+
+felons.tidy <- felons[felons$returntoprison==0, ] 
+
+# felons.tidy <- felons %>%
+#   filter(returntoprison==0) 
+
+felons.tidy$returntoprison <- NULL
+
+blocks <- unique(felons.tidy[ ,c('felony_type',"vote12")])
+felons.tidy$treated.block <- F
+
+ii <- 1
+
+for(ii in 1:nrow(blocks)){
+  
+  this.block <- blocks[ii,]
+  
+  rows <- which(  felons.tidy$felony_type       == this.block$felony_type & 
+                  felons.tidy$vote12               == this.block$vote12)
+  
+  felons.tidy$treated.block[sample(rows, 
+                                     size = round(length(rows)/2), 
+                                     replace = F)] <- T
+  
+}
+
+table(felony = felons.tidy$felony_type ,
+      vote = felons.tidy$vote12,
+      treated = felons.tidy$treated.block)
+```
+
+## Part D
+
+> i
+
+
+There is a imbalance between the age and days served variables because the mean of X and y are off by at least 20-30 points.
+
+```{r}
+# table( age = t.test(felons.tidy$age[felons.tidy$age <= 30],
+#        felons.tidy$age[felons.tidy$age > 30]),
+# 
+# days.served = t.test(felons.tidy$days_served[felons.tidy$days_served <= 500],
+#        felons.tidy$days_served[felons.tidy$days_served > 500]),
+# 
+# years_since_release = t.test(felons.tidy$yrs_since_release[felons.tidy$yrs_since_release <= 2],
+#        felons.tidy$yrs_since_release[felons.tidy$yrs_since_release > 1]),
+# 
+# vote08 = t.test(felons.tidy$vote08[felons.tidy$vote08 == 1],
+#        felons.tidy$vote08[felons.tidy$vote08 == 0]) )
+```
+
+
+> ii
+
+```{r}
+# summary(lm(felony_type ~ treated.block, data = felons.tidy))
+```
+
+> iii
+
+## Part E
+
+## Part F
+

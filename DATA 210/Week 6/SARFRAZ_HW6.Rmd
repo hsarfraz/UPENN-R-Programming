@@ -1,0 +1,38 @@
+---
+title: "SARFRAZ_HW6"
+author: "Hussain Sarfraz"
+date: "12/14/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Question 1
+
+## Part A
+
+## Part B
+
+## Part C
+
+## Part D
+
+## Part E
+
+# Question 2
+
+## Part A
+
+## Part B
+
+## Part C
+
+## Part D
+
+## Part E
+
+## Part F
+
+## Part G

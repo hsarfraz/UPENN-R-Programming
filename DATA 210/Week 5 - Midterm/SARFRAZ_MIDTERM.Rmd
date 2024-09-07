@@ -1,0 +1,688 @@
+---
+title: "SARFRAZ_MIDTERM"
+author: "Hussain Sarfraz"
+date: "11/24/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(readxl)
+library(tidyverse)
+library(dplyr)
+library(haven)
+```
+
+# Question 1
+## Part A
+
+When reading this survey question there were a few thoughts that came into my mind:
+
+* This question asks for two separate topics/opinions. It is a **double-barreled** question. In this question the respondent is being asked about who is to blame for the **dysfunction and gridlock** in Washington. Some respondents might think that a particular individual/entity is to blame for the **dysfunction** in Washington but they might not think that the chosen individual is responsible for the **gridlock** in Washington. The survey writer should have been careful with their word choice and should have only used one descriptive word to ask the question instead of two words.
+* I did not know what was being asked as I read the question. I am not well-versed with U.S politics which might be the reason I was completely clueless about what was being asked but I wish there was some sort of link or greater details about what was being talked about. When I search the keywords **gridlock in Washington** I do not get many results. There are some articles that are published in **2013** while some are published in **2010**. I wish a year was mentioned in the question such as **Who is to blame for the occurrence of the gridlock that occurred in Washington at September, 2013?**. **September, 2013** is a made up year but my point is that if a year was included then I would have some type of idea about what specific event is being talked about. Having a specific date could also help me with my research into finding a particular article that talks about this situation in greater detail. Also, I do not know if this would be correct grammar but I believe it would have been best to say **the recent political gridlock that occurred in Congress** and not say **in Washington** at the end. As mentioned before, I am not well-versed with U.S politics and I did not know what was a gridlock. When I tried to search the meaning of the term I got really confusing definitions and then I realized that this question was referring to a **political gridlock** and that was what I needed to search to understand the concept better. If the question said **political gridlock** and used the word **congress** then I would have understood that this question and **gridlock** has to do with congress finding it difficult to pass laws. 
+* When looking at the answer choices I believe some of the choices were random and created a imbalance. The two answer choices **Congress | The Media** sound like more generic terms. They represent a group/entity instead of pointing at a particular person. When I saw the other answer choices **Donald Trump | Nancy Pelosi | Chuck Schumer | Obama** I was wondering why these names were given. From my research and understanding **Chuck Schumer and Barak Obama** are from the **Democratic Party** while **Donald Trump** is from the **Republican Party**. I believe **Nancy Pelosi** is a part of **Congress**. The point I am trying to get across is that I personally do not keep track or know much about specific politicians. I never heard the name **Chuck Schumer** in my life and do not know much about the polititican. By displaying really specific answer choices it might be hard for respondants to make a decision on who to pick. It would be best to just mention the political party groups in the answer choices such as **Democrats | Republicans**. This way there is a higher chance that the survey respondent can instantly know what group is being talked about and can give a better answer. Whereas, if the specific names of politicians are mentioned then some people (like me) might not know what party these politicians belong to and this increases the chance for a in-accurate response to be given or for the question to be skipped. 
+
+## Part B
+
+I would re-word the question like this: 
+
+**Who is responsible for the recent political gridlock that occurred in Congress at NOV,2 2021?** 
+* A political gridlock is when congress has difficulty passing laws that satisfy the needs of the people
+
+* **Republicans**
+* **Democrats**
+* **Congress**
+* **The Media**
+
+Here are the few points that I have addressed:
+
+**NOTE:** Please look at **Question 1 - part a** to see a detailed overview of my thought process and why I made the decisions that I made.
+
+* I changed the word **to blame** to **responsible** because I felt like using the word **blame** was too harsh. The word **blame** implies that there is a single group or individual that is solely responsible for the gridlock. While some people might think like that not everyone would and some people might think that there is more than one group that is responsible for the **political gridlock**. Also, including harsh words like **blame** in a survey question might encourage a respondent to pick a political party that they hate. The choice would be based entirely out of emotion which can ruin the survey results. Using the word **responsible** does not give the implication that the **political gridlock** was one persons fault. It encourages the respondent to think for a bit and to select a political party/group that is not based off of the individuals personal bias. While this change does not completely eliminate bias I believe it reduces it to a certain extent.
+* I removed the word **dysfunction** because including that word would be confusing since the word **gridlock** is already mentioned. Many people might think of **dysfunction** to mean many different things (some might think of it as a slight mis-organisation while others might think it means total chaos). Only including the word **political gridlock** simplifies the survey and **political gridlock** has one solid definition and many people do not hold different opinions about it which means that it could potentially help the respondent in understanding the question better. 
+* I added the word **political** next to **gridlock** to let the respondents know what is being talked about. The word **gridlock** has many different definitions when it is searched online so using the word **political gridlock** allows the respondent to understand the question better since they can search for a specific term instead of experimenting with different ones and figuring out what something means. I also added a asterisk at the end of the question which quickly provides a explanation about what a political gridlock is. I did this because not all survey responders would search the definition about what a gridlock means.
+* I also included a specific date in the question about the **political gridlock** that I am referring too. Although a date was not given in the original question I found a recent article (published NOV,2 2021) written by **CNBC** that talks about a recent gridlock congress was in. When I searched the phrase **political gridlock November 2 2021** on the web the first suggested article I got was from **CNBC** so I believe survey respondents would not have a hard time in finding the article (if they would want to gain further context about the situation)
+* I also shortened down the answer choices and included **Democrats and Republicans** instead specific names of politicians. I did this because more individuals know the words **Democrats and Republicans** and would most probably be confused if the name of a specific politician was given (since the respondent might not know who the politician is or which political party they are in). Using groups in the answer choices familiarizes the respondent with what groups are being referred too and this encourages the respondent to provide an answer since they are more familier with the options. 
+
+# Question 2
+## Part A
+
+Here are the questions I would explore with this data:
+
+* **Were there more females or males (or any other genders) that supported Trump? What about Hilary Clinton and the other presidential candidates?**
+  + I want to explore this topic because I believe it would be interesting to see if different genders preferred one candidate over the other. This question also allows me to get a idea of what type of genders believe/follow what type of political ideology. Although none of these answers would be a complete representation of the entire U.S population it would be helpful in initiating further discussion/analysis on the topic and in different subjects.
+  
+* **Which race/ethnicity voted for Trump the most and which race/ethnicity voted for Hilary the most?**
+  + I wanted to ask this question since I believe it would be interesting to see if there is any relation between race and the presidential candidates that received a vote. Some further questions I would ask for this topic are: Does one race favor a certain candidate more than another? What does this information tell us about the American public and why did the results come out the way they did? 
+  
+* **What percent of Trump supporters were educated or had a certain level of education? What about Clinton (or any other candidate) supporters?**
+  + I wanted to ask this question since it would be interesting to see if there is any relation between education and the type of supporters that presidential candidates received. Knowing this would help me make some conclusions about what type of audience each presidential candidate targeted. I could also go a step further and analyse the political campaign of each presidential candidate and see if uneducated voters sided with a candidate that made absurd claims/statements and if **educated voters** sided with a candidate that made absurd claims/statements. 
+  
+* **Did Trump supporters show a great amount of support to the Green New Deal or Medicare for All or was there a equal amount of support? What were the results for other presidential candidates such as Hilary Clinton?**
+  + This question would help me assess what type of law/act was favored by what type of candidate. For example, if majority of the Trump supporters favored the **Green New Deal** act then that would let me know that Trump supporters care more about the environment. This question would also let me know a bit more about the different supporters for each political candidate. 
+  
+* **Which candidate got the most approval/support?**
+  + Answering this question is essential in finding out which presidential candidate had the most support. It also helps in figuring out what type of political beliefs the majority of the U.S population favors. 
+  
+* **What was the percentage difference between Trump and Hilary Clinton supporters? What about the other presidential candidates?**
+  + Answering this question helps me see how intense the presidential campaign was and how strong of a lead the winning presidential candidate have. Did the winning presidential candidate have a big or small difference in votes/support as compared to his competitors?
+
+## Part B
+
+> First Question: political behavior or political attitudes
+
+**Which deal/act do you support the most?**
+
+* **Green New Deal**
+* **Medicare for All**
+
+**NOTE:** When the respondent is answering this question they will only get to pick one deal/act and not multiple. This question would also not allow the respondent to rank the deal/act. 
+
+> Second Question: demographic or other non-political characteristics of the respondent
+
+**What is your highest level of education?**
+
+* **No Formal Education**
+* **Below High School**
+* **High School Diploma or Equivalent**
+* **Associates Degree**
+* **Bachelors Degree**
+* **Masters**
+* **Doctorate/PhD**
+* **Vocational/Professional**
+
+# Question 3
+
+Before I answer this question I need to:
+
+1. load the **.sav** file in R using the **read_sav()** function which is in the **haven library**
+
+* To do this I need to set my working directory through the **setwd()** function
+
+* I also need to keep a copy of the original dataset. In this problem I make **genforward_2017** as my original dataset. I create a new object **genforward_2017_tidy** which would be the object that stores in the updated changes to the dataset.
+
+```{r}
+setwd("C:/Users/hussainsarfraz/Desktop/DATA 210")
+genforward_2017 <-  read_sav('genforward sept 2017.sav')
+genforward_2017_tidy <- genforward_2017
+```
+
+2. Tidy the **genforward_2017** dataset. The **genforward_2017_tidy** dataset will store in these changes.
+
+* I first checked to see if this dataset is long and if it needs to go from long->wide. This was not the case since the **GenF_ID** column did not have any repeating rows. I checked this answer using two methods which I had detailed in my code.
+
+* I did notice that the dataset is wide and needs to be in the **long** format but I decided not to focus on this at the moment since there are many columns that are in the wide format. When I start to answer some of the questions I will then tidy the data accordingly. 
+
+**NOTE:** Since this dataset does not have repeating rows it is safe to say that the total number of respondents for this dataset are **1741** (got this answer from using the **nrow()** function which was used further down the code when answering the questions)
+
+```{r}
+############################################## long data testing
+
+#method 1: not long data since GenF_ID is not repeated and shows FALSE
+#genforward_2017[1,]==genforward_2017[2,]
+
+#method 2: not long data since all values in GenF_ID appear once. 
+#sort(table(genforward_2017$GenF_ID),decreasing=T)
+```
+
+* I then decided to make all the column names lowercase in the dataset since I found it easier to type when writing down the column names.
+
+```{r}
+############################################## making all column names lowercase
+names(genforward_2017_tidy) <- tolower(names(genforward_2017_tidy))
+```
+
+* I decided to re-name some of the columns and renamed **q0** to **candidate.vote** since the values under **q0** represented the respondents candidate vote
+
+```{r}
+############################################## giving variables more descriptive names
+genforward_2017_tidy <- rename(genforward_2017_tidy,
+                               candidate.vote = q0)
+```
+
+* The next step was to replace the **_** in the column names to **.** since it is good practice and makes it easier to code/type
+
+```{r}
+############################################## sub "_" in col names to "."
+names(genforward_2017_tidy) <- gsub("_",".",names(genforward_2017_tidy))
+```
+
+* I then used the **summary()** function to get a overview of each column and to understand each columns data type. My result was that the **device | state | timezone** columns were strings. The rest of the columns were numeric
+
+```{r}
+############################################## summary() to see each variable type
+#summary(genforward_2017_tidy)
+
+#string columns (all other columns are numeric)
+#device, state, timezone, 
+```
+
+* since majority of the values in the **state** column are 2 characters long I decided to check and see if there are any column values that have additional spaces. Thankfully, I did not need to remove any spaces since I found out that all the values in the **state** column are two characters long
+
+```{r}
+####################################### seeing if stings don't have unnecessary spaces
+table(nchar(genforward_2017_tidy$state))
+```
+
+## Part A
+
+**14.70419 % of the sample strongly approved or somewhat approved of the way that President Trump is handling his job as president**
+
+I got this answer by following these steps:
+
+ 1. I used the **attributes()** function to see what the numbers under the **q1** column meant. I found out that I need to count the numbers 1 and 2 in the **q1** column since they represent **Strongly approve** and **Somewhat approve** respectively. 
+ 2. I then replaced the values 77,98,99 with **NA** because these numbers represented that a individual: skipped this question, did not respond, or did not know what answer to give
+    + I then used the **table()** function to see if this change was successfully implemented and it was because the count of 77,98,99 did not appear in the vector
+
+```{r}
+#################################### understanding what numbers in the 'q1' column mean
+#attributes(genforward_2017_tidy$q1)
+
+###################### replacing some values to NA and then testing to see if it worked
+#77=DON'T KNOW | 98=SKIPPED ON WEB | 99=refused
+
+genforward_2017_tidy$q1[genforward_2017_tidy$q1 %in% c(77,98,99)] <- NA
+#table(genforward_2017_tidy$q1) #checking to see if values are replaced
+```
+
+3. I then used the **nrow()** function to see how many total respondents I have in my dataset (I would use this value later on as the total when I am finding the percentage). I got the **nrow()** of the **genforward_2017** and **genforward_2017_tidy** object to double check and see if I am getting the same values and I did. My result was **1741** which means there are a total of **1741** respondents in the dataset.
+4. Now I am going to get the answer. I am using the **subset()** function to filter in the values 1 and 2 in the **q1** column. I then use the **nrow()** function to count how many rows appear after the filter and I then divide this by the total number of rows in the dataset as a whole which is **1741**. 
+
+```{r}
+####################################### checking is rows total respondents are correct
+#nrow(genforward_2017)
+nrow(genforward_2017_tidy)
+
+############################################## getting answer
+nrow(subset(genforward_2017_tidy, q1==1 | q1==2))/nrow(genforward_2017_tidy)*100
+```
+
+> Double Checking Answer
+
+So I have also decided to double check my answer and to make sure I am doing my calculations correctly. I use the **prop.table()** function to convert the numbers that appear in the **table(genforward_2017$Q1)** code to percentages. Note that I have used the **genforward_2017** dataset here and the reason I did that is because in the **genforward_2017_tidy** dataset some rows are **NA** now so if I use the **genforward_2017_tidy** dataset here the percentages will be slightly altered since the **prop.table()** and **table()** function would count less rows than what is actually in the dataset.   
+
+When I add the total number of one and two values in the **Q1** column I get the same percentage as I got before which means my calculation was correct.
+
+```{r}
+respondent.percent <- prop.table(table(genforward_2017$Q1))*100 
+respondent.percent[1]+respondent.percent[2]
+```
+
+## Part B
+
+Here are the results I got for this problem:
+
+Republican Men Trump approval/dis-approval  | Percentage
+------------- | -------------
+Republican men who **“strongly approve” or “somewhat approve”** of the way Trump is handling his job as president                 | ----------->**16.65709 %**
+Republican men who **“somewhat disapprove” or “strongly disapprove”** of the way Trump is handling his job as president        | ----------->**29.12119 %**
+
+Republican Women Trump approval/dis-approval  | Percentage
+------------- | -------------
+Republican women who **“strongly approve” or “somewhat approve”** of the way Trump is handling his job as president        | ----------->**15.27858 %**
+Republican women who **“somewhat disapprove” or “strongly disapprove”** of the way Trump is handling his job as president        | ----------->**28.77657 %**
+
+1. The first step I took in answering this question was to use the **attributes()** function to see what numbers I needed to focus on for each column. I was focusing on three columns for this problem and they were: **q1 | gender | partyid7**
+
+```{r}
+##attributes(genforward_2017$Q1)
+#Strongly approve = 1 | Somewhat approve = 2
+#Somewhat disapprove = 4 | Strongly disapprove = 5
+
+##attributes(genforward_2017$gender)
+# male = 1 | female = 2
+
+##attributes(genforward_2017$PartyID7)
+# “Lean Republican”, “Moderate Republican”, or “Strong Republican” 5,6,7
+```
+
+2. I then made four separate object which each contained the rows for the four specific results that I wanted to obtain.
+    + For the **male.trump.approval** object I filtered the **q1** column through the numbers one and two because they represented the values “strongly approve” or “somewhat approve”. For **gender** I filtered the column values to only show the number one because one represented male respondents. Finally, for the **partyid7** column I filtered the numbers 5,6, and 7 because they represented the “Lean Republican”, “Moderate Republican” and “Strong Republican” categories.
+    + For **female.trump.approval** everything was the same as **male.trump.approval** except the filter for **gender** which was the number two this time. I did this because the number two represented females and for this result I needed the percentage of female trump approvals. 
+    + For **male.trump.disapproval** everything is the same as **male.trump.approval** except now since I am looking at male trump dis-approvals I have to change the numbers I use for the **q1** column to the numbers four and five since they represent a “somewhat disapprove” or “strongly disapprove” of Trump.
+    + **female.trump.disapproval** is the same as **male.trump.disapproval** except I changed the filter for gender to only show rows that have the number two in them. 
+    + For every object I piped the **nrow()** function to get the number of rows in the dataset. This number is the amount of people (male/female) who approve/dis-approve of how Trump is handling his job as a president. After I did this I divided the result by the total number of rows in the dataset which represents all respondents. 
+
+```{r}
+############################################## getting answer for male trump approval
+male.trump.approval <- genforward_2017_tidy %>%
+  filter(q1==1|q1==2 &
+         gender==1 &
+         partyid7==5|partyid7==6|partyid7==7) %>%
+  nrow()
+
+male.trump.approval/nrow(genforward_2017_tidy)*100
+
+############################################## getting answer for female trump approval
+female.trump.approval <- genforward_2017_tidy %>%
+  filter(q1==1|q1==2 &
+           gender==2 &
+           partyid7==5|partyid7==6|partyid7==7) %>%
+  nrow()
+
+female.trump.approval/nrow(genforward_2017_tidy)*100
+
+########################################### getting answer for male trump dis-approval
+male.trump.disapproval <- genforward_2017_tidy %>%
+  filter(q1==4|q1==5 &
+           gender==1 &
+           partyid7==5|partyid7==6|partyid7==7) %>%
+  nrow()
+
+male.trump.disapproval/nrow(genforward_2017_tidy)*100
+
+############################################## getting answer for female trump dis-approval
+female.trump.disapproval <- genforward_2017_tidy %>%
+  filter(q1==4|q1==5 &
+           gender==2 &
+           partyid7==5|partyid7==6|partyid7==7) %>%
+  nrow()
+
+female.trump.disapproval/nrow(genforward_2017_tidy)*100
+```
+
+## Part C
+
+**Terrorism and homeland security** and **Health Care** were the two most important issues that Trump voters listed. The percentage of Trump supporters who listed these issues as important are listed in the chart below:
+
+Issue        | Percentage of Trump voters who listed this issue as a important issue
+-------------                                         | -------------
+Terrorism and homeland security                       | ----------->18.22034 %
+Health care                                           | ----------->10.59322 %
+Terrorism and homeland security **and** Health care   | ----------->28.81356 %
+
+1. To begin with I first needed to use the **attributes()** function to compare the column attributes for column **q13.1** and **q13.2**. I did this to check if the questions assigned to boht of these columns are the same which they were. This meant that the columns that had **q13** in them were in a wide format and I could bring all the column values into one.
+2. I then used the **gather()** function to bring all the **q13** columns together. 
+3. After I executed the **gather()** function successfully I needed to do further data cleaning since the **genforward_2017_tidy** now had **38,302** rows now. To bring the dataset back to **1741** rows I had to remove the zeros that were in the **important.issue.value** column.
+4. After I removed the zeros I did not need the **important.issue.value** column since it only contained ones which meant the important issue for each respondent is now displayed.
+5. I then replaced the numbers 77,98,99 in the **candidate.vote** column to **NA** values since those numbers did not mean anything significant in the dataset and only represented someone skipping the question or not providing a answer
+
+```{r}
+############################################## checking if assigned question is same
+# attributes(genforward_2017_tidy$q13.1)
+# attributes(genforward_2017_tidy$q13.2)
+
+############################################## going from wide->long
+genforward_2017_tidy <- gather(genforward_2017_tidy,
+       key = 'important.issue.topic',
+       value = 'important.issue.value',
+       paste0('q13.',1:22)) 
+
+########################################## only zero and ones in column no other value
+#unique(genforward_2017_tidy$important.issue.value)
+
+############################################## removing zero in column
+genforward_2017_tidy <- genforward_2017_tidy[!(genforward_2017_tidy$important.issue.value == 0) , ]
+
+############################################## removing important.issue.value column
+genforward_2017_tidy$important.issue.value <- NULL
+
+############################################## replacing some values to NA and then testing to see if it worked
+#77=DON'T KNOW | 98=SKIPPED ON WEB | 99=refused
+genforward_2017_tidy$candidate.vote[genforward_2017_tidy$candidate.vote %in% c(77,98,99)] <- NA
+```
+
+6. I then used the **unique()** function to figure out what number in the **candidate.vote** column represents Trump. The number that I got was **two**
+7. I then created a object called **trump.vote.only** which only contained the rows of Trump voters. Afterwards, I used the **nrow()** function to get the total amount of trump voters which was **236** voters.
+
+```{r}
+############################################## seeing what number represents trump
+#unique(genforward_2017_tidy$candidate.vote)
+
+############################################## creating trump only dataset
+trump.vote.only <- subset(genforward_2017_tidy, candidate.vote == 2)
+
+############################################## total no. of trump voters
+nrow(trump.vote.only)
+```
+
+8. I then used the **table()** function to calculate the count of each topic in the **important.issue.topic** column. The **sort()** function helped me determine which two topics did Trump supporters find the most important. I then used the **attributes()** function to help me figure out what topic these questions were and in the end I got **Terrorism and homeland security** as the most important topic and **Health Care** as the second most important topic. 
+    + **45** Trump voters said that **Terrorism and homeland security** was a important issue facing the country
+    + **25** Trump supporters said that **Health Care** was a important issue
+    + **NOTE:** When using the **attributes()** function I referenced the original dataset **genforward_2017** because I noticed that the attributes in the **genforward_2017_tidy** would not display since I made some changes to it. So to be on the safe side I decided to reference the **genforward_2017** dataset when looking for specific attributes. 
+
+```{r}
+############################################## seeing two most important issue
+sort(table(trump.vote.only$important.issue.topic),decreasing = T)
+
+attributes(genforward_2017$Q13_21)
+attributes(genforward_2017$Q13_6)
+
+#[Terrorism and homeland security]       [Health care]
+# q13.21                             and q13.6
+#    43                                   25
+```
+
+9. Finally, I performed my calculations 
+
+```{r}
+############################################## answer
+43/nrow(trump.vote.only)*100 # 18.22034 <- Terrorism and homeland security
+25/nrow(trump.vote.only)*100 # 10.59322 <- Health Care
+(43+25)/nrow(trump.vote.only)*100 # 28.81356
+```
+
+## Part D
+
+The percentage of Clinton voters who listed the issue of **Terrorism and homeland security** and **Health Care** as an important issue facing the U.S is listed in the table below:
+
+Issue        | Percentage of Clinton voters who listed this issue as a important issue
+-------------                                         | -------------
+Terrorism and homeland security                       | ----------->4.454865 %
+Health care                                           | ----------->13.59906 %
+Terrorism and homeland security **and** Health care   | ----------->18.05393 %
+
+1. I first created a object called **clinton.vote.only** which contained Clinton voters only. 
+2. I then used the **nrow()** function to count how many clinton voters there were in this dataset. The number I got was **853**
+3. I then used the **nrow()** and **subset()** function to filter the Clinton voters that listed the issue **Terrorism and homeland security** or **Health Care** as important issues. I then divided that result over the total amount of Clinton voters in the **clinton.vote.only** dataset
+
+```{r}
+############################################## creating clinton only dataset
+clinton.vote.only <- subset(genforward_2017_tidy, candidate.vote == 1)
+
+############################################## total no. of clinton voters
+nrow(clinton.vote.only)
+
+############################################## seeing two most important issue
+nrow(subset(clinton.vote.only, important.issue.topic=='q13.21'))/nrow(clinton.vote.only)*100
+
+nrow(subset(clinton.vote.only, important.issue.topic=='q13.6'))/nrow(clinton.vote.only)*100
+
+nrow(subset(clinton.vote.only, important.issue.topic=='q13.21'|important.issue.topic=='q13.6'))/nrow(clinton.vote.only)*100 # both issue percentage total
+```
+
+## Part E
+
+The top three issues that women **over 30 years of age** care about are:
+
+1. Health care
+2. Racism
+3. Terrorism and homeland security
+
+The top three issues that women **30 years of age and under** care about are:
+
+1. Racism
+2. Health care
+3. Environment and climate change
+
+Women over and under 30 years of age care about the same two issues and think that these issues might affect the U.S. The two issues are **Racism** and **Health care**. There is a difference of opinion in the third issue. Women over 30 say the third important issue is **Terrorism and homeland security** while women 30 and under say that the third most important issue is **Environment and climate change**. 
+
+1. To start, I used the **attributes()** function to see what number I need to use to filter out females from the **gender** column.
+2. I then created a object called **women.over.30** which used the **age** and **gender** columns to filter out people who are over 30 and are female. 
+    + The **women.under.30** is similar except it filters out women who are 30 or younger.
+3. For both objects I use the **sort()** and **table()** function to see which are the most important issues that women over/under 30 find the most important.
+4. Once I get that result I use the **attributes()** function to see what topic is assigned to the column.
+
+```{r}
+#attributes(genforward_2017$gender)
+############################### seeing three most important issue for women over 30
+women.over.30 <- subset(genforward_2017_tidy, age > 30 & gender==2)
+
+sort(table(women.over.30$important.issue.topic),decreasing = T)
+
+#[Health care]            [Racism]          [Terrorism and homeland security]
+# q13.6                    q13.14             q13.21
+#    28                    26                 19
+
+# attributes(genforward_2017$Q13_6)
+# attributes(genforward_2017$Q13_14)
+# attributes(genforward_2017$Q13_21)
+############################### seeing three most important issue for women 30 or under
+women.under.30 <- subset(genforward_2017_tidy, age <= 30 & gender==2)
+
+sort(table(women.under.30$important.issue.topic),decreasing = T)
+
+#  [Racism]            [Health care]         [Environment and climate change]
+#   q13.14                q13.6              q13.3
+#    160                  98                 85
+
+# attributes(genforward_2017$Q13_14)
+# attributes(genforward_2017$Q13_6)
+# attributes(genforward_2017$Q13_3)
+```
+
+# Question 4
+## Part A
+
+The year **1869** is missing at least one day of temperature data. In total, there are **7 days** of missing temperature data in the year **1869**
+
+1. I used the **read_csv()** function to load in the temperature data and I then created a object called **nyc.temperature.tidy** which would store in any of the new changes that I would make to the **nyc-central-park-temps** dataset
+2. I converted all the column names in **nyc.temperature.tidy** to be lowercase
+3. I used the **separate()** function to split the **date** column into **year**,**month**, and **day**
+4. To figure out if a year had missing temp data I decided to use the **group_by()** function and to group by **year**. When I did that I used the **summarize()** function to count how many rows are in that group I just made. This result would give me the days in a year that has **temperature** data stored.
+5. I then used the **arrange()** and **desc()** function to see the smallest values first in the dataset. The result that I got is that the year with the smallest number of days is **1869** with only **358** days of temperature data.
+6. I then subtracted **365** days by **358** to find out how many days of missing temperature data there is in the year **1896**
+
+```{r}
+nyc.temperature <-  read_csv('nyc-central-park-temps.csv')
+nyc.temperature.tidy <- nyc.temperature
+names(nyc.temperature.tidy) <- tolower(names(nyc.temperature.tidy))
+
+nyc.temperature.tidy <- separate(nyc.temperature.tidy,
+                            col='date',
+                            into = c('year','month','day'),
+                            sep = '-') 
+
+day.total.temp <- nyc.temperature.tidy %>%
+  group_by(year) %>%
+  summarize(total.days = n()) %>%
+  arrange(total.days)
+
+365 - day.total.temp[1,2]
+```
+
+
+## Part B
+
+I have split the question into separate headers and will answer each part separately.
+
+> Create a variable that tells us the difference between the highest and lowest temperature for each day.
+
+I use the **mutate()** function to create a new column in the **nyc.temperature.tidy** dataset. The **temp.diff** column stores in the difference between the **tmax** and **tmin** column.
+
+```{r}
+#difference between the highest and lowest temperature for each day
+nyc.temperature.tidy <- nyc.temperature.tidy %>%
+  mutate(temp.diff = tmax - tmin)
+```
+
+> What the average of this difference? 
+
+The average of the **tmax** and **tmin** difference is **14.73218** degrees Fahrenheit.
+
+To find the average of the **tmax** and **tmin** difference I decided to add up all the temperature difference values in the **temp.diff** column and then divide that by the total number of days in the **nyc.temperature.tidy** dataset (which is 54779). 
+
+```{r}
+#what the average of this difference?
+sum(nyc.temperature.tidy$temp.diff)/nrow(nyc.temperature.tidy) #14.73218
+```
+
+> Which day during this 150 year window had the biggest difference between the highest and lowest temperature? 
+
+* On the 28th of March in 1921 there was the biggest temperature difference of 48 degrees Fahrenheit
+* The first day of the month has the biggest difference of high temperature and low temperature. The difference is 26889 degrees Fahrenheit
+
+**NOTE:** When answering this question I thought that the question can be interpreted in two ways. Because of this I have decided to give two separate/alternate answers to the question. I am not saying both answers are needed to solve the question but I wanted to include my whole thought process in case to not avoid losing any points.
+
+So my first interpretation of the question was to find a specific date out of the whole dataset that had the biggest temperature difference between the highest and lowest temperature. Figuring this out was simple since I had to use the **arrange()** and **desc()** function to bring the highest temperature difference values to the top in the **temp.diff** column. 
+
+**The result was that on the 28th of March in 1921 there was the biggest temperature difference of 48 degrees Fahrenheit**
+
+```{r}
+#Which day during this 150 year window had the biggest difference between the highest 
+#and lowest temperature?
+
+nyc.temperature.tidy %>%
+  arrange(desc(temp.diff)) #the 28th of March in 1921 had the biggest temperature difference of 48 degrees Fahrenheit
+```
+
+My second interpretation was that the question is asking me for the overall day that had the biggest difference in highest and lowest temperatures. To answer this question I grouped by **day** and then used the **summarize()** function to gather the total temperature difference for each day. I then used the **arrange()** function to get the day that had the biggest total of temperature differences.
+
+**The result that I got was that the first day of the month has the biggest difference of high temperature and low temperature. The difference is 26889 degrees Fahrenheit**
+
+```{r}
+nyc.temperature.tidy %>%
+  group_by(day) %>%
+  summarize(total.day.diff = sum(temp.diff)) %>%
+  arrange(desc(total.day.diff)) # the first day of the month has the biggest difference between the highest and lowest temperature of 26889.
+```
+
+> Averaging across years, which month tends to have the highest average difference in daily high and low temperatures?
+
+**The month of May tends to have the highest average difference in daily high and low temperatures**
+
+1. I arrived at this answer by first using the **group_by()** function to group by year and month. I then use **summarize()** to get the temperature difference total for each month. I also add in the total days for that month since I am going to use that amount when calculating the month with the highest average difference in daily high and low temperatures.
+2. Finally, the **mutate()** function sums all of this up and calculates the monthly average difference in daily high and low temperatures by dividing the total monthly temperature difference over the total number of days in the month. This result gives me the **average difference in daily high and low temperatures**.
+3. When using the **arrange()** function I can see which months have the highest average difference in daily high and low temperatures. When looking at the dataset I see the month of **May** appearing many times at the top of the dataset. The highest average difference in temperature was **21.5** in **May** of **1941**.
+
+```{r}
+#Averaging across years, which month tends to have the highest average difference in daily high and low temperatures?
+nyc.temperature.tidy %>% 
+  group_by(.,year, month) %>% 
+  summarize(diff.total = sum(temp.diff),
+            day.total = n()) %>%
+  mutate(average.diff = diff.total/day.total) %>%
+  arrange(desc(average.diff)) # month of may has the highest ave. temp diff
+```
+
+## Part C
+
+I have split the question into separate headers and will answer each part separately.
+
+> Load and merge in the precipitation data. What type of merge does it mark sense to perform? Which variable(s) will you merge on? 
+
+I have loaded the precipitation data through the **read_csv()** function and have also created a object **nyc.precipitation.tidy** which will store in the changes that I make to the precipitation data. I also convert all the column names to be lowercase. I also use the **separate()** function to create individual **year | month | day** columns in the **nyc.precipitation.tidy** dataset. Doing this would help determining a key when performing the merge. 
+
+I then perform a outer merge on the temperature and precipitation data because the whole point is me merging these two datasets is to see the commonalities  and differences between the temperature and precipitation data. When I perform the merge I see that there are 7 rows that have blank temperature data and looking at this made me realize that the 7 rows represent the 7 days of temperature data that was missing in 1869. (**I talk about this further in Q4 - part A**). Also, there will be situations where I am going to be analyzing precipitation data only so it is important to make sure I include everything from both datasets to avoid calculation errors.
+
+Since the values in the **station** and **name** columns in the **nyc.precipitation.tidy** and **nyc.temperature.tidy** dataset is the same I decided to merge the two datasets using the **year | month | day** columns because these columns combined acted as a unique identifier for each row.
+
+```{r}
+nyc.precipitation <-  read_csv('nyc-central-park-precipitation.csv')
+nyc.precipitation.tidy <- nyc.precipitation
+names(nyc.precipitation.tidy) <- tolower(names(nyc.precipitation.tidy))
+
+nyc.precipitation.tidy <- separate(nyc.precipitation.tidy,
+         col='date',
+         into = c('year','month','day'),
+         sep = '-') 
+
+#wanted to see what rows did not match between the two datasets
+# anti_join(x = nyc.precipitation.tidy, 
+#           y = nyc.temperature.tidy , 
+#           by = c('year','month','day'))
+
+nyc.temp.percip.merge <- merge(x = nyc.temperature.tidy, 
+      y = nyc.precipitation.tidy, 
+      by = c('year','month','day'),
+      all = T)
+```
+
+> How many days in the past 150 years had a high temperature of at least 50 degrees and received at least 1 inch of snowfall.
+
+**25 days in the past 150 years have a high temperature of at least 50 degrees and received at least 1 inch of snowfall**
+
+To get to this answer I used the **filter()** function to filter out the values that I need and then used **nrow()** to count the number of days that had a high temperature of at least 50 degrees and received at least 1 inch of snowfall.
+
+```{r}
+#how many days in the past 150 years had a high temperature of at
+#least 50 degrees and received at least 1 inch of snowfall.
+
+  nyc.temp.percip.merge %>%
+  filter(tmax>=50 & snow>=1) %>%
+    nrow() #25 days
+```
+
+## Part D
+
+> Aggregate the data by month to figure out what percentage of days have had preciptation since 1869. 
+
+**33.12708% of days have precipitation since 1869**
+
+1. I created a object **days.since.1869** which stored the total number of days after the year **1869**. I would use this result as the total when calculating the percentages.
+2. I then created a object **percip.by.month** which was a dataset that showed (for each month) how many days had precipitation above zero. Theses days counted during and after the year **1869**. 
+3. I then performed the calculation of the percentage of days have had precipitation since 1869. I used the **sum()** function to count the total number of days during and after **1869** that had precipitation above zero. I then divided this value by the total number of days since **1869**
+
+```{r}
+days.since.1869 <-  nyc.temp.percip.merge %>% 
+    filter(year>=1869) %>%
+  nrow()
+
+percip.by.month <-  nyc.temp.percip.merge %>% 
+    filter(prcp > 0 & year>=1869) %>%
+    group_by(., month) %>% 
+    summarize(percip.days = n()) 
+
+#what percentage of days have had preciptation since 1869
+sum(percip.by.month$percip.days)/days.since.1869*100#33.12708% days have precipitation since 1869
+
+##################### to check if my count worked for lines 607-610
+  # nyc.temp.percip.merge %>% 
+  #   mutate(day.count = 1) %>% 
+  #   filter(prcp > 0 & year>=1869) %>%
+  #   group_by(., month) %>% 
+  #   summarize(percip.days = sum(day.count))
+```
+
+> Which month tends to have the most rainy days in New York City? What percentage of days does it usually rain in this month? 
+
+**March has the most rainy days in New York City. It rains 3.092031% of days in this month.**
+
+**NOTE:** I am using **days.since.1869** as my total since in the beginning of the question I was asked to figure out the percentage of days since 1869. Because of this I assume that the further question would like me to use the same number as a total
+
+1. To get this answer I first needed to find out which month had the most precipitation days. I used the **arrange()** and **desc()** function to figure out which month had the greatest amount of days with precipitation. 
+2. After I knew that **March** is the month with the most precipitation I used bracket notation to get the value out from the **percip.by.month** dataset.
+
+```{r}
+# Which month tends to have the most rainy days in New York City?
+arrange(percip.by.month,desc(percip.days)) #march has the most rainy days
+#What percentage of days does it usually rain in this month?
+percip.by.month[3,2]/days.since.1869*100#3.092031% 
+```
+
+>Which month tends to be the dryest (i.e. fewest days with precipitation)? What percentage?
+
+**September has the fewest days with precipitation in New York City. It rains 2.296207% of days in this month.**
+
+For this question I followed the similar logic as the previous one. The only difference here is that since I was finding the month with the fewest days of precipitation I did not use the **desc()** function in the **arrange()** function 
+
+```{r}
+#And which month tends to be the dryest (i.e. fewest days with precipitation)? 
+#What percentage?
+arrange(percip.by.month,percip.days) #september has the least rainy days/is dry
+percip.by.month[9,2]/days.since.1869*100#2.296207% 
+```
+
+## Part E
+
+When looking at this graph I notice that as time moves on and the years increase the number of cold days in Central Park **gradually decreases**. For example, around **1869-1899** the number of cold days in NYC was around the **70-120** day range. This number gradually decreases because if you look at the years **1989-2018** most of the points are at the lower end of the graph (around **80-40**). Also, this change can be seen through the line of best fit. It gradually decreases as it goes towards **2018**.
+
+Although this change is not sudden the decrease is happening slowly and this could potentially be a result of pollution and global warming/climate change because many areas in the world are getting warmer. I believe in future years the number of cold days in NYC would be really low and the temperatures would be warm. I am curious to see and compare this graph with a graph of the number of warm days in NYC.
+
+**NOTE:** The variable **year** was a factor and because of this I needed to use the **as.numeric()** function to convert the values in the **year** column from factor->numeric. By doing this I was able to use **geom_smooth()** in my graph as display the line of best fit.
+
+1. Before I made the graph I filtered the **nyc.temp.percip.merge** dataset to only include rows which had any year that was **1869** or above it. Then I filtered days that were lower that 32 degrees Fahrenheit. 
+2. From there I used the **group_by()** function to group the years together.
+3. I then used the **summarize()** function to count the number of cold days in each year. The column **low.32temp.days** stores this amount. 
+
+```{r}
+nyc.temp.percip.merge %>%
+  filter(tmin <= 32 & year>=1869) %>%
+  group_by(., year) %>%
+  summarize(low.32temp.days = n()) %>%
+  ggplot(mapping = aes(x=as.numeric(year),y=low.32temp.days)) +
+  geom_point(color='blue') +
+  geom_smooth(color='black') +
+  xlab("Year") +
+  ylab("Number of Cold Days in Central Park") +
+  scale_x_continuous(breaks=c(1869,1884,1899,1914,1929,1944,1959,1974,1989,2004,2018)) +
+  ggtitle("Cold Days (below 32 degrees Farenheight) in NYC Central Park") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 10))
+```
