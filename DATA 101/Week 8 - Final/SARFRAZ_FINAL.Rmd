@@ -1,0 +1,353 @@
+---
+title: "SARFRAZ_FINAL"
+author: "Hussain Sarfraz"
+date: "10/19/2021"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(tidyverse)
+library(maps)
+library(mapdata)
+library(RColorBrewer)
+```
+
+## Question 1
+To answer this question I used the **setwd()** function to set my working directory. I then created the object **senate_races** which stored the dataset of the senate elections.
+
+```{r}
+setwd("C:/Users/hussainsarfraz/Desktop/DATA 101")
+senate_races <-  read_csv('1976-2020-senate.csv')
+```
+
+## Question 2
+To answer this question I used the **transmute()** function to select the columns that I would like to keep and the columns that I would like to remove. I kept the names of the new columns that I am creating to be the same name as the old columns because I was not making any changes to the data. I then created the object **updated_senate_races** to store the senate elections dataset which only had the columns:
+
+1. year
+2. state
+3. state_po
+4. stage
+5. candidate
+6. party_detailed
+7. candidatevotes
+8. totalvotes
+
+```{r}
+updated_senate_races <- senate_races %>%
+  transmute(year = year,
+            state = state,
+            state_po = state_po,
+            stage = stage,
+            candidate = candidate,
+            party_detailed = party_detailed,
+            candidatevotes = candidatevotes,
+            totalvotes = totalvotes)
+```
+
+## Question 3
+To answer this question I got the dataset **updated_senate_races** and piped it with the **filter()** function to remove the missing data in the candidate column. **!is.na()** selects rows that do not having missing data in them which is why I used this command inside **filter()**.
+
+**NOTE**: The question asked: *"Remove any rows that have missing data in the “candidate”* **or** *“party” columns"*. Because of the keyword **or** I chose to filter the missing data in only one column (in this example it is the **candidate** column).
+
+```{r}
+filtered_updated_senate_races <- updated_senate_races %>%
+  filter(!is.na(candidate))
+
+###  used this code to check if the filter command worked -Not Answer
+#filtered_updated_senate_races %>%
+#  filter(is.na(candidate))
+```
+
+## Question 4
+To answer this question I first created a **party3** column which indicated if a senator was a **republican** by displaying **R** in each row. If the senator was not a **republican** then the column would display **I** in each row.
+
+Now after I created this column I still needed to indicate which senators were **democrats**. To do this I decided to make a change to the **party3** column that I previously created; this is why I call the column again. In this statement I tell R to display **D** if a senator is a **democrat**. If a senator is not a **democrat** then I tell R to fill in the values that were used in the original **party3** column. This is why I write **party3** as a output in my second **ifelse()** statement. When the statement is false then R fills in the values that were stored in the original **party3** column. After this is complete R displays the latest version of the **party3** column which indicates if a senator is from the **republican**,**democrat**, or **independant** party. 
+
+```{r}
+categorized_senate_dataset <- filtered_updated_senate_races %>%
+  mutate( 
+    party3 = ifelse((party_detailed == 'REPUBLICAN'),'R','I'),
+    party3 = ifelse((party_detailed == 'DEMOCRAT'),'D',party3)
+  ) 
+```
+
+## Question 5
+There are:
+
+* **798 Democrats** in this dataset
+* **802 Republicans** in this dataset
+* **1430 Independents** in this dataset
+
+**NOTE**: The number of **NA**'s displayed are the amount of candidates that do not have a association to a party. This could most probably be a error in the dataset (maybe the person entering this data forgot to write in which party these candidates belonged to?). There would not have been **NA** values if I filtered the **party_detailed** column in question 3. But since the question asked to choose between the **candidate** or **party_detailed** column I decided to filter the **NA** values in the **candidate** column.
+
+To answer this question I used the **count()** function to count the different variables in the **party3** column. In this example there were 4 variables that were in the **party3** dataset and these were:
+
+* **D** for Democrats
+* **R** for Republicans
+* **I** for Independents (senators who are not a democrat or republican)
+* **NA** for blank values
+
+```{r}
+categorized_senate_dataset %>%
+  count(party3)
+
+###  used this code to check if I got the correct count -Not Answer
+#filtered_updated_senate_races %>%
+#  mutate( 
+#    partyR = ifelse((party_detailed == 'REPUBLICAN'),1,0),
+#    partyD = ifelse((party_detailed == 'DEMOCRAT'),1,0),
+#    partyI = ifelse((party_detailed != 'DEMOCRAT'& party_detailed != 'REPUBLICAN'),1,0)
+#  ) %>%
+#  transmute(totalR = sum(partyR, na.rm=T),
+#            totalD = sum(partyD,na.rm=T),
+#            totalI = sum(partyI,na.rm=T)) %>%
+#  view()
+```
+
+## Question 6
+To answer this question I piped the **categorized_senate_dataset** (that I created in question 4) with the **filter()** function. I removed the rows in the **party3** column that were not equal to **I** so I could just view the **republicans** and **democrats** in my dataset. I then also kept the rows in the **stage** column that had the value **gen**. This way I could only see the results from the general election. I then stored this dataset in the **two_party_vote** object. 
+
+```{r}
+two_party_vote <- categorized_senate_dataset %>%
+  filter(party3 != 'I',
+         stage == 'gen')
+```
+
+## Question 7
+* **23** races were contested between more than 2 candidates
+* **Louisiana** has the most senate elections/races (a total of **7 races**!)
+
+*I have grouped my answer into two section. The first talks about how I got the number of races and the second talks about how I found the state that had the most races.*
+
+> How I got the number of races
+
+To answer this question I grouped the dataset **two_party_vote** (which I created in Question 6) by year and state. I grouped by **year** because there is a new senate election/race happening every year and I needed to factor that when displaying my answer since the question is talking about each election/race that has occurred. I then grouped by **state** since each senate election/race happens in different states so to include each individual election in my calculations I needed to group by **state** as well. If I did not group by **state** R would just count the amount of senate elections/races that happened every year. 
+
+I then used the **summarize()** function to create a column **candidate_count** that counted the number of rows in each group that I created. The number of rows in each group would show how many candidates were competing against each other in each race. With this information I used the **filter()** function to only include the races that has more that 2 candidates in a senate election/race. I then stored this dataset in the object **senate_races**, which had 23 rows. This meant that there were 23 races that had more than 2 candidates competing against each other. 
+
+> How I found the state that had the most races
+
+To see which state has the most senate elections/races I had to use the **senate_races** dataset and group everything by **state**. I did not need to group by **year** since the **senate_races** dataset displayed all the elections that occurred. After I grouped by **state** I then created a column **race_count** which counted how many times each state appeared on the **senate_races** dataset. This number shows me which state had the most races. I then arranged the **senate_races** column from greatest to least to see the state that had the most races.   
+
+```{r}
+#This was the code I used to find the number of races that had more than 2 senates
+#competing against each other
+senate_races <- two_party_vote %>%
+  group_by(year,state) %>%
+  summarize(candidate_count = n()) %>%
+  filter(candidate_count>2)
+
+#23 rows mean 23 races
+senate_races
+
+#This code was used to see which state has the most senate election/races
+senate_races %>%
+  group_by(state) %>%
+  summarize(race_count = n()) %>%
+  arrange(desc(race_count)) %>%
+  head(1)
+```
+
+## Question 8
+*I have grouped my answer into four section. The first three talk about the different objects I create and what each of them mean and the last section talks about how I put everything together and made my graph*
+
+> Section 1: The "updated_two_party_vote" dataset
+
+So the first thing that I did was to use the **mutate()** function to create a new column called **candidate_vote_percentage** in the **updated_two_party_vote** dataset. I created the **candidate_vote_percentage** column to show the percentage of votes that each candidate got. I got this number by dividing the votes each candidate got over the total number of votes for that election. I then multiplied that number by 100 to get a percentage. 
+
+> Section 2: The "R_avetrends" dataset
+
+The second thing that I did was I created a separate object called **R_avetrends**. This object stores the overall percentage of votes for all **republicans**. I did this because the question asked to include two lines (one for democrats and republicans) that show the parties support overtime. When I read this I decided to create a object that stores in values of a parties yearly overall/average support.
+
+To start off I first filtered the **updated_two_party_vote** dataset to only include republicans in the new dataset (**R_avetrends**) that I was creating. Then I grouped by **year** since I wanted to calculate the parties overall (or average) yearly performance. After I grouped by **year** I used the **summarize()** function to create a column that summed up the total number of votes that every republican got (the name of this column is **total_candidatevotes** in my code). I then created a column that summed the total amount of votes that **all** candidates received (the name of this column is **total_oftotalvotes**). 
+
+I then created a third column (**overall_total_percentage**) which got the overall yearly percentage of the republicans votes. This was done through dividing the overall yearly votes of the republicans over the yearly total votes of all candidates (In my code this calculation is: "total_candidatevotes/total_oftotalvotes)*100"). 
+
+> Section 3: The "D_avetrends" dataset
+
+The third thing that I did was I created a object called **D_avetrends**. This object stores the overall percentage of votes for all **democrats** I did this because the question asked to include two lines (one for democrats and republicans) that show the parties support overtime. When I read this I decided to create a object that stores in values of a parties yearly overall/average support.
+
+The code for creating this object is similar to the code I used to create the **R_avetrends** object so you can look at **section 2** to read the details of how I did everything. The main different I would like to highlight here is that I used **party3 == 'D'** inside the **filter()** function because I wanted to store the yearly support of **democrats** in this object.
+
+> Section 4: How I made the graph and put everything together
+
+After I created all the objects I had to put everything together in a graph.
+
+* I displayed the data in the **updated_two_party_vote** object through a scatter plot (**geom_point**) because I wanted to display each senators elections performance.
+* I diaplayed the data in the **R_avetrends** and **D_avetrends** objects through a line (**geom_line**) because the values stored in those objects are overall yearly averages.
+* I also used **scale_color_manual()** to set the colors of the points and lines. Before I used **scale_color_manual()** R automatically assigned a color to each point/line and in the legend R just named each box the default name that was given to it. Because of this, I knew which point/line represented which party and where to place each color and what to name each point/line.
+
+```{r}
+updated_two_party_vote <-two_party_vote %>%
+  mutate(candidate_vote_percentage = (candidatevotes/totalvotes)*100)
+
+R_avetrends <- updated_two_party_vote %>%
+  filter(party3 == 'R') %>%
+  group_by(year) %>%
+  summarize(total_candidatevotes = sum(candidatevotes),
+            total_oftotalvotes = sum(totalvotes),
+            overall_total_percentage=(total_candidatevotes/total_oftotalvotes)*100) 
+
+D_avetrends <- updated_two_party_vote %>%
+  filter(party3 == 'D') %>%
+  group_by(year) %>%
+  summarize(total_candidatevotes = sum(candidatevotes),
+            total_oftotalvotes = sum(totalvotes),
+            overall_total_percentage=(total_candidatevotes/total_oftotalvotes)*100) 
+
+updated_two_party_vote %>%
+  ggplot() +
+  geom_point( mapping = aes(x=year,y=candidate_vote_percentage, color=party3)) +
+  geom_line(R_avetrends, mapping = aes(x=year,y=overall_total_percentage,color='red_L')) +
+  geom_line(D_avetrends, mapping= aes(x=year,y=overall_total_percentage,color='blue_L')) +
+  xlab("Years") + 
+  ylab("Candidate Vote Percentage") +
+  scale_x_continuous(breaks=c(1975,1980,1985,1990,1995,2000,2005,2010,2015,2020)) + 
+  ggtitle("Yearly Voting Percentage of Senators") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 10)) +
+  scale_color_manual(values = c('blue','#9ae9fd', '#fd9a9a','red'),
+                     name="Legend", 
+                     labels=c(
+                       'blue_L' = 'Democrats Average',
+                       "D" = 'Democrats',
+                       "R" = 'Republican',
+                       'red_L' = 'Republican Average'))
+```
+
+After looking at the graph I would say that the support for democrats and republicans are in the middle and there have not been any drastic changes. The support for democrats is a bit higher than the republicans by a small percentage but it is not anything too big. Around 1995 and 2013 (approx) the support for republicans was greater than democrats but democrats were back on top really quickly. 
+
+In recent years (approximately 2017-2020) the support for both democrats and republicans has declined drastically. This can be seem in the lines **Democrats Average** and **Republicans Average**. This decrease could indicate that many people in America are losing their trust in the government and do not feel the benefit of choosing a side of a political party. Another reason that could explain this recent decline is that there is a independent party that might be gaining popularity. Looking at this graph has made me curious about the future democrat and republican trends and to see the voting percentages for other independent parties. 
+
+## Question 9
+To answer this question I used the **updated_two_party_vote** dataset that I created in question 8. I first used the **filter()** function to only get the elections (or races) that happened in 2012. I then used the **select()** function to pick the columns that I wanted to be displayed in this dataset. These columns were: 
+
+1. year
+2. state
+3. party3
+4. candidate_vote_percentage
+
+I then used **pivot_wider()** to tidy the dataset because I noticed that it was untidy. I realized that the values **R** and **D** in the **party3** column could be made into separate columns and the values in the **candidate_vote_percentage** column can go under the new columns (the new columns are **R** and **D**). By doing this I reduced the number of rows in the dataset and the state names were not repeated.
+
+**Fun Fact**: I realized that I could have used the **select()** function in question 2 to pick certain columns. In question 2 I used **transmute()** to select certain columns. It was interesting to see the different methods I could use to reach one answer/solution in R.
+
+```{r}
+senate_votes_2012 <- updated_two_party_vote %>%
+  filter(year == 2012) %>%
+  select(year, state, party3, candidate_vote_percentage) %>%
+  pivot_wider(names_from = party3, values_from = candidate_vote_percentage)
+```
+
+## Question 10
+To answer this question I used the **senate_votes_2012** dataset that I created in question 9. I used the **mutate()** function to create the column **demwin** which records if democrats receive a higher vote than republicans. I did this through creating a **ifelse()** statement which displays **one** if the percentage of democrats votes were higher than republicans. If the democrat votes are lower than a **zero** is displayed. 
+
+**NOTE**: I am going to re-use this code in question 11 since I just need to add another column in the **mutate()** function. This is why I have not created an object to store the changes that I have made in this question. I will be creating the object in the next question. 
+
+```{r}
+senate_votes_2012 %>%
+  mutate(demwin = ifelse((D>R),1,0))
+```
+
+## Question 11
+To answer this question I re-used the code that was used in **question 10** and I just added another column (called **demdiff**) in the **mutate()** function. **demdiff** records the percentage difference of votes between democrats and republicans. I then created a object **updated_senate_votes_2012** which recorded the two new columns that I added to the **senate_votes_2012** dataset (the two new columns are **demwin** and **demdiff**).
+
+```{r}
+updated_senate_votes_2012 <- senate_votes_2012 %>%
+  mutate(demwin = ifelse((D>R),1,0),
+         demdiff = D-R)
+```
+
+## Question 12
+To answer this question I first loaded the **maps** and **mapsdata** library. I then created an object **states** which stores the **state-level** mapping data. I did make some changes in the **state-level** mapping data and these changes were:
+
+* The first change was that I used the **mutate()** function to create a column **upper_state** which converted all the state names in the **region** column to all uppercase characters. I did this because the state names in the **updated_senate_votes_2012** dataset are in all caps so I wanted to make sure everything was consistent. This change would be important when I am going to be joining the **updated_senate_votes_2012** and **states** dataset in **question 13**.
+* The second change was that I used the **select()** function to remove the **region** and **subregion** columns. I did this because I already created a new column for the state names (this was **upper_state**) and I did not need the **subregion** names because the **updated_senate_votes_2012** dataset did not have regions stored. The main reason why I removed these two columns was to avoid any confusion R might have when I am joining these two datasets. 
+
+```{r}
+states <- map_data("state") %>%
+  mutate(upper_state = str_to_upper(region)) %>%
+  select(-subregion,-region)
+```
+
+## Question 13
+To answer this question I created a new object called **state_and_senate_dataset** which has the data of the senate elections and the state-level mapping data. This object would be useful when I am going to be mapping the senate elections data in question 14 and 15.
+
+I joined the **updated_senate_votes_2012** and **states** dataset by using the **leftjoin()** function. The column **state** was in the **updated_senate_votes_2012** dataset and the column **upper_state** was in the **states** dataset. I had to make sure (when defining the key) that I called the column in the **updated_senate_votes_2012** dataset first because that was the dataset that I first called. The column in the **states** dataset comes later because that is the dataset that is being joined. 
+
+**NOTE**: I made sure the columns **state** and **upper_state** both spelled each state in all uppercase letters. I made this change in **question 12** so go there to see what I specifically did in my code. 
+
+```{r}
+state_and_senate_dataset <- updated_senate_votes_2012 %>%
+  left_join(states, by=c("state"="upper_state"))
+```
+
+## Question 14
+*To answer this question I have divided my answer into different sections. The first is about how I created my custom color palette and the second is how I made my map*
+
+> Section 1: Creating a Custom Color Palette
+
+To start this question off I installed the **RColorBrewer** library to make my own custom color palette which is called **election_palette**. I did this because I wanted to pick a shade of blue and red that were in a color scheme created by Cynthia Brewer, a Professor of Geography at Penn State University. The brewer.pal() function was used to let R know which color scheme I wanted to pick my colors from and I then picked my colors based of the position they had in the RdYlBu color scheme. In this example I picked Blue and Red.
+
+> Section 2: Creating my Map
+
+When creating my map I decided to use **geom_polygon()** three times. I used the first **geom_polygon()** to set the backgroud of the map and to represent states where there were no elections or a win of a non-democrat/republican. The second **geom_polygon()** was used to display the data about which states democrats won and which states republicans won. The third **geom_polygon()** was used to create a outline of the states in the map. 
+
+I then used my custom color palette in the **scale_fill_manual()** function and also defined what each box/color meant. I used the same strategy that I used in question 8 to figure out what each box represented and how I should allocate/position my labels and color scheme. 
+
+```{r}
+election_palette <- c(brewer.pal(n = 11, name = "RdYlBu")[c(2,10)])
+
+ggplot(data=state_and_senate_dataset) +
+  geom_polygon(data=states, aes(x=long, y=lat, group=group), fill='#7f7f7f') +
+  geom_polygon(aes(x=long, y=lat, group=group, fill=as.factor(demwin)))+
+  geom_polygon(data=states, aes(x=long, y=lat, group=group), fill=NA, 
+               col="grey", lwd=0.0001) +
+  coord_quickmap() +
+  scale_fill_manual(values = election_palette,
+                    name="Voting Key",
+                    labels=c("Republican Win",
+                             "Democrat Win",
+                             "No Elections/Other Party Win")) +
+  xlab("Longitude ") + 
+  ylab("Latitude") +
+  ggtitle("2012 Senate Election Results for Democrats and Republicans") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+From the map it can be seen that in the 2012 senate elections there were many votes for Democrats in the Northern and Eastern States. There are some states in the middle and in the south that have votes for Republicans. There appears to be more blue than red which implies that democrats had more support and were the stronger party in 2012. The graph that I created in **question 8** confirms that this observation is most likely to be true since the line **Democrats Average** is above the line **Republicans Average**. There are many grey states as well which means that a non-republican/democratic party won or there was no senate election in that state. 
+  
+## Question 15
+Most of my explanations for making this map are the same ones I gave for the map I made in **question 14**. Here are the main differences/new things that I did:
+
+* In my second **geom_polygon()** I did not use **as.factor()** in **fill** because the column values in **demdiff** are continuous and not categorical like the values in the column **demwin**
+* Because of this I have to use **scale_fill_gradient2()** to set my colors because now R will use a gradient to display the colors in my map. 
+* I set the mid-point in my gradient to be **-5.96933** because I looked at the **demdiff** column in the **state_and_senate_dataset** dataset and realized that the highest value in the **demdiff** column is 40.80605 and the lowest value is -52.74471. From there I calculated the distance between the two numbers and divided that value by two. The mid-point distance value that I got was 46.77538 and I subtracted that by the highest value in the column (40.80605). I then got **-5.96933** which was the midpoint.
+
+```{r}
+ggplot(data=state_and_senate_dataset) +
+  geom_polygon(data=states,
+               aes(x=long, y=lat, group=group), fill='#7f7f7f') +
+  geom_polygon(aes(x=long, y=lat, group=group, fill=demdiff))+
+  geom_polygon(data=states,
+               aes(x=long, y=lat, group=group), fill=NA, 
+               col="grey", lwd=0.0001) +
+    coord_quickmap() +
+  scale_fill_gradient2( name = "Winning Scale",
+                        high = "blue",mid = "purple", low = "red", midpoint = -5.96933) +
+  xlab("Longitude ") + 
+  ylab("Latitude") +
+  ggtitle("2012 Senate Election Results for Democrats and Republicans") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+After looking at this map I see that most of the states that were republican (as seen from the map in question 14) are kind of neutral states meaning that there is a good percentage of people who are democrat supporters while the other bit are republican supporters. This observation is shown in the state of Texas which was red in the previous map. But as you can see in this map Texas is pink which means that it is not a entirely republican supported state and there are a good percentage of democratic supporters. Who knows, maybe in the future Texas might be a democratic state? (maybe the same could happen for Nebraska since it is in a similar situation like Texas?)
+
+I also see that the states that were blue in the previous map are actually purple in this map (such as the northern and eastern states). Purple in the gradient scale is around the midpoint. This implies that the race between democrats and republicans was intense.
