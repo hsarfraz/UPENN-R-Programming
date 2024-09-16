@@ -1,0 +1,374 @@
+---
+title: "SARFRAZ_HW2_310"
+author: "Hussain Sarfraz"
+date: "1/24/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+# Question 1
+## Part A
+
+> i. p(24 < X < 30) = ? 
+
+**Answer: 0.3141458**
+
+To solve this question I used the `pnorm()` function to find the area under the graph that is to the left of point 30 on the X-axis. I then found the area under the graph that is to the left of point 24 on the X-axis. Using this method I was able to find the area under the graph that was in between point **30 and 24** on the X-axis.
+
+```{r}
+pnorm(30,26,sqrt(54),lower.tail = T)-pnorm(24,26,sqrt(54),lower.tail = T)
+```
+
+> ii. Solve for c such that p(X < 45) = p(Z < c), where Z ∼ N(0, 1)
+
+**Answer: c = 2.585573**
+
+To solve this question I used the `pnorm()` function to find the area under the normal random variable curve. Once I got the area under the curve (aka probability) I could solve for **c**.
+
+To solve for **c** I used the `qnorm()` function and imputed the previous `pnorm()` function into the first value just so I can make sure I include all the numbers in my calculations.
+
+```{r}
+#first find area under the normal random variable curve
+#pnorm(45,26,sqrt(54),lower.tail = T) #output: 0.9951391
+
+#second, solve for c
+#qnorm(0.9951391,0,sqrt(1),lower.tail = T)
+qnorm(pnorm(45,26,sqrt(54),lower.tail = T),0,sqrt(1),lower.tail = T)
+```
+
+> iii. Find lb and ub on the symmetric CI such p(lb < X < ub) = 0.90
+
+**Answer: lb = 13.91284 and ub = 38.08716**
+
+To solve for **lb and ub** I used the `qnorm()` function. I made sure that I imputed the probability (or area under the curve) of **0.05 and 0.95** in the `qnorm()` function because in order for me to figure out the intervals that cover **90%** of the area under the graph I had to make sure the sides of the graph added up to **0.10**
+
+```{r}
+#lb
+qnorm(0.05,26,sqrt(54),lower.tail = T)
+#ub
+qnorm(0.95,26,sqrt(54),lower.tail = T)
+```
+
+## Part B
+
+> i. p(40 < Y < 50) = ?
+
+**Answer: 0.6619928**
+
+The logic to this question is similar to the one used in **Q.A.i** 
+
+```{r}
+pnorm(50,43,sqrt(23),lower.tail = T)-pnorm(40,43,sqrt(23),lower.tail = T)
+```
+
+> ii. Solve for c such that p(Y < 35) = p(Z < c), where Z ∼ N(0, 1)
+
+**Answer: -1.668115**
+
+The logic to this question is similar to the one used in **Q.A.ii** 
+
+```{r}
+#first find area under the normal random variable curve
+#pnorm(35,43,sqrt(23),lower.tail = T)
+
+#second, solve for c
+#qnorm(0.04764642,0,sqrt(1),lower.tail = T)
+qnorm(pnorm(35,43,sqrt(23),lower.tail = T),0,sqrt(1),lower.tail = T)
+```
+
+> iii. Find the lb and ub on the symmetric CI such p(lb < Y < ub) = 0.99
+
+**Answer: lb = 30.64676 and ub = 55.35324**
+
+The logic to this question is similar to the one used in **Q.A.iii** 
+
+* One thing that I would highlight here is that the reason I used the probabilities **0.005** and **0.995** in the `qnorm()` function is to find the X-axis values that make up **99%** of the probabilities in the curve. This means that the side areas in the graph need to have a probability/area of **0.005** since **0.005+0.005 = 0.01**
+
+```{r}
+#lb
+qnorm(0.005,43,sqrt(23),lower.tail = T)
+#ub
+qnorm(0.995,43,sqrt(23),lower.tail = T)
+```
+
+# Question 2
+## Part A
+
+**Answer: 0.278044**
+
+For this question I used the code in the `YahtzeeFirstRoll.R` file. The only changes I made to this code is that I changed the number of dice to be four since the question asks to: **Approximate probability of the “maxnumber” random variable equaling one when rolling four dice**
+
+To calculate the probability I used the `table()` function to see how many times each number repeated. I then got the total amount of ones and divided it by the sum of the table (aka the total die rolls). I also used the `prop.table()` function to double check my answer.
+
+```{r}
+# How many dice
+numdice = 4
+# How many simulations
+numsims = 1000000
+# Initializes a vector that contains the outcome of each simulation
+maxnumber <- matrix(NA, nrow = numsims, ncol = 1)  
+# Sets the seed
+set.seed(12221979)
+
+for (s in 1:numsims) {
+  
+  # Draws uniform r.v.
+  uniform <- runif(n = numdice, min = 0, max = 1)
+  # Initializes a vector
+  dice <- matrix(-9, nrow = numdice, ncol = 1)  
+  # Transforms uniform r.v. into dice rolls
+  # Applies inverse sampling 
+  dice[uniform >= 0 & uniform <= (1/6)] <- 1
+  dice[uniform > (1/6) & uniform <= (2/6)] <- 2
+  dice[uniform > (2/6) & uniform <= (3/6)] <- 3
+  dice[uniform > (3/6) & uniform <= (4/6)] <- 4
+  dice[uniform > (4/6) & uniform <= (5/6)] <- 5
+  dice[uniform > (5/6) & uniform <= (6/6)] <- 6
+
+  # Finds the mode of dice and stores in maxnum
+  uniqv <- unique(dice)
+  maxnum <- uniqv[which.max(tabulate(match(dice, uniqv)))]
+  
+  # Stores how many dice equal the mode
+  maxnumber[s] <- sum(dice == maxnum)
+}
+
+#converting vector to dataframe
+maxnumberdf <- as.data.frame(maxnumber)
+
+#creating table to see how many times each value appears
+#table(maxnumberdf)
+
+#probability of one occuring with 4 dice
+table(maxnumberdf)[0:1]/sum(table(maxnumberdf))
+#using prop.table() to check my answer
+prop.table(table(maxnumberdf))
+
+
+
+# Plots histogram of the max number from each simulation
+p <- ggplot(data=maxnumberdf, aes(x=V1)) +         
+  geom_bar( color="black") + 
+  scale_x_discrete(limits=c(1:numdice)) + 
+  labs(title="1,000,000 sims.of 5 dice",  
+       x="Max. of Same Number", 
+       y = "Number of Realizations")
+
+p
+```
+
+## Part B
+
+**Answer:0.366321**
+
+My code for this question is the same as **Q 2.A** The only changes I made to this code is that I changed the number of dice to be **six** since the question asks to: **Approximate probability of the “maxnumber” random variable equaling three or more when we roll six dice**
+
+To calculate the probability I used the `table()` and `sum()` function to see how many times each number equaling three or more repeated. I then got the total amount of equaling three or more occurances and divided it by the sum of the table (aka the total die rolls). I also used the `prop.table()` function to double check my answer.
+
+```{r}
+# How many dice
+numdice = 6
+# How many simulations
+numsims = 1000000
+# Initializes a vector that contains the outcome of each simulation
+maxnumber <- matrix(NA, nrow = numsims, ncol = 1)  
+# Sets the seed
+set.seed(12221979)
+
+for (s in 1:numsims) {
+  
+  # Draws uniform r.v.
+  uniform <- runif(n = numdice, min = 0, max = 1)
+  # Initializes a vector
+  dice <- matrix(-9, nrow = numdice, ncol = 1)  
+  # Transforms uniform r.v. into dice rolls
+  # Applies inverse sampling 
+  dice[uniform >= 0 & uniform <= (1/6)] <- 1
+  dice[uniform > (1/6) & uniform <= (2/6)] <- 2
+  dice[uniform > (2/6) & uniform <= (3/6)] <- 3
+  dice[uniform > (3/6) & uniform <= (4/6)] <- 4
+  dice[uniform > (4/6) & uniform <= (5/6)] <- 5
+  dice[uniform > (5/6) & uniform <= (6/6)] <- 6
+  
+  # Finds the mode of dice and stores in maxnum
+  uniqv <- unique(dice)
+  maxnum <- uniqv[which.max(tabulate(match(dice, uniqv)))]
+  
+  # Stores how many dice equal the mode
+  maxnumber[s] <- sum(dice == maxnum)
+}
+
+# Plots histogram of the max number from each simulation
+maxnumberdf <- as.data.frame(maxnumber)
+p <- ggplot(data=maxnumberdf, aes(x=V1)) +         
+  geom_bar( color="black") + 
+  scale_x_discrete(limits=c(1:numdice)) + 
+  labs(title="1,000,000 sims.of 5 dice",  
+       x="Max. of Same Number", 
+       y = "Number of Realizations")
+
+p
+
+#sum(table(maxnumberdf)[3:6])
+#probability of 3 or more occuring with 6 dice
+sum(table(maxnumberdf)[3:6])/sum(table(maxnumberdf))
+#checking answer
+sum(prop.table(table(maxnumberdf))[3:6])
+```
+
+## Part C
+
+**Answer: 0.030573**
+
+For this question I set the dice number to be **five** since the question states: **Approximate the probability of rolling a large straight with 5 dice**. I then created a vector called **rollsum** which basically stored all the sums of the die roll.
+
+I then used the `mean()` function at the end to filter out the **rollsum** values that equal **15 or 20** because to get a straight the total of your dice will add up to those values. I also made sure that these values had a **maxnumber** of one to ensure that the dice were not repeated.
+
+```{r}
+# How many dice
+numdice = 5
+# How many simulations
+numsims = 1000000
+# Initializes a vector that contains the outcome of each simulation
+maxnumber <- matrix(NA, nrow = numsims, ncol = 1)  
+rollsum <- matrix(NA, nrow = numsims, ncol = 1)
+
+# Sets the seed
+set.seed(12221979)
+
+for (s in 1:numsims) {
+  
+  # Draws uniform r.v.
+  uniform <- runif(n = numdice, min = 0, max = 1)
+  # Initializes a vector
+  dice <- matrix(-9, nrow = numdice, ncol = 1)  
+  # Transforms uniform r.v. into dice rolls
+  # Applies inverse sampling 
+  dice[uniform >= 0 & uniform <= (1/6)] <- 1
+  dice[uniform > (1/6) & uniform <= (2/6)] <- 2
+  dice[uniform > (2/6) & uniform <= (3/6)] <- 3
+  dice[uniform > (3/6) & uniform <= (4/6)] <- 4
+  dice[uniform > (4/6) & uniform <= (5/6)] <- 5
+  dice[uniform > (5/6) & uniform <= (6/6)] <- 6
+  
+  # Finds the mode of dice and stores in maxnum
+  uniqv <- unique(dice)
+  maxnum <- uniqv[which.max(tabulate(match(dice, uniqv)))]
+  
+  # Stores how many dice equal the mode
+  maxnumber[s] <- sum(dice == maxnum)
+  rollsum[s] <- sum(dice)
+}
+
+# Plots histogram of the max number from each simulation
+maxnumberdf <- as.data.frame(maxnumber)
+p <- ggplot(data=maxnumberdf, aes(x=V1)) +         
+  geom_bar( color="black") + 
+  scale_x_discrete(limits=c(1:numdice)) + 
+  labs(title="1,000,000 sims.of 5 dice",  
+       x="Max. of Same Number", 
+       y = "Number of Realizations")
+
+p
+mean((rollsum == 15 | rollsum == 20) & maxnumber == 1)
+
+```
+
+# Question 3
+## Part A
+
+**Answer: {THTTTHTTHHTTHHTTHHHTTTHHH}**
+
+I just randomly flipped a coin 25 times here. My longest streak of heads/tails were **three**
+
+## Part B
+
+For this question I set the:
+
+* number of coins to be **25**
+* number of trials to be **100000**
+* probability of **50 %**
+
+I then went in the code and replaced the areas where there was a **XXX** with the neccassary code.
+
+```{r}
+# Sets the seed
+set.seed(12221979)
+
+# Defines the number of coins being flipped
+numcoins = 25
+# Defines the number of simulations
+numsims = 100000
+# Defines the probability that a coin is heads
+probheads = 0.5
+
+# Initializes a vector that contains the longest streak in every simulation
+longstreak <- matrix(-9, nrow = numsims, ncol = 1) 
+
+# Uses a for loop to loop over simulations
+for (s in 1:numsims) {
+  
+  # Uses rbinom() function to draw a series Bernoulli r.v.s 
+  # The number r.v.s in the series is defined by the parameter numcoins
+  coins <- rbinom(numcoins, 1, probheads)
+  # Initializes a vector that contains the streak after every coin
+  streak <- matrix(-9, nrow = numcoins, ncol = 1) 
+  # Initilaizes the streak to 1 after the first coing
+  streak[1] <- 1
+  # Uses a for loop to calculate streak after every coin
+  for (c in 2:numcoins) {
+    
+    streak[c] <- 1 + streak[c-1]*(coins[c] == coins[c-1])
+    
+  }
+  
+  # Identifies the longest streak and stores in longest streak vector
+  longstreak[s] <- max(streak)
+  
+}
+
+# Uses table command to create a pdf
+pdf <- table(longstreak) / numsims
+# Creates the cdf by looping over the pdf
+cdf <- pdf
+for (c in 2:dim(cdf)) {
+  cdf[c] <- cdf[c-1] + pdf[c]
+}
+
+# Makes cdf into a data frame for plotting purposes
+cdfdf <- as.data.frame(cdf)
+# Plots the cdf
+p <- ggplot(data=cdfdf, aes(x=longstreak, y=Freq, group=1)) +
+  geom_line()+
+  geom_point()+
+  labs(title = "CDF in 100,000 Sims.", x = "Length of Streak of Same Coin", y = "Pr(Longest Streak <= Length)")
+p
+```
+
+## Part C
+
+**Answer: 0.29674**
+
+To get this answer I subtracted **one (the total probability)** by the probability of getting a streak of **5 coins or less**. I did not include 5 in my probability calculation because the question stated : **what is the probability of having a streak of more than 5 coins show up?**
+
+The question did not state what is the probability of having **5 and more coins show up** which implies that I only want the probability of 6 or more coins showing up.
+
+```{r}
+1 - cdfdf$Freq[cdfdf$longstreak == 5]
+
+```
+
+## Part D
+
+**Answer: 0.8492**
+
+My longest streak was **three** so I used the logic applied in **Q 3.C** to get the probability of having a longer streak than my current streak that I got. 
+
+```{r}
+1 - cdfdf$Freq[cdfdf$longstreak == 3]
+```
+

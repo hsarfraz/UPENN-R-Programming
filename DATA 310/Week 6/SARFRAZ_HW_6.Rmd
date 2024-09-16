@@ -1,0 +1,250 @@
+---
+title: "SARFRAZ_HW_6"
+author: "Hussain Sarfraz"
+date: "2/19/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(gridExtra)
+```
+
+# Question 1
+
+## Part A
+
+* I used the `load()` function to load in the `acs` dataset.
+* I then divided the `median.income` variable by $1,000 so each number can be expressed in thousands of dollars. I did this so it could be easier to see the unit changes when I graph the `median.income` variable.
+
+```{r}
+load('C:/Users/hussainsarfraz/Desktop/DATA 310/Week 6/ACSCountyData (1).Rdata')
+acs$median.income <- acs$median.income / 1000
+```
+
+## Part B
+
+When I see the **Relationship between Median Income and Child Poverty** scatter plot I notice that the points take a downward slope shape as median income increases. The points do not decrease in a linear manner in the sense that they gradually decrease as the median income increases. 
+
+From looking at the scatter plot I can see that as the median income increases the percentage of child poverty decreases which means that when people earn higher income the percentage of children in poverty declines.
+
+```{r}
+ggplot(data=acs) +
+  geom_point(aes(x = median.income, y = percent.child.poverty)) + 
+  xlab("Median Income (Thousands)") +
+  ylab("Percentage of Child Poverty") +
+  scale_x_continuous(breaks=c(0,25,50,75,100,125,150)) + 
+  ggtitle("Relationship between Median Income and Child Poverty") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 10))
+```
+
+## Part C
+
+**NOTE**: I am using the symbols in the math equation $y=mx+b$ to represent the bi-variate linear regression
+
+Regression Values | What it Means
+-------------     | -------------
+$b=53.584098$     | y-intercept
+$m=-0.613294$     | slope
+$x$               | input  (independent variable)
+$y$               | output (dependent variable)
+
+When I ran the bi-variate regression in R `summary(lm(percent.child.poverty~median.income, data=acs))` I got the above results. I have gave a detailed description below about what each number means:
+
+* The **y-intercept** means when $x=0$ (meaning when no body is earning a income) then the child poverty rate would be at **53.584098** 
+* The **slope** means that for every unit increase in `median.income` the child poverty rate would decrease by **-0.613294** percent. This makes sense because as people earn more income there is a lower chance of children being in poverty because parents can provide for their kids education and well-being.
+
+When looking at the scatter plot you can see that the numbers that the bi-variate regression function produced are correct since the y-intercept ($b$) appears to be close to **53.584098** and the slope ($m$) decreases the output of the regression line ($y$). That is why the regression line is decreasing. 
+
+```{r}
+summary(lm(percent.child.poverty~median.income, data=acs))
+
+ggplot(data=acs,aes(x = median.income, y = percent.child.poverty)) +
+  geom_point() + 
+  geom_smooth(method=lm, formula = y ~ poly(x, 1), se = FALSE) +
+  xlab("Median Income (Thousands)") +
+  ylab("Percentage of Child Poverty") +
+  scale_x_continuous(breaks=c(0,25,50,75,100,125,150)) + 
+  ggtitle("Relationship between Median Income and Child Poverty") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 10))
+```
+
+## Part D
+
+When looking at the bi-variate linear regression graph in **part c** I realized that the regression does not satisfy **assumption 2** of the **Gauss-Markov Theory**. 
+
+Assumption 2 of the Gauss-Markov Theory states that the true model that generates our data is:
+$Y_{i} = \alpha + \beta_{1}*x_{i1} + \beta_{2}*x_{i2} + ... + \beta_{k}*x_{ik} + \epsilon_{i}$
+
+When looking at the bi-variate regression line in **part c** you could see that at around a median income between **80-100 thousand dollars** the regression line goes off in a tangent and goes further away from the data points in the plot. According to the Gauss-Markov Theory this is inaccurate since the model (mentioned above) generates a true representation of the data.
+
+To make my bi-variate regression line an accurate representation of the data I would need to add the square of `median.income` to the **linear** bi-variate regression line by changing the value of `poly(x,1)` to `poly(x,2)`. This would make the bi-variate regression into a curve and it would surround more data points as opposed to the **linear** bi-variate regression line. 
+
+The new **polynomial/curved** bi-variate regression line improves the model fit since the line now surrounds most of the data points. But when we use data to inform us about a lines function form we **increase** the risk of over-fitting our model fit. This is what has occurred with the **polynomial/curved** bi-variate regression line. Here are a few limitations of the **polynomial/curved** bi-variate regression line:
+
+* The y-intercept is not accurately represented through the line.
+* Around a median income of **100-150 thousand dollars** the slope of the bi-variate regression line increases which in not accurate since the increase in slope means that when people earn higher income the child poverty rate increase. This **conflicts** with what was shown at the beginning of the **polynomial/curved** bi-variate regression line where there was a **negative** slope.
+
+There are also changes with $R^2$ in the **linear** bi-variate regression line and **polynomial/curved** bi-variate regression line models. 
+
+$R^2$ Value | **linear** or **polynomial/curved** bi-variate regression line model
+------------- | -------------
+$R^2=0.5549$  | **linear** bi-variate regression line model
+$R^2= 0.7039$ | **polynomial/curved** bi-variate regression line model
+
+The $R^2$ value increased in the **polynomial/curved** bi-variate regression line model. This increase happened because when I added the square of `median.income` to the **linear** bi-variate regression line I made the regression line come closer to most of the data points. This makes both variables more correlated. The increase in $R^2$ means that `median.income` explains a greater percentage ($70.39\%$) of the variation in the `percent.child.poverty` variable. This implies that $20.61\%$ of the variation in the `percent.child.poverty` variable is not explained by the `median.income` of people.
+
+```{r}
+summary(lm(percent.child.poverty~poly(median.income,2,raw=T), data=acs))
+
+ggplot(data=acs,aes(x = median.income, y = percent.child.poverty)) +
+  geom_point() + 
+  geom_smooth(method=lm, formula = y ~ poly(x, 2), se = FALSE) +
+  xlab("Median Income (Thousands)") +
+  ylab("Percentage of Child Poverty") +
+  scale_x_continuous(breaks=c(0,25,50,75,100,125,150)) + 
+  ggtitle("Relationship between Median Income and Child Poverty") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 10))
+```
+
+## Part E
+
+At around $\$30k$ thousand dollars an effect of an additional $\$1000$ in median income would **decrease** the percentage of child poverty. This is because the slope of the polynomial/curved bi-variate regression line is **negative**.
+
+At around $\$100k$ thousand dollars an effect of an additional $\$1000$ in median income would **increase** the percentage of child poverty. This is because the slope of the polynomial/curved bi-variate regression line is **positive**.
+
+The difference in slope does make theoretical sense because as a I explained in **part D**: 
+
+* When we use data to inform us about a lines function form we **increase** the risk of over-fitting our model fit.
+
+## Part F
+
+Correlation Value | Variable Names
+-------------     | -------------
+$-0.4990148$      | median.income     and unemployment.rate
+$-0.7448909$      | median.income     and percent.child.poverty
+$0.6814938$       | unemployment.rate and percent.child.poverty
+
+The least correlated variables are **median.income and unemployment.rate** and the most correlated variables are **median.income and percent.child.poverty**.
+
+**unemployment.rate and percent.child.poverty** do have a strong correlation since the correlation score is $68.15\%$.
+
+Now **unemployment.rate** does have a strong correlation with the dependent variable **percent.child.poverty** but is does not have a strong correlation with the independent variable **median.income**. This means that because **unemployment.rate** does not have a strong correlation with another independent variable the y-intercept ($b$) would decrease and the coefficient/slope of `median.income` would decrease. 
+
+I wanted to see the conflicting correlations of the `median.income` and `unemployment.rate` variables so I compared the regression lines of both graphs side by side (the dependent variable for both graphs was `percent.child.poverty`). After seeing how the regression lines for both graphs were going in opposite directions I could understand why the y-intercept ($b$) and the coefficient/slope of `median.income` would decrease after adding `unemployment.rate` to the regression. 
+
+```{r}
+#median.income - unemployment.rate
+cor(acs$median.income, acs$unemployment.rate, use="pairwise.complete") #-0.4990148
+
+#median.income - percent.child.poverty
+cor(acs$median.income, acs$percent.child.poverty, use="pairwise.complete") #-0.7448909
+
+#unemployment.rate - percent.child.poverty
+cor(acs$unemployment.rate, acs$percent.child.poverty, use="pairwise.complete") #0.6814938
+
+median.income_graph <- ggplot(data=acs,aes(x = median.income, y = percent.child.poverty)) +
+  geom_point() + 
+  geom_smooth(method=lm, formula = y ~ poly(x, 1), se = FALSE) +
+  xlab("Median Income (Thousands)") +
+  ylab("Percentage of Child Poverty") +
+  scale_x_continuous(breaks=c(0,25,50,75,100,125,150)) + 
+  ggtitle("Relationship between Median Income and Child Poverty") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 10))
+
+unemployment.rate_graph <- ggplot(data=acs,aes(x = unemployment.rate, y = percent.child.poverty)) +
+  geom_point() + 
+  geom_smooth(method=lm, formula = y ~ poly(x, 1), se = FALSE) +
+  xlab("Unemployment Rate") +
+  ylab("Percentage of Child Poverty") +
+  scale_x_continuous(breaks=c(0,25,50,75,100,125,150)) + 
+  ggtitle("Relationship between Unemployment Rate and Child Poverty") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 10))
+
+grid.arrange(median.income_graph, unemployment.rate_graph)
+```
+
+## Part G
+
+When I ran the regression for `percent.child.poverty` and `median.income` in **part C** the slope($m$) of `median.income` was $-0.613294$ which meant that a unit increase in `median.income` would cause a $-0.613294$ decrease in `percent.child.poverty`.
+
+However, now that I am doing a **multivariate regression** with 2 independent variables `median.income` and `unemployment.rate` I noticed that the slope($m$) of `median.income` has decreased by $0.169458$ ($0.613294 - 0.443836 = 0.169458$). The slope($m$) that I have now is $-0.443836$. Although mathematically this would look like a **increase** in the context of this problem the change in slope is a **decrease** and a **negative thing**. This is because the now slope means that a unit increase in `median.income` reduces child poverty by $-0.443836$ percent. This percentage is **lower** than the rate that I got in the **bi-variate regression** which is a bad thing since my coefficient is telling me that a persons increase in income has a less effect in decreasing child poverty. 
+
+The decrease in slope for the `median.income` variable could also mean that the `unemployment.rate` variable has a greater effect in changing the child poverty rate. We could see this in **part F** with the strong correlations that `median.income` and `unemployment.rate` had with `percent.child.poverty`.
+
+```{r}
+summary(lm(percent.child.poverty ~ median.income + unemployment.rate, data = acs))
+```
+
+## Part H
+
+There is a slight decrease in the `median.income` and `unemployment.rate` coefficients if you compare them with the coefficients from **part G**. The difference is not too big and the explanation for the decrease is the new variables that are introduced in the regression analysis might have had a bigger impact in determining the percentage of child poverty which decreased the coefficient of the `median.income` and `unemployment.rate` variables (basically what happened in **part F** with the decrease in the coefficient of `median.income` when the `unemployment.rate` variable was introduced in the regression). The table below highlights the difference:
+
+Coefficient Difference (Part G - Part H) | Variable Name
+-------------                            | -------------
+$-0.443836 - (-0.397512) = -0.046324$    | median.income
+$1.369099 - 1.193781 = 0.175318$         | unemployment.rate
+
+The question stated that living in the south could be associated with lower average incomes and more child poverty. The results of the multivariate regression proved this point since the `census.regionsouth` variable has the **highest coefficient** of $3.546065$ out of all the other variables. This means that with every unit/population increase in southwest region of America would cause a $354.6065\%$ increase in child poverty. 
+
+The `census.regionwest` region had the lowest coefficient of $62.2232\%$ when compared with the other regions. This means that there is less poverty in the west when compared to the northern and southern sides of the states. 
+
+```{r}
+#type is character, convert to factor
+class(acs$census.region)
+
+acs$census.region <- factor(acs$census.region)
+summary(lm(percent.child.poverty ~ median.income + unemployment.rate +
+             census.region, 
+           data = acs))
+```
+
+## Part I
+
+When adding the variable that says if a county is urban or not I noticed that there were many changes in the coefficients (some increased while others decreased. I have highlighted these changes in the table below.) 
+
+**NOTE**: I am making these comparisons from the results I got in **Part H**
+
+Coefficient Difference (Part I - Part H)     | Variable Name
+-------------                                | -------------
+$-0.397512 - (-0.419528) = 0.022016$         | median.income
+$1.193781 - 1.156250    = 0.037531$         | unemployment.rate
+$1.193781 - 1.413684    =-0.219903$         | census.regionnortheast
+$3.546065 - 3.371122    = 0.174943$         | census.regionsouth      
+$0.622232 - 0.677346    =-0.055114$         | census.regionwest
+
+The coefficient for `population.densityTRUE` was $4.302792$ which was the highest coefficient among all the variables. This means that the a urban or rural county does play a huge difference in determining if there is greater child poverty in one particular county or not. In this case urban areas increase child poverty by $43.02\%$ The variables `unemployment.rate` and `census.regionsouth` had a increase in coefficients as compared to from **part H**. This means that if the unemployment rate and county's located in the south have a higher increase in child poverty, especially if the county is in a urban area.   
+
+```{r}
+acs$population.density <- (acs$population.density >= 1000)
+
+#convert class to factor
+class(acs$population.density)
+
+acs$population.density <- factor(acs$population.density)
+
+summary(lm(percent.child.poverty ~ median.income + unemployment.rate +
+             census.region + population.density, 
+           data = acs))
+```

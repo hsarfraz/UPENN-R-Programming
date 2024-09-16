@@ -1,0 +1,407 @@
+---
+title: "SARFRAZ_HW1_310"
+author: "Hussain Sarfraz"
+date: "1/15/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(tidyverse)
+library(stargazer)
+```
+
+# Question 1
+
+## Part A
+
+I set my working directory and then used the **read_csv()** function to store in the **AlabamaCourt.csv** dataset into the object **alabama.court**.
+
+```{r}
+setwd("C:/Users/hussainsarfraz/Desktop/DATA 310")
+alabama.court <-  read_csv('AlabamaCourt.csv')
+```
+
+## Part B
+
+I used the **mutate()** function to create the two new variables **black** and **amountremain**. 
+
+The variable **black** lets me know if a person convicted of a crime is African-American. I check this by using a **ifelse()** function which would write the value **1** if a persons race equals **B** and if the persons race is not equal to **B** then the value to indicate that would be **zero**.
+
+I then created the variable **amountremain** by subtracting the variable **amountdue** with the variable **amountpaid**. This result would give me the remaining account value (remaining LFOs) that the convicted criminal needs to pay to the state of Alabama
+
+```{r}
+alabama.court <- alabama.court %>%
+  mutate(black = ifelse((race=='B'), 1, 0),
+         amountremain = amountpaid - amountdue)
+```
+
+## Part C
+
+For this question I changed the R markdown script that I am going to use to display the stargazer tables. Instead of writing **{r}** (in the beginning of the R markdown R script) I wrote **{r,results='asis'}**. I did this because I changed my stargazer table type to **html** so the stargazer tables can be displayed properly in R markdown (such as the titles).
+
+I used the **subset()** function to filter out the specific rows that I needed from the **alabama.court** dataset. 
+
+* I first converted the **alabama.court** dataset from a **tibble** to a **data frame** using the **as.data.frame()** function. I did this because stargazer can only make tables of **data frames**
+* I used the **race** variable to filter out the people who were African American and non-African Americans.
+* I used the **select()** function to pick the specific columns that I want to display in the stargazer table.
+
+I then made my stargazer table type to **html** since my R markdown file was being displayed in **html**. I then re-named the variable names from the **alabama.court** dataset to names that would make sense to someone if it was their first time viewing the table (I did this through **covariate.labels =**. I also set the display of digits for each number to only go to two decimal places since I did not want the values in the table to be hard to read (did this through **digits =** ).  
+
+```{r,results='asis'}
+### African Americans
+stargazer(subset(as.data.frame(alabama.court), 
+                 alabama.court$race == 'B',
+                 select = c(amountremain,amountdue,amountpaid)),
+          type = 'html',
+          title = "Legal Financial Obligations (LFOs) in Alabama Court Cases for African Americans",
+          covariate.labels = c('Remaining LFOs','LFOs Assesed','LFOs Paid to Date'),
+          digits = 2)
+
+### non-African Americans
+stargazer(subset(as.data.frame(alabama.court),
+                 alabama.court$race != 'B',
+                 select = c(amountremain,amountdue,amountpaid)),
+          type = 'html',
+          title = "Legal Financial Obligations (LFOs) in Alabama Court Cases for non-African Americans",
+          covariate.labels = c('Remaining LFOs','LFOs Assesed','LFOs Paid to Date'),
+          digits = 2)
+
+```
+
+```{r}
+### Checking if dataset is tibble |output:TRUE
+#is_tibble(alabama.court)
+
+### checking total number of rows |output:2926
+#nrow(alabama.court)
+
+### double checking row number |output:1366
+# subset(as.data.frame(alabama.court), 
+#        alabama.court$race == 'B',
+#        select = c(amountremain,amountdue,amountpaid)) %>%
+#   nrow()
+
+### double checking row number (2926-1366=1560) |output:1560
+# subset(as.data.frame(alabama.court),
+#        alabama.court$race != 'B',
+#        select = c(amountremain,amountdue,amountpaid)) %>%
+#   nrow()
+```
+
+## Part D
+
+When I created my graphs for this question I noticed that all the values in the x-axis were is scientific notation so I wrote **options(scipen=999)** to make sure all my graphs display numbers instead of scientific notation. 
+
+```{r}
+# To remove the scientific notation in the graphs
+options(scipen=999)
+```
+
+I have divided my graphs with each heading, but most of the code that I wrote for each graph is the same and nothing was changed drastically (just the names of titles or axis labels). I did this because I needed to create three graphs which each represented one variable (**amountremain, amountdue, and amountpaid**). So most of what I explain in the first graph is too be applied to the other graphs as a explanation to how I constructed them.
+
+> Graph which shows number of LFOs Remaining for Convicted Criminals (African Americans and non-African Americans) (Graph 1)
+
+When creating this kernel density plot I had to make sure to create a new variable called **amountremain1** which basically added **one** to all the values in the variable **amountremain**. I did this because I was going to use the **log scale** to stretch out my graph since my graph without the log scale made it hard to see some points (this is because the graphs outliers would not make the graph clear.)
+
+* I have also added **one** to the other graphs as well for the respective variables
+
+I then used **group =** inside **aes()** to let R know that the variables in the **black** variable are supposed to be grouped. After I made this change I noticed that my graphs color scheme was displayed as a gradient and I did not want that since the values under the **black** variable were categorical. Because of this I used the **as.factor()** function in **fill =** to let R know that the values in the **black** variable need to be grouped in separate boxes and should not be displayed as a gradient. 
+
+I also noticed that the lines were not colored in this graph and the space underneth the curve was colored. Because of this I decided to lighten the color so the overlapped line portions can be seen for easier analysis (I did this through **alpha=0.3**).
+
+I then used **scale_fill_manual()** to make my legend for comprehensive and for it to make more sense. **NOTE:** before I used **scale_fill_manual()** I could see what number represented each color and from there I knew what label to give each box.
+
+I then used **scale_x_continuous()** to implement the **log scale** and write down the values that I want to diaply on the x-axis. 
+
+The following functions were used for additional formatting:
+
+* **xlab()** : Used to change x-axis label
+* **ylab()** : Used to change y-axis label
+* **ggtitle()** : Used to add a graph title
+* **theme_bw()** : Used to add a thin black frame around the graph
+* **theme(plot.title = element_text(hjust = 0.5))** : Used to put the title in the middle
+
+```{r}
+alabama.court %>%
+  mutate(amountremain1 = amountremain + 1) %>%
+  ggplot(.) +
+  geom_density(aes(x = amountremain1,
+                       group=black,
+                       fill=as.factor(black)),
+               alpha=0.3) +
+  scale_fill_manual(values = c('red','blue'),
+                    name="Race Key",
+                    labels=c("Non-African Americans",
+                             "African Americans")) +
+  scale_x_continuous( trans='log10',
+                      breaks = c(1,10,100,1000,10000,100000)) +
+  xlab("$ of LFOs Remaining") +
+  ylab('Number of Cases') +
+  ggtitle("$ of LFOs Remaining for Convicted Criminals") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+![This is a screenshot of the graph. For some reason the whole graph is displayed on my R console but the whole thing is not displayed through R markdown which is why I included this screenshot](graph1.jpg)
+
+> Graph which shows number of LFOs Assesed for Convicted Criminals (African Americans and non-African Americans) (Graph 2)
+
+```{r}
+alabama.court %>%
+  mutate(amountdue1 = amountdue + 1) %>%
+  ggplot(.) +
+  geom_density(aes(x = amountdue1,
+                       group=black,
+                       fill=as.factor(black)),
+               alpha=0.3) +
+  scale_fill_manual(values = c('red','blue'),
+                    name="Race Key",
+                    labels=c("Non-African Americans",
+                             "African Americans")) +
+  scale_x_continuous( trans='log10',
+                      breaks = c(1,10,100,1000,10000,100000)) +
+  xlab("$ of LFOs Assesed") +
+  ylab('Number of Cases') +
+  ggtitle("$ of LFOs Assesed for Convicted Criminals") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+> Graph which shows number of LFOs Paid to Date for Convicted Criminals (African Americans and non-African Americans) (Graph 3)
+
+```{r}
+alabama.court %>%
+  mutate(amountpaid1 = amountpaid + 1) %>%
+  ggplot(.) +
+  geom_density(aes(x = amountpaid1,
+                       group=black,
+                      fill=as.factor(black)),
+               alpha=0.3) +
+  scale_fill_manual(values = c('red','blue'),
+                    name="Race Key",
+                    labels=c("Non-African Americans",
+                             "African Americans")) +
+  scale_x_continuous( trans='log10',
+                      breaks = c(1,10,100,1000,10000,100000)) +
+  xlab("$ of LFOs Paid to Date") +
+  ylab('Number of Cases') +
+  ggtitle("$ of LFOs Paid for Convicted Criminals") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+## Part E
+
+According to my analysis (after looking at the graphs and stargazer table) I believe there are no racial differences between how much **LFOs are assessed** to African Americans and non-African Americans. 
+
+But **I do believe** that there are some racial differences when it comes to African Americans paying off their LFOs to the government. This is because there are a greater percentage of African Americans who are finding it hard to may off their LFOs even through they have been assessed a similar LFO amount as non-African Americans (by the government). I believe this problem is arising due to the difficulties that African Americans face in getting work opportunities to pay off their LFOs. I believe the main cause of this problem is race since many non-African Americans have paid a **greater amount of their LFOs** and have **a lower amount of LFOs remaining** as compared to African Americans.
+
+I have explained my analysis below in greater detail. I first talk about my interpretation of the kernel density plots that I created then I go n to analyse the stargazer tables that I made.
+
+> The graph of LFOs remaning for convicted criminals (Graph 1)
+
+When I first looked at this graph I noticed that there was a higher percentage of African Americans who had a LFO remaining to be paid off. I saw that this overlap started at around **$500 to $10,000** in the graph. After seeing this I concluded that the amount African Americans owe to the State of Alabama is greater than the amount non-African Americans owe. I came up with two potential hypothesis/reasonings for this:
+
+1. African American convicted criminals are given a greater amount of LFOs to pay off than non-African Americans which is why there was a greater amount of African Americans who had a greater amount of LFO to pay off.
+2. African American convicted criminals are finding it hard to find job opportunites to pay off their LFOs due
+
+> The graph of LFOs assessed to convicted criminals (Graph 2)
+
+When I looked at this graph I was able to strengthen my second hypothesis because I noticed that the LFOs assessed to both African Americans and non-African Americans are quite similar. In fact, a certain group of non-African Americans were assigned to pay more LFOs to the State of Alabama (this overlap can be seen around **$1000 to $5000**). This observation debunks my first hypothesis that African American convicted criminals are given greater amounts of LFOs which makes it harder for them to pay them off.
+
+> The graph of LFOs paid to date by convicted criminals (Graph 3)
+
+Seeing this graph strengthened my second hypothesis since I saw that a greater amount of **non-African Americans** paid a certain amount of their LFOs as compared to African Americans (this overlap can be seen around **$500 to $15000**). This means that African Americans are having a hard time to find job opportunities or ways to pay back their LFOs. This could be because African Americans have a hard time finding a job due to their race whereas it might be easier for non-African Americans to find a job and pay off their LFOs.
+
+> Stargazer table of LFOs for African Americans and non-African Americans
+
+The stargazer tables for African Americans and non-African Americans supported my second hypothesis since I noticed these things:
+
+**Mean**
+
+* The average of the remaining LFOs for African Americans ($3,568.94) is slightly lower than the average remaining LFOs for non-African Americans ($3,582.68). This means that average LFOs remaining for non-African Americans is slightly higher than African Americans. But this does not change my initial hypothesis since I saw that there was a huge overlap of African Americans over non-African Americans in Graph 1 (overlap started at around **$500 to $10,000** in the graph)
+* The average of the LFOs assessed for African Americans ($4,040.68) is slightly lower than the average LFO assessed for non-African Americans ($4,398.81). This confirms my observation that there was not a great difference between how much LFOs is assessed to African Americans and non-African Americans
+* The average of the LFOs paid to date for African Americans ($471.74) is lower than the average LFO assessed for non-African Americans ($816.13). This confirms my observation that African Americans are having a hard time to pay off their LFOs as compared to non-African Americans.
+
+**Pctl(25)**
+
+* 25% of the sample in the African American stargazer table has **$445.9** left to pay while 25% of the sample in the non-African American stargazer table has **zero** remaining LFOs remaining. This strengthens my hypothesis that African Americans have a higher percentage of LFOs that they need to pay off.
+
+**Pctl(75)**
+
+* 25% of the sample in the **African American stargazer table** has more than **$3,261** remaining LFOs while 75% has lower than **$3,261** remaining LFOs. 25% of the sample in the **non-African American stargazer table** has more than **$2,961.5** remaining LFOs while 75% has lower than **$2,961.5** remaining LFOs.
+    + This proves my hypothesis since this data shows that African Americans have more remaining LFOs that they have to pay off as compared to non-African Americans
+* 25% of the sample in the **African American stargazer table** has more than **$510.8** LFOs that they paid to date while 75% has lower than **$510.8** LFOs that they paid to date. 25% of the sample in the **non-African American stargazer table** has more than **$1,127.2** LFOs that they paid to date while 75% has lower than **$1,127.2** LFOs that they paid to date.
+    + This proves my hypothesis since this data shows that non-African Americans have paid a greater amount of the remaining LFOs that they had
+    
+# Question 3
+
+```{r}
+college.basketball <- read_csv('CollegeBasketball.csv')
+```
+
+## Part A
+
+> The mean of the absolute value of variable "predicted.diff_result" (difference of predicted and actual performance) is 8.26971
+
+**NOTE**: For **parts A and C** I used similar logic in creating my code
+
+The histogram of predicted and actual differences show that majority of the games were either lost by the favorites or they won a basketball game by fewer points than expected. I am saying this since there is a lot of grey boxes after zero in the graph. But there is still a good amount of games that the favorites won by more points than expected since there is grey in the negative x-axis values. 
+
+I calculated the mean by first converting all the values in the **predicted.diff_result** to positive numbers (I did this through the **abs()** function). The mean lets me know a average amount of how far the datasets points are from the line of regression. 
+
+```{r}
+college.basketball <- college.basketball %>%
+  mutate(predicted.diff_result = PredictedDifference - ActualDifference) 
+
+ggplot(data = college.basketball) +
+  geom_histogram(aes(x = predicted.diff_result)) +
+  scale_x_continuous(breaks = c(-40,-30,-20,-10,0,10,20,30,40)) +
+  xlab("Difference of Game Predictions minus Actual Result") +
+  ylab('Number of Times Differnce Occuered') +
+  theme_bw() +
+  ggtitle('Game Prediction Differences') +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+# how far points are from line of regression
+mean(abs(college.basketball$predicted.diff_result))
+```
+
+## Part B
+
+> My Probability Results:
+
+Probability   | Decimal Result (can be % if multiplied by 100)
+------------- | -------------
+P(W)          | 0.5020747
+P(E)          | 0.02904564
+P(L)          | 0.4688797
+
+For the answers to **part B and D** I used similar logic in assigning values to the new variables. 
+
+* values under the **predicted.diff_result** and **predicted.point_result** variables that are **negative** actually mean that the basketball game was won by more points than expected or the game performance (by the favorites) was better than expected. This is because the gamblers expectations/predictions would be lower than the actual results which is why a negative value represents something positive for the favorites
+* values under the **predicted.diff_result** and **predicted.point_result** variables that equal to **zero** actually mean that the basketball game prediction of performance and points actually **met** the gamblers expectations. This is because the prediction number and actual result is the same.
+* values under the **predicted.diff_result** and **predicted.point_result** variables that are **positive** actually mean that the basketball game prediction of performance and points actually **did not meet** the gamblers expectations. This means that the favorites lost the game or performed lower than expected. This is because the prediction number is higher than the and actual result.
+
+For both, **part B and D** I calculated the mean to find the probability of the variables since to calculate the mean you need to add all values and divide by the total amount of rows. Also, the newly made variables had ones and zeros in them which meant that calculating the mean would let me know how many times these instances occured which is what I wanted to find out.
+
+```{r}
+college.basketball <- college.basketball %>%
+  mutate(W = ifelse((predicted.diff_result <  0),1,0),
+         E = ifelse((predicted.diff_result == 0),1,0),
+         L = ifelse((predicted.diff_result >  0),1,0)) 
+
+#P(W)
+mean(college.basketball$W)
+
+#P(E)
+mean(college.basketball$E)
+
+#P(L)
+mean(college.basketball$L)
+```
+
+## Part C
+
+> The mean of the absolute value of variable "predicted.point_result" (difference of predicted and actual points) is 13.50622
+
+```{r}
+college.basketball <- college.basketball %>%
+  mutate(predicted.point_result = PredictedPoints - ActualPoints)
+
+ggplot(data = college.basketball) +
+  geom_histogram(aes(x = predicted.point_result)) +
+  scale_x_continuous(breaks = c(-40,-20,0,20,40,60)) +
+  xlab("Difference of Point Predictions minus Actual Result") +
+  ylab('Number of Times Differnce Occurred') +
+  theme_bw() +
+  ggtitle('Game Point Differences') +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+# how far points are from line of regression
+mean(abs(college.basketball$predicted.point_result))
+```
+
+## Part D
+
+> My Probability Results:
+
+Probability   | Decimal Result (can be % if multiplied by 100)
+------------- | -------------
+P(M)          | 0.3858921
+P(T)          | 0.04149378
+P(F)          | 0.5726141
+
+```{r}
+college.basketball <- college.basketball %>%
+  mutate( M =  ifelse((predicted.point_result <  0),1,0),
+         'T' = ifelse((predicted.point_result == 0),1,0),
+         'F' = ifelse((predicted.point_result >  0),1,0)) 
+
+#P(M)
+mean(college.basketball$M)
+
+#P(T)
+mean(college.basketball$'T')
+
+#P(F)
+mean(college.basketball$'F')
+```
+
+## Part E
+
+> My Probability Results:
+
+Probability   | Decimal Result (can be % if multiplied by 100)
+------------- | -------------
+P(W '|' M)      | 0.5020747
+P(L '|' M)      | 0.4688797
+P(W '|' F)      | 0.5020747
+P(L '|' F)      | 0.4688797
+
+**NOTE**: I got these results by using this formula
+![Conditional Probability Formula](conditional probability formula.jpg)
+
+```{r}
+#P(W | M)
+(mean(college.basketball$M)*mean(college.basketball$W))/mean(college.basketball$M)
+  
+#P(L | M)
+(mean(college.basketball$M)*mean(college.basketball$L))/mean(college.basketball$M)
+  
+#P(W | F)
+(mean(college.basketball$'F')*mean(college.basketball$W))/mean(college.basketball$'F')
+  
+#P(L | F)
+(mean(college.basketball$'F')*mean(college.basketball$L))/mean(college.basketball$'F')
+
+# #P(W)
+# mean(college.basketball$W)
+# #P(L)
+# mean(college.basketball$L)
+# 
+# #P(M)
+# mean(college.basketball$M)
+# #P(F)
+# mean(college.basketball$'F')
+```
+
+## Part F
+
+The evidence that I have gathered **is consistent** with the theory mentioned above since the probability of **P(L | M) and P(W | F)** were close to each other (there was probably a small difference of **0.04**). 
+
+The probability of W given that F occurred was **50.2%** which means that there is a high chance that is W occurs then F would occur. This evidence proves the theory mentioned since the theory stated that the favorite team performs better if the game score is lower than expected.
+
+Also, the probability of L given that M occurred was **46.9%** which means that if event L happened then there is a high chance that event M would happen. This supports the second part of the theory which stated that the underdogs perform better if when the game score is higher than expected. 
+
+* M is the variable that represents when the favorite team had more combined points than expected and 
+* L is the variable that represents when the favorite team won the game by fewer points than expected or lost. 
+
+The fact that **M and L** have a **46.9%** of occurring means that when the favorite team has more combined points then expected they also do not so well performance-wise and either lose or show a decrease in expected performance.
+
+```{bash}
+ufw help
+```
+

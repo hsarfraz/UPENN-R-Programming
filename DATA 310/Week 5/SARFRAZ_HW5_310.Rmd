@@ -1,0 +1,338 @@
+---
+title: "SARFRAZ_HW5_310"
+author: "Hussain Sarfraz"
+date: "2/13/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Question 1
+
+## Part A
+
+**Answer: We have failed to reject the null hypothesis because the sample mean does not fall in the rejection region. See hypothesis test below**
+
+> **formulas used in this problem**
+
+Formula              | Formula Description
+-------------            | -------------
+$\sqrt{\frac{Sample-Variance}{Sample-Size}}$ or $\frac{Standard-Deviation}{\sqrt{Sample-Size}}$  | Formula for Standard Error of Mean [ SE($\overline{x}$) ]
+$n-1$       | Formula to find Degrees of Freedom [ $\nu$ ]
+null hypothesis - 1 | what the **above ^** formula looks like in words
+$\mu$ $\frac{+}{-}$ SE($\overline{x}$) * `qt()` | The Confidence Interval used to specify the Rejection Region 
+null hypothesis $\frac{+}{-}$ standard error of mean * standard deviation units | what the **above ^** formula looks like in words
+
+> **writing down the given/calculated values**
+
+Given Value              | What it is called
+-------------            | -------------
+$\mu$=50                 | null hypothesis
+n=20                     | sample size
+$\nu$=19                 | degrees of freedom
+$\overline{x}$=53        | sample mean
+$s_{x}$=7                | sample standard deviation
+$s_{x}^{2}$=49           | sample variance
+SE($\overline{x}$)=$\sqrt{\frac{49}{20}}$ or $\frac{7}{\sqrt{20}}$ | standard error of mean
+
+> **step 1** (specifying the null hypothesis)
+
+Null Hypothesis | What it looks like in mathematical terms
+-------------                                                 | -------------
+Americans on average **are** ambivalent about President Biden | $\mu = 50$ 
+
+> **step 2** (specifying the alternative hypothesis)
+
+Alternative Hypothesis | What it looks like in mathematical terms
+-------------                                                    | -------------
+Americans on average **are not** ambivalent about President Biden| $\mu \neq 50$ 
+
+> **step 3** (selecting the rejection region)
+
+The null hypothesis would be **rejected** if the sample mean falls in the **rejection region**:
+
+* $\overline{x} < 46.7239$ or $53.2761 < \overline{x}$
+
+
+```{r}
+50 + (7/sqrt(20)) * qt(0.975,19) #ub (upper bound)   <-53.2761
+50 + (7/sqrt(20)) * qt(0.025,19) #lb (lower bound)   <-46.7239
+# 50 - (7/sqrt(20)) * qt(0.975,19) #lb (lower bound) <-46.7239
+```
+
+> **step 4** (getting the test statistic)
+
+The **sample mean** is our **test statistic**
+
+Sample Mean    | What it looks like in mathematical terms
+-------------  | -------------
+53             | $\overline{x} = 53$ 
+
+> **step 5** (choose to accept the null hypothesis or reject it)
+
+We have **failed to reject** the null hypothesis because the sample mean does not fall in the rejection region.
+
+## Part B
+
+* I used the `load()` function to load in the `ACSCountyData.Rdata` dataset.
+* I used the `lm()` function to to run a regression for `percent.college`.
+
+```{r}
+load('C:/Users/hussainsarfraz/Desktop/DATA 310/ACSCountyData.Rdata')
+
+#lm(dependant.variable~independant.variable, data = )
+lm(median.income~percent.college, data = acs)
+```
+
+## Part C
+
+A regression line uses the linear formula $y=mx+b$. Here is what each part means:
+
+* $y$: represents the output
+* $m$: represents the slope (multiplied by x-axis value)
+* $b$: is the y-intercept (x is zero at this point)
+
+Regression Output for `percent.college` | What it means
+-------------                           | -------------
+28,898 (Intercept)                       | 28,898 represents the y-intercept. It could represent the average income that people who do not go to college make. 
+1,015  (percent.college)                 | 1,015 is our slope. Since it is positive it means that college grads (or people who spend time in college) have a high income because every one step increase in the x-axis (college percentage) increases the y-axis (income amount) by $1,015
+
+## Part D
+
+**Answer: We have rejected the null hypothesis because the sample mean falls in the rejection region. See hypothesis test below**
+
+> **formulas used in this problem**
+
+Formula                  | Formula Description
+-------------            | -------------
+$\mu$ $\frac{+}{-}$ SE($\overline{x}$) * `qt()` | The Confidence Interval used to specify the Rejection Region 
+null hypothesis $\frac{+}{-}$ standard error of mean * standard deviation units | what the **above ^** formula looks like in words
+
+> **writing down the given/calculated values**
+
+I got these values by using the `summary()` and `lm()` function since the `lm()` function takes into consideration the **dependent** and **independent** variables when making the calculations.
+
+Given Value                   | What it is called
+-------------                 | -------------
+$\mu$=0                       | null hypothesis
+$\nu$=3217                    | degrees of freedom
+$\overline{x}$=1015.14        | sample mean
+$SE(\overline{x})$=20.51     | standard error of mean
+
+> **step 1** (specifying the null hypothesis)
+
+Null Hypothesis | What it looks like in mathematical terms
+-------------                                               | -------------
+The level of education **does not** have a effect on income | $\mu = 0$ 
+
+> **step 2** (specifying the alternative hypothesis)
+
+Alternative Hypothesis | What it looks like in mathematical terms
+-------------                                           | -------------
+The level of education **does** have a effect on income | $\mu \neq 0$ 
+
+## Part E
+
+**Answer: We have rejected the null hypothesis because the sample mean falls in the rejection region. See hypothesis test below**
+
+**NOTE: For this question I have used the values mentioned in part D**
+
+> **step 3** (selecting the rejection region)
+
+The null hypothesis would be **rejected** if the sample mean falls in the **rejection region**:
+
+* $\overline{x} < -40.21399$ or $40.21399 < \overline{x}$
+
+
+```{r}
+0 + 20.51 * qt(0.975,3217) #ub (upper bound)   <-   40.21399
+0 + 20.51 * qt(0.025,3217) #lb (lower bound)   <-  -40.21399
+# 0 - 20.51 * qt(0.975,3217) #lb (lower bound) <-  -40.21399
+```
+
+> **step 4** (getting the test statistic)
+
+The **sample mean** is our **test statistic**
+
+Sample Mean         | What it looks like in mathematical terms
+-------------       | -------------
+1015.14             | $\overline{x}$
+
+> **step 5** (choose to accept the null hypothesis or reject it)
+
+We have **rejected** the null hypothesis because the sample mean **does** fall in the rejection region.
+
+
+# Question 2
+
+## Part A (test 1 without having 1,000 runs)
+
+> The information **given to us**
+
+Given Value              | What it is called
+-------------            | -------------
+$n=100$                  | sample size
+$\mu$=0                  | null hypothesis (aka expected value of the population mean we are drawing from)
+$\sigma_=7$              | Population standard deviation
+$\sigma^2_=49$           | Population Variance
+
+```{r}
+x <- rnorm(100, mean=0,sd=7)
+```
+
+#### Part B
+
+> The **p-value**
+
+Calculated p-value through `t.test()` function | Description
+-------------                                  | -------------
+$p=0.8949$     | The p-value calculated is **not** statistically significant
+
+
+* Since the p-value is **greater** than **0.05** that means that it is **not statistically significant**
+* This means that there is a high probability of a false **negative** to occur
+* This means that there is a high probability of getting a **type 2** error
+* $\alpha$ is **small** (aka Rejection Region is small)
+* $\beta$ is **large** 
+
+```{r}
+t.test(x,mu=0)
+```
+
+## Part C (test 2: our first 1,000 run)
+
+> The information **given to us**
+
+Given Value              | What it is called
+-------------            | -------------
+$n=100$                  | sample size
+$\mu$=0                  | null hypothesis (aka expected value of the population mean we are drawing from)
+$\sigma_=1$              | Population standard deviation
+$\sigma^2_=1$            | Population Variance
+
+```{r}
+ttest <- rep (NULL,length(1000))
+
+for(i in 1:1000) {
+  samp <- rnorm(100,mean = 0, sd =1)
+  ttest[i] <- t.test(samp)$p.value
+}
+```
+
+#### Part D
+
+Calculated p-value through `t.test()` function | Description
+-------------                                  | -------------
+$p=0.049$     | The p-value calculated **is** statistically significant
+
+
+* Since the p-value is **less than** than **0.05** that means that it is **statistically significant**
+* This means that there is a high probability of a false **positive** to occur
+* This means that there is a high probability of getting a **type 1** error
+* $\alpha$ is **large** (aka Rejection Region is large)
+* $\beta$ is **small** 
+
+```{r}
+#number of p-values that were statistically significant
+table(ttest < .05)[2:2]
+
+table(ttest < .05)[2:2]/sum(table(ttest < .05)[1:2])
+
+#sum(as.data.frame(ttest) < .05)/1000 #another way to find percentage of statistically significant p-values
+```
+
+## Part E (test 3: our second 1,000 run)
+
+> The information **given to us**
+
+Given Value              | What it is called
+-------------            | -------------
+$n=100$                  | sample size
+$\mu$=2                  | null hypothesis (aka expected value of the population mean we are drawing from)
+$\sigma_=7$              | Population standard deviation
+$\sigma^2_=49$           | Population Variance
+
+```{r}
+second_ttest <- rep (NULL,length(1000))
+
+for(i in 1:1000) {
+  second_samp <- rnorm(100, mean=2, sd=7)
+  second_ttest[i] <- t.test(second_samp)$p.value
+}
+```
+
+#### Part F
+
+> The **p-value**
+
+Calculated p-value through `t.test()` function | Description
+-------------                                  | -------------
+$p=0.194$     | The p-value calculated is **not** statistically significant
+
+
+* Since the p-value is **greater** than **0.05** that means that it is **not statistically significant**
+* This means that there is a high probability of a false **negative** to occur
+* This means that there is a high probability of getting a **type 2** error
+* $\alpha$ is **small** (aka Rejection Region is small)
+* $\beta$ is **large** 
+
+```{r}
+#number of p-values that were NOT statistically significant
+table(second_ttest > .05)[2:2]
+
+table(second_ttest > .05)[2:2]/sum(table(second_ttest > .05)[1:2])
+
+#sum(as.data.frame(second_ttest) > .05)/1000 #another way to find percentage of NOT statistically significant p-values
+```
+
+## Part G (test 4: our third 1,000 run)
+
+Given Value              | What it is called
+-------------            | -------------
+$n=350$                  | sample size
+$\mu$=2                  | null hypothesis (aka expected value of the population mean we are drawing from)
+$\sigma_=7$              | Population standard deviation
+$\sigma^2_=49$           | Population Variance
+
+
+Calculated p-value through `t.test()` function | Description
+-------------                                  | -------------
+$p=0.001$     | The p-value calculated **is** statistically significant
+
+
+* Since the p-value is **less than** than **0.05** that means that it is **statistically significant**
+* This means that there is a high probability of a false **positive** to occur
+* This means that there is a high probability of getting a **type 1** error
+* $\alpha$ is **large** (aka Rejection Region is large)
+* $\beta$ is **small** 
+
+```{r}
+third_ttest <- rep (NULL,length(1000))
+
+for(i in 1:1000) {
+  third_samp <- rnorm(350,mean = 2,sd=7)
+  third_ttest[i] <- t.test(third_samp)$p.value
+}
+
+#number of p-values that were statistically significant
+table(third_ttest > .05)[2:2]
+
+
+table(third_ttest > .05)[2:2]/sum(table(third_ttest > .05)[1:2])
+
+#sum(as.data.frame(third_ttest) > .05)/1000 #another way to find percentage of statistically significant p-values
+```
+> Conclusions and Observations
+
+**How Standard Deviation affects the p-value**
+
+* When the standard deviation **decreases** then the p-value decreases and the sample goes from being **NOT** statistically significant to **being** statistically significant (this can be seen from the **decrease** in standard deviation from `Part A (test 1 without having 1,000 runs)` to the standard deviation in `Part C (test 2: our first 1,000 run)`).
+* Now the opposite happens when the standard deviation **increases**. When the standard deviation **increases** the p-value increases and the sample goes from **being** statistically significant to **NOT** being statistically significant (this can be seen from the **increase** in standard deviation from `Part C (test 2: our first 1,000 run)` to the standard deviation in `Part E (test 3: our second 1,000 run)`)   
+
+**How Sample Size affects the p-value**
+
+* When the sample size **increases** the p-value decreases and the sample goes from being **NOT** statistically significant to **being** statistically significant this can be seen from the **increase** in sample size from `Part E (test 3: our second 1,000 run)` to the sample size in `Part G (test 4: our third 1,000 run)`)
+* What is stated above is true because in **large samples** the sampling variance is small which causes statistical significance 
+* In **small samples** the sampling variance is large which causes statistical insignificance.

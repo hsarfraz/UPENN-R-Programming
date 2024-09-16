@@ -1,0 +1,203 @@
+---
+title: "SARFRAZ_HW3_310"
+author: "Hussain Sarfraz"
+date: "1/29/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(tidyverse)
+```
+
+# Question 1
+
+## Part A
+
+**Answer: 0.9914182**
+
+* **The probability is 0.9914182 that the average is between 73 and 78 in a random sample of 50 observations**
+
+To answer this question I used the `pnorm()` function to calculate the probability. Since I had to calculate the probability with a sample of 50 observations I had to make sure that I divided `sqrt(35)` (the square root of the samples variance) over `sqrt(50)` which is the square root of the number of observations that I have.
+
+```{r}
+pnorm(78,76,sqrt(35)/sqrt(50),lower.tail = T)-pnorm(73,76,sqrt(35)/sqrt(50),lower.tail = T)
+
+#another way to do the problem
+# standrd.error <- sqrt(35)/sqrt(50)
+# pnorm(78,76,standrd.error,lower.tail = T)-pnorm(73,76,standrd.error,lower.tail = T)
+```
+
+## Part B
+
+**Answer: lb= 74.24037 ub= 77.75963**
+
+* **The confidence interval of lb= 74.24037 ub= 77.75963 with a random sample of 75 observations would represent a 99% probability**
+
+I used the `qnorm()` function to solve for this problem since I was given the probability. I needed to find the confidence interval which was basically the numbers on the x-axis. To do this I needed to input the probability amount that would give me the x-axis value I was looking for. To figure this out I subtracted **100-99** which gave me **1%** as a result. The **1%** represents the area of the graph that is not included. To see how much area is on each side I divided **1 by 2** which gave me **0.005**. I then made sure that the probabilities in my `qnorm()` function were 0.5% (0.005) away from 0 and 1.
+
+* Also, as mentioned in **Part A** since I had sample of 75 observations I had to divide the square root of my variance (`sqrt(35)`) over the square root of the sample (`sqrt(75)`)
+
+```{r}
+#lb
+qnorm(.005,76,sqrt(35)/sqrt(75),lower.tail=T)
+#ub
+qnorm(.995,76,sqrt(35)/sqrt(75),lower.tail=T)
+```
+## Part C
+
+**Answer: 538**
+
+* **The sample must be 538 in order for there to be a 95% probability that the sample average is between 75.5 and 76.5**
+
+1. To solve for this problem I first had to get the upper interval for the standard normal variable. The reason why I am getting values from the standard normal variable is because 95% is two standard deviations away from the mean. Because the given probability is **95%** then that means that the standard normal distribution is similar to the current distribution that I have.
+    + To solve for the upper interval in the standard normal variable I used the `qnorm()` function and my result was **1.959964** (this number also represents the graphs mid-point interval)
+2. Now that I got the **mid-point interval for the standard normal distribution graph** I needed to find the mid-point interval for my current graph. This was simple since I subtracted **76.5-75.5** and got **1**. To get the midpoint I divided one over two and got **0.5**
+    + I then needed to get the ratio between the two mid-point intervals which is why I divided `1.96/0.5` (1.96 is the result I got in my previous step) 
+    + The **result** that I got was **3.92** which was the ratio between the original graph and the standard normal distribution graph.
+3. Now that I got my ratio I needed to multiply the square root of my variance (`sqrt(35)`) with my ratio (**3.92**). The result I got by doing this is **23.19**
+4. I then had to preform the final step and square my result by 2 (`23.19**2`) to figure out the sampling size I need. My result was **537.8042** which rounds to **538**
+
+```{r}
+#getting the upper interval for the standard normal variable
+#qnorm(0.975,0,1,lower.tail = T) #1.959964
+
+#getting the interval ratio for both graphs
+#((qnorm(0.975,0,1,lower.tail = T))/0.5) #3.919928
+#1.96/0.5 #3.92
+
+#converting the sqrt(35) to how it will look in the standard normal graph
+#(sqrt(35)*((qnorm(0.975,0,1,lower.tail = T))/0.5)) #23.19061
+#sqrt(35)*3.92 #23.19
+
+#squaring the values to find the sampling size
+(sqrt(35)*((qnorm(0.975,0,1,lower.tail = T))/0.5))**2 #538
+# 23.19**2 #538
+
+#checking answer
+#qnorm(.975,76,sqrt(35)/sqrt("Sample_Size"),lower.tail = T) # =76.5
+#qnorm(.975,76,sqrt(35)/sqrt((sqrt(35)*((qnorm(0.975,0,1,lower.tail = T))/0.5))**2),lower.tail = T) #76.5
+
+```
+
+# Question 2
+
+## Part A
+
+**Answer: The histogram that I made is not normally distributed and has a left skew meaning it has a long left tail which goes in the negative direction. Therefore, the pdf of this variable would not be well approximated through a standard normal distribution since it also is symmetrical. The histogram is not symmetrical either.**
+
+* **In part E I am required to take the sample of a large sampling size 10,000 times. Doing this repetitive process allows me to create a graph that mimics the sampling distribution since there is no left or right skew in the graph and the graphs mean is similar to the mean of the histogram. In this scenario, the pdf of this variable would be well approximated by a normal distribution**
+
+```{r}
+setwd('C:/Users/hussainsarfraz/Desktop/DATA 310')
+ohio2016.election <- read_xlsx('Ohio2016.xlsx')
+
+ohio2016.election <- ohio2016.election %>%
+  mutate(trump.vote = Trump/Ballots)
+
+ohio2016.election %>%
+  ggplot() +
+  geom_histogram(aes(x = trump.vote)) +
+  xlab("Trump Vote Percentages") +
+  ylab('Count of Percentages') +
+  theme_bw() +
+  ggtitle('Percentage Distribution of Trump Votes') +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+## Part B
+
+**Answer: Mean= 0.5065674 Variance= 0.04156068**
+
+* **The mean of Trump's vote share in the precinct is 0.5065674. The variance of Trump's vote share in the precinct is 0.04156068**
+
+```{r}
+mean(ohio2016.election$trump.vote)
+var(ohio2016.election$trump.vote)
+```
+
+## Part C
+
+**Answer: lb= 0.4235387 ub= 0.5895962**
+
+* **The confidence interval of a statistic with a 99% probability and sample size of 40 is: lb= 0.4235387 ub= 0.5895962**
+
+```{r}
+#lb
+qnorm(0.005,mean(ohio2016.election$trump.vote),sqrt(var(ohio2016.election$trump.vote))/sqrt(40),lower.tail = T)
+
+#ub
+qnorm(0.995,mean(ohio2016.election$trump.vote),sqrt(var(ohio2016.election$trump.vote))/sqrt(40),lower.tail = T)
+```
+
+## Part D
+
+**Answer for sample size of 80: lb= 0.4478573 ub= 0.5652776**
+
+* **The confidence interval of a statistic with a 99% probability and sample size of 80 is: lb= 0.4478573 ub= 0.5652776**
+
+**Answer for sample size of 120: lb= 0.4586308 ub= 0.5545041**
+
+* **The confidence interval of a statistic with a 99% probability and sample size of 120 is: lb= 0.4586308 ub= 0.5545041**
+
+```{r}
+#80 sample size
+#lb
+qnorm(0.005,mean(ohio2016.election$trump.vote),sqrt(var(ohio2016.election$trump.vote))/sqrt(80),lower.tail = T)
+#ub
+qnorm(0.995,mean(ohio2016.election$trump.vote),sqrt(var(ohio2016.election$trump.vote))/sqrt(80),lower.tail = T)
+
+
+#120 sample size
+#lb
+qnorm(0.005,mean(ohio2016.election$trump.vote),sqrt(var(ohio2016.election$trump.vote))/sqrt(120),lower.tail = T)
+#ub
+qnorm(0.995,mean(ohio2016.election$trump.vote),sqrt(var(ohio2016.election$trump.vote))/sqrt(120),lower.tail = T)
+```
+
+## Part E
+
+`trump.average` is the mean of the first sample that created (`trump.sample`). The result I got for `trump.average` is 0.5261867. However, I would like to point out that this value might not be the one displayed in my code because each time I run this code R would pick a different sample with different values.
+
+So after I used the `for loop` to run my sample 10,000 times I stored all the mean values (of each sample run) in a vector called `final.vector`. I then used the `quantile()` function to find the **0.5 and 99.5 percentiles of the average Trump vote share**. The result I got was: **lb= 0.4577474 ub= 0.5518370**. This confidence interval was closest to the confidence interval I got when I increased my sample size to **120** (**part D**). This means that when my sample size is big and I perform many iterations of that sample then my distribution will start to look like a standard normal distribution. This can also be seen through the density plot that I created of the `final.vector` vector. 
+
+I wanted to check if the density plot of the `final.vector` vector is similar to the histogram I made about the original Trump percentage distribution (**Part A**). To do this I compared the mean (**Part B**) of the `trump.vote` column with the mean of the `final.vector` vector. My result for both values were very similar and were only different after 4 decimal places. This means that the `final.vector` vector and the original Trump vote percentages are similar in terms of mean and variance. 
+
+
+```{r}
+# – Draw a random sample of 120 precincts from the data (I use the ‘sample()’
+#                                                        function to do this).
+trump.sample <- sample(ohio2016.election$trump.vote, 120, replace = FALSE, prob = NULL)
+
+
+# – Calculate the average Trump vote share in these precincts.
+# – Store this average in a vector
+trump.average <- mean(trump.sample)
+trump.average
+
+# – Repeat those three steps 10,000 times using a for loop
+
+repeats <- 10000
+final.vector <- rep(NA, length(repeats))
+
+for(i in 1:repeats){
+  
+  samp <- sample(ohio2016.election$trump.vote, 120, replace = F, prob = NULL)
+  
+  final.vector[i] <- mean(samp)
+}
+
+# – After running the 10,000 simulations, use the quantile() function to find 0.5
+# and 99.5 percentiles of the average Trump vote share over the 10,000 simulations. 
+# Compares these values to the bounds on the symmetric 99 percent
+# confidence interval you estimated using the Central Limit Theorem.
+
+quantile(final.vector, probs = c(0.005,0.995))
+
+plot(density(final.vector))
+mean(final.vector) 
+mean(ohio2016.election$trump.vote)
+
+```
+

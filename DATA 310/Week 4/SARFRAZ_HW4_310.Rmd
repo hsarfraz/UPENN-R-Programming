@@ -1,0 +1,331 @@
+---
+title: "SARFRAZ_HW4_310"
+author: "Hussain Sarfraz"
+date: "2/4/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(survey)
+```
+
+# Question 1
+
+## Part A
+
+**Answer: lb: 1.191914 and ub: 6.808086**
+
+**The 95% confidence interval for this sample would be 1.191914 and 6.808086**
+
+* For this question I squared the standard deviation since that would give me the sample variance of the t-distribution (output was 36). Note that the standard deviation given to us was a estimate from the t-distribution which is why I call 36 the **sample variance of the t-distribution**.
+* I then used the **sample variance of the t-distribution** and **sample size** to figure out my sample variance (standard error).
+* I also calculated my **t-scores** by using the `qt()` function. In the `qt()` function I plugged in the t-distribution associated probability that I wanted to find out and I also added in the degrees of freedom which was (n-1)
+* I then put everything together by adding the **sample mean** to the **t-score** times the **sample variance (standard error)**. This is how I get my confidence interval.
+
+```{r}
+#sample size = 20
+#sample mean = 4
+#sample variance (standard error) = sqrt(36/20) or 6/sqrt(20)
+
+#t-distribution estimates
+#standard deviation (S)=6
+#sample variance of t-distribution (S^2)=36
+
+#t-scores
+#qt(0.025, 19) 
+#qt(0.975, 19)
+
+#both formulas to calculate the standard error for the sample are the same
+#sqrt(36/20) #1.341641
+#6/sqrt(20) #1.341641
+
+#calculating the confidence intervals
+4+qt(0.025, 19)*sqrt(36/20) #lb: 1.191914
+4+qt(0.975, 19)*sqrt(36/20) #ub: 6.808086
+```
+
+## Part B
+
+**Answer: lb: 1.370432 and ub: 6.629568**
+
+**The 95% confidence interval for this sample would be 1.370432 and 6.629568 when using a normal distribution centered on the sample mean and variance (aka standard error for the sample)**
+
+The confidence interval that I got when using the **normal distribution** was more narrow than the confidence interval that I got when using the **t-distribution**. 
+
+This has occurred because we use the **normal distribution** when we have all respondents from the **entire population**, meaning there are no left out respondents. So because of this our confidence interval would be more narrow as compared to using a **t-distribution** because we are more confident that the mean would be in the confidence interval.
+
+On the other hand, the **t-distribution** is used when we only have the responses from a sample and not the entire population. This is what happens in many real life scenarios since we can not get all responses from the entire population because in many cases we miss a few respondents or it might be too expensive to get a response from the entire population. Because of this, the **confidence interval** that we get from using a **t-distribution** would be **wider** than the confidence interval we get from using a **normal distribution**. In other words, when using a **t-distribution** we are **less confident** that the mean would be in the confidence interval (which is why it is wider). 
+
+```{r}
+qnorm(0.025,4, sqrt(36/20)) #lb: 1.370432
+qnorm(0.975,4, sqrt(36/20)) #ub: 6.629568
+```
+
+## Part C
+
+**Answer: lb: -0.8791218 and ub: 2.879122**
+
+**The 95% confidence interval for the difference of the two sample means is -0.8791218 and 2.879122**
+
+To solve this problem I:
+
+* first had to find the difference of the two means in both samples. 
+* I then had to calculate the degrees of freedom by adding the two degrees of freedoms (from both samples) together. 
+* Then, I calculated the standard error by adding the standard errors of both samples together.
+
+After I had this information I calculated the confidence interval by adding the **sample mean** to the **t-score** which is multiplied to the **standard error of the sample**.
+
+```{r}
+#mean: 1(6-5)
+#degree of freedom: 18(9+9)
+#standard error: sqrt(4/5)[sqrt((4/10)+(4/10))]
+
+1+qt(0.025,18)*sqrt(4/5) #lb:-0.8791218
+1+qt(0.975,18)*sqrt(4/5) #ub:2.879122
+```
+
+# Question 2
+
+## Part A
+
+Since this was a `.Rdata` file I simply used the `load()` function to load in the file to R. The name of the file (which is **az**) was automatically uploaded to my R Global Environment. 
+
+```{r}
+load('C:/Users/hussainsarfraz/Desktop/DATA 310/AZPollFake.Rdata')
+```
+
+## Part B
+
+**Answer:**
+
+Part          | Confidence Interval
+------------- | -------------
+Part i        | lb= 39.92895    - ub= 46.63562
+Part ii       | lb= 58.05173    - ub= 65.81219
+Part iii      | lb= 14.15132    - ub= 21.02744
+
+
+### Part i
+
+* To answer this question I had to calculate the **sample size** using the `nrow()` or `length()` function
+* I then calculated the **sample mean** using the `mean()` function
+* I calculated the **standard deviation of the sample** using the `sd()` function
+* I calculated the **sample variance** by dividing the **standard deviation** over the **square root of the sample size**
+* I then calculated the **confidence interval** by adding the mean to the **t-score** (which is multiplied by the **standard variance**)
+
+```{r}
+#Part i - the 95% confidence interval for “clinton.thermometer”
+
+# #n (sample size)
+# nrow(az)# 447
+# length(az$clinton.thermometer)# 447
+# 
+# #sample mean
+# mean(az$clinton.thermometer)# 43.28229
+# 
+# #standard deviation of sample
+# sd(az$clinton.thermometer)# 36.07468
+# 
+# #sample variance
+# 36.07468/sqrt(447)# 1.706274
+# sd(az$clinton.thermometer)/sqrt(447)# 1.706274
+
+#confidence interval
+#43.28229+qt(0.025,446)*(36.07468/sqrt(447))# lb=39.92895
+mean(az$clinton.thermometer)+qt(0.025,446)*sd(az$clinton.thermometer)/sqrt(447)
+
+#43.28229+qt(0.975,446)*(36.07468/sqrt(447))# ub=46.63563
+mean(az$clinton.thermometer)+qt(0.975,446)*sd(az$clinton.thermometer)/sqrt(447)# ub=46.63562
+```
+
+### Part ii
+
+```{r}
+#Part ii (ii) the 95% confidence interval for “clinton.thermometer” among those
+# voting for clinton (“clinton”==1)
+
+# #n (sample size)
+# az %>%
+#   filter(clinton==1) %>%
+#   nrow()
+# length(az$clinton.thermometer[az$clinton==1])# 259
+# 
+# #sample mean
+# mean(az$clinton.thermometer[az$clinton==1])# 61.93196
+# 
+# #standard deviation of sample
+# sd(az$clinton.thermometer[az$clinton==1])# 31.71151
+# 
+# #sample variance
+# 31.71151/sqrt(259)# 1.970457
+# sd(az$clinton.thermometer[az$clinton==1])/sqrt(259)# 1.970458
+
+#confidence interval
+#61.93196+qt(0.025,258)*(31.71151/sqrt(259))# lb=58.05173
+mean(az$clinton.thermometer[az$clinton==1])+qt(0.025,258)*sd(az$clinton.thermometer[az$clinton==1])/sqrt(259)# lb=58.05173
+
+#61.93196+qt(0.975,258)*(31.71151/sqrt(259))# ub=65.81219
+mean(az$clinton.thermometer[az$clinton==1])+qt(0.975,258)*sd(az$clinton.thermometer[az$clinton==1])/sqrt(259)# ub=65.81219
+```
+
+### Part iii
+
+```{r}
+#Part iii - the 95% confidence interval for “clinton.thermometer”
+# among those not voting for clinton (“clinton”==0)
+# #n (sample size)
+# az %>%
+#   filter(clinton==0) %>%
+#   nrow()
+# length(az$clinton.thermometer[az$clinton==0])# 188
+# 
+# #sample mean
+# mean(az$clinton.thermometer[az$clinton==0])# 17.58938
+# 
+# #standard deviation of sample
+# sd(az$clinton.thermometer[az$clinton==0])# 23.89595
+# 
+# #sample variance
+# 23.89595/sqrt(188)# 1.742791
+# sd(az$clinton.thermometer[az$clinton==0])/sqrt(188)# 1.742791
+
+#confidence interval
+#17.58938+qt(0.025,187)*(23.89595/sqrt(188))# lb=14.15132
+mean(az$clinton.thermometer[az$clinton==0])+qt(0.025,187)*sd(az$clinton.thermometer[az$clinton==0])/sqrt(188)# lb=14.15132
+
+#17.58938+qt(0.975,187)*(23.89595/sqrt(188))# ub=21.02744
+mean(az$clinton.thermometer[az$clinton==0])+qt(0.975,187)*sd(az$clinton.thermometer[az$clinton==0])/sqrt(188)# ub=21.02744
+```
+
+## Part C
+
+**Answer:**
+
+Part          | Confidence Interval
+------------- | -------------
+Part i        | lb= 38.93272    - ub= 45.88059
+Part ii       | lb= 57.9704     - ub= 66.13023
+Part iii      | lb= 13.9482     - ub= 20.742
+
+I noticed that the confidence intervals after applying the weights are a bit **wider** than the confidence intervals without applying any weights. There was one interval that was more **narrower** than the interval without applying the weights.  have specified the length of each interval below (with and without the weights). Although the difference is not that big I found it to be a unique observation.
+
+Confidence Interval Difference without weights (part B)| Confidence Interval Difference with weights (part c)
+-------------                   | -------------
+46.63562-39.92895 = **6.70667** | **<** 45.88059-38.93272 = **6.94787**
+65.81219-58.05173 = **7.76046** | **<** 66.13023-57.9704  = **8.15983**
+21.02744-14.15132 = **6.87612** | **>** 20.742-13.9482    = **6.7938**
+
+I believe there the confidence interval difference is occurring because of the **weights** being applied to the `clinton.thermometer` column. Theoretically, I believe that after applying the weights to the dataset the new confidence intervals needed to be **narrower** than the confidence intervals that have **no weights to them**. But this can only occur if we assume that our sample has **a equal representation/amount of every group**.
+
+In this situation, there was a **unequal representation between Clinton supporters and non-supporters in our dataset** and we needed to **allocate more weights to one group so we could accurately represent the overall population of our sample when applying the weights**. This is why the confidence interval of non-Clinton supporters was **more narrow** when the weights were applied. A greater amount of weights were applied to **non-Clinton** supporters in our dataset since there was a lass amount of them in our sample.
+
+
+To answer this question I created a object called `az_weight` which uses the `svydesign()` function to apply the datasets weights to all the columns in the dataset.
+
+```{r}
+az_weight <- svydesign(ids = ~1,
+                       data = az, weights = az$final_weight)
+```
+
+### Part i
+
+I then used the `svymean()` function to calculate the **mean and standard error** of the values in the `clinton.thermometer` column. I stored this information in a object called `az_meani` and put that in the `confint()` function which gave me my confidence intervals with the weights.
+
+```{r}
+#part i
+az_meani <- svymean(~clinton.thermometer, az_weight)
+az_meani
+confint(az_meani)
+```
+
+### Part ii
+
+```{r}
+#part ii
+
+#svymean(~clinton.thermometer, az_weight[az$clinton==1])
+az_meanii <- svymean(~clinton.thermometer, subset(az_weight, clinton==1))
+az_meanii
+confint(az_meanii)
+```
+
+### Part iii
+
+```{r}
+#part iii
+
+#svymean(~clinton.thermometer, az_weight[az$clinton==0])
+az_meaniii <- svymean(~clinton.thermometer, subset(az_weight, clinton==0))
+az_meaniii
+confint(az_meaniii)
+```
+
+## Part D
+
+**Answer: Look at code output**
+
+I used the `svyttest()` function to perform a t-test on the difference in means in the `clinton.thermometer` column. The t-test would also give me the confidence interval for this difference. 
+
+When using the `svyttest()` function I had to specify the continuous variable first then the categorical variable. I then had to specify the object that applied the weights to the dataset (I created `az_weight` in question 2.c)
+
+```{r}
+svyttest(clinton.thermometer~clinton, az_weight)
+```
+
+## Part E
+
+**Answer: Look at code output**
+
+The estimate for the intercept represents **Trumps feeling thermometer**. This is because since `clinton.thermometer` only includes values of how much people like Hillary Clinton the only variable that would represents people dislike for Hillary would be **zero**. This means that in a graph the **y-intercept** would represent the percentage/feeling thermometer of how many people do not like Hillary Clinton. 
+
+The estimate for Clinton represents the mean of difference between the people who like Hilary (represented by ones) and the people who do not like Hilary (represented by zeros). Now since the `lm()` function follows the equation **y=mx+b** the feeling thermometer for Hillary Clinton would be 62.06 (44.71+17.35 = 62.06). 
+
+* `m` would be the slope and in this case it would represent the category distributions that separate each group (one or zero)
+* `b` would be the y-intercept which is 17.35
+
+```{r}
+lm(clinton.thermometer~clinton, data = az, weight = final_weight)
+```
+
+## Part F
+
+When looking at the grpah I can not form any specific conclusions since the points are scattered all over the graph. One thing that can be concluded is that the `clinton.thermometer` and `final_weight` variables do not correlate. One event does not cause the other. This is a good sign in this specific case since it lets us know that the weights were assigned randomly to each variable. 
+
+```{r}
+az %>%
+  ggplot(aes(x = clinton.thermometer, y = final_weight)) +
+  geom_point() +
+  xlab("Hilary Clinton Feeling Thermometer Score") +
+  ylab('Number of Weights Applied') +
+  ggtitle("Weights applied to Hiliary Clinton Feeling Thermometer Score") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+## Part G
+
+Adding the regression line does change my interpretation of the relationship. In **part F** I thought that the two variables did not have any relation and that the weights were applied to each variable equally. However, adding the regression line made me see things more clearly. 
+
+**I discuss more in part H**
+
+```{r}
+az %>%
+  ggplot(aes(x = clinton.thermometer, y = final_weight)) +
+  geom_point() + 
+  geom_smooth(method='lm') +
+  xlab("Hilary Clinton Feeling Thermometer Score") +
+  ylab('Number of Weights Applied') +
+  ggtitle("Weights applied to Hiliary Clinton Feeling Thermometer Score") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+## Part H
+
+When looking at the graph I noticed that the estimation for the **clinton.thermometer** landed at the part of the regression line that was equal to one. I believe this is true because the Clinton thermometer estimation represents the mean of difference for people who are in favor for Hillary Clinton and the people who are not in favor. Because of this the difference of the mean needs to have a equal amount of weight applied to it which is why the estimation for the **clinton.thermometer** landed at the part of the regression line that was equal to one. This means that the weight applied to the estimation for the **clinton.thermometer** would not be too much or too less. 
+
+The interpretation of the intercept shows us that there were less non-Clinton supporters in the dataset. This is because the intercept lands on the part of the regression line that is above the number one. You can see this through where the regression line has its y-intercept. This means that there were less non-Clinton supporters in the dataset which is why more weights were applied to the non-Clinton supporters. We wanted to get a fair representation of the entire population and therefore needed to apply for weights to the under-represented groups of the dataset. 
+
+Based on this information I believe the sampling process was challenging. There could be a high possibility that non-Clinton supporter purposefully did not fill a survey because they believe the survey would benefit them or thought the government was going to track them down. Another reason is that I could have sampled more Clinton supporters by chance (highly unlikely) 

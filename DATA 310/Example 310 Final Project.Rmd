@@ -1,0 +1,382 @@
+---
+title: "Example DATA 310 Final Project"
+author: "Marc Trussler"
+date: "2/17/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+#Cleaning for 310 example final project
+rm(list=ls())
+#Trussler
+
+#Packages
+library(survey)
+library(stargazer)
+library(sandwich)
+
+#Load data
+
+load('C:/Users/hussainsarfraz/Desktop/DATA 310/ANES20Datafor310.Rdata')
+
+##################
+#Prepare variables
+##################
+
+#State
+anes$state <- anes$V203001
+
+#Biden Feeling Thermometer
+
+anes$biden.ft <- anes$V201151
+  
+anes$biden.ft[anes$biden.ft %in% c(-9,-4,998)] <- NA
+summary(anes$biden.ft)
+
+#Ideology
+anes$ideo7 <- anes$V201200
+anes$ideo7[anes$ideo7 %in% c(-9,-8,99)] <- NA
+table(anes$ideo7)
+
+anes$liberal<- NA
+anes$liberal[anes$ideo7 %in% c(1,2,3)] <- 1
+anes$liberal[!(anes$ideo7 %in% c(1,2,3))] <- 0
+
+anes$moderate<- NA
+anes$moderate[anes$ideo7 %in% c(4)] <- 1
+anes$moderate[!(anes$ideo7 %in% c(4))] <- 0
+
+anes$conservative<- NA
+anes$conservative[anes$ideo7 %in% c(5,6,7)] <- 1
+anes$conservative[!(anes$ideo7 %in% c(5,6,7))] <- 0
+
+
+#Religiosity
+anes$V201433
+#(Reverse coded)
+anes$religiosity <- NA
+anes$religiosity[anes$V201433==5] <- 1
+anes$religiosity[anes$V201433==4] <- 2
+anes$religiosity[anes$V201433==3] <- 3
+anes$religiosity[anes$V201433==2] <- 4
+anes$religiosity[anes$V201433==1] <- 5
+table(anes$religiosity)
+
+anes$high.religion <- NA
+anes$high.religion[anes$religiosity>=4] <- 1
+anes$high.religion[anes$religiosity<4] <- 0
+
+
+
+#Party ID dummies
+table(anes$V201231x)
+anes$V201231x[anes$V201231x %in% c(-9,-8)] <- NA
+
+anes$rep <- NA
+anes$rep[anes$V201231x %in% c(5,6,7)] <- 1
+anes$rep[!(anes$V201231x %in% c(5,6,7))] <- 0
+
+anes$ind <- NA
+anes$ind[anes$V201231x %in% c(4)] <- 1
+anes$ind[!(anes$V201231x %in% c(4))] <- 0
+
+anes$dem <- NA
+anes$dem[anes$V201231x %in% c(1,2,3)] <- 1
+anes$dem[!(anes$V201231x %in% c(1,2,3))] <- 0
+
+
+
+#Gender
+anes$V201600
+anes$female <- NA
+anes$female[anes$V201600==2] <- 1
+anes$female[anes$V201600==1] <- 0
+
+#Age
+anes$age <- anes$V201507x
+anes$age[anes$age==-9] <- NA
+
+#College
+anes$V201510
+anes$college[anes$V201510<6] <- 0
+anes$college[anes$V201510>6] <- 1
+anes$college[anes$V201510 %in% c(-9,-8,95)] <- NA
+table(anes$college)
+
+#Race
+anes$V201549x
+anes$V201549x[anes$V201549x %in% c(-9,-8)] <- NA
+anes$white[anes$V201549x==1] <- 1
+anes$white[!(anes$V201549x==1)] <- 0
+anes$black[anes$V201549x==2] <- 1
+anes$black[!(anes$V201549x==2)] <- 0
+
+#Weight
+anes$weight<- anes$V200010a
+
+
+
+#Restrict to variables we care about
+anes <- anes[,63:79]
+
+
+#Create weight object
+anes.w <- svydesign(ids = ~1,
+                    data=anes,
+                    weights = anes$weight)
+```
+
+
+# Introduction and Theory
+
+In the last 30 years of American politics there has been a stable relationship between religiosity and voting for Republican candidates for President. Does this relationship hold in the 2020 election?
+
+While Donald Trump espouses socially conservative views that may be favored by those with a high degree of religiosity, his moral conduct may repel other highly religious individuals. Conversely, Joe Biden's liberal stance on abortion and LGBT+ rights almost certainly hurts him among some highly religious individuals, yet he is also devout and vocal Catholic. 
+
+In this report I investigate whether the effect of religiousity in the 2020 election is moderated by ideology. My expectation is that higher religiosity among conservative individuals will lead to lower ratings of Biden, while higher religiosity among liberal individuals will lead to higher ratings of Biden.
+
+# Description of Main Variables
+
+To investigate this relationship I use the American National Election Study, an academic study of the American adult population with a sample size of around 8000 individuals. 
+
+The main outcome variable I am interested in is the "Feeling Thermometer" for Joe Biden. This question asks respondents how "warm" they feel towards Biden, where 0 means "cold" and 100 means "hot". Individuals are instructed that 50 degrees means that "you don't feel particularly warm or cold toward the person." The mean of this variable, `r round(weighted.mean(anes$biden.ft, weight=anes$weight, na.rm=T),2)` makes it seem like Americans are ambivalent towards Joe Biden, but the standard deviation of `r round(sd(anes$biden.ft, na.rm=T),2)` indicates that views are highly variable. This is borne out in the distribution of this variable, displayed below. Many individuals rate Biden very negatively (many at 0). At the same time, a good deal of people feel relatively warm about him (ratings from 60 to 85). 
+
+
+```{r, echo=F,out.width="50%", fig.align="center"}
+#Visualization of key variables
+plot(density(anes$biden.ft,na.rm=T), lwd=2,
+     xlim=c(0,100),
+     xlab="Feeling: Cold(0) to Hot (100)",
+     main="Distribution of Biden Feeling Thermometer")
+```
+
+The primary question of this research note is to see the degree to which two variables combine to explain feelings about Biden: religiosity and ideology.
+
+Religiosity is determined by respondents' answers to the question "How important is religion in your life?". Individuals answer on a five-point scale from "Not important at all"(1) to "Extremely important"(5). The modal response to this question is "Extremely Important" while the average response was `r round(weighted.mean(anes$religiosity, weight=anes$weight, na.rm=T),2)`, meaning a response between "Moderately important" and "A little important".
+
+Ideology is determined by respondents' self-placement on a 7 point scale from "Extremely liberal" to "Extremely conservative" with 4 being "Moderate". The modal response to this question is "Moderate", and the average is approximately the same at `r round(weighted.mean(anes$ideo7, weight=anes$weight, na.rm=T),2)`. The second and third most prominent choices are "Liberal" (2) and "Conservative" (6). 
+
+
+```{r, echo=F, fig.show="hold",out.width="50%"}
+
+barplot(prop.table(table(anes$religiosity)),
+        xlab="", 
+        ylab="Proportion",
+        names.arg = c("Not Important at all","","","", "Extremely Important"),
+        axes=F,
+        main="How Important is Religion?")
+axis(side=2, las=2)
+
+barplot(prop.table(table(anes$ideo7)),
+        xlab="", 
+        ylab="Proportion",
+        names.arg = c("Very Lib", 2,3,4,5,6, "Very Con"),
+        axes=F,
+        main="Distribution of Ideology")
+axis(side=2, las=2)
+
+```
+
+# Difference in Means
+
+```{r, echo=F}
+# anes.w <- svydesign(ids = ~1,
+#                     data=anes,
+#                     weights = anes$weight)
+
+t1 <- svyttest(biden.ft ~ high.religion, anes.w)
+t1
+#Among conservatives
+anes.w.r <- svydesign(ids = ~1,
+                      data=anes[anes$conservative==1,],
+                      weights = anes$weight[anes$conservative==1])
+tr <- svyttest(biden.ft ~ high.religion, anes.w.r)
+tr
+#Among liberals
+anes.w.l <- svydesign(ids = ~1,
+                      data=anes[anes$liberal==1,],
+                      weights = anes$weight[anes$liberal==1])
+
+tl <- svyttest(biden.ft ~ high.religion, anes.w.l)
+tl
+
+#mean rating for individuals with low-relgiosity
+round(weighted.mean(anes$biden.ft[anes$high.religion==0], weight=anes$weight[anes$high.religion==0],na.rm=T),2)
+#mean rating for individuals with high-relgiosity
+round(weighted.mean(anes$biden.ft[anes$high.religion==1], weight=anes$weight[anes$high.religion==1], na.rm=T),2)
+
+#The probability of seeing a difference as extreme as
+round(t1$statistic,2)
+#in our sample if the true difference in the population was 0 is
+format.pval(t1$p.value, eps=.01, nsmall=2)
+```
+
+
+The main relationship of interest is between the degree of religiosity and feelings towards Biden. To take a first look at this, I have recoded religiosity into an indicator variable, where (0) indicates low-religiosity ("Not Important at all", "A little important", "Not important at all") and (1) indicates high-religiosity ("Very important", "Extremely important"). 
+
+I have displayed the distribution of feelings towards Biden among these two groups in the left panel, below. The first thing that is clear is that religiosity does not explain all of the variation in how people feel about Biden: lots of Americans with low-religiosity dislike Biden, and lots of Americans with high-religiosity like him. That being said, there is a significant mass of individuals with high-religiosity who rate Biden very low, and a significant mass of individuals with low-religiosity who feel relatively warmly towards Biden. The mean rating for individuals with low-relgiosity was `r round(weighted.mean(anes$biden.ft[anes$high.religion==0], weight=anes$weight[anes$high.religion==0], na.rm=T),2)` and for individuals with high-religiosity `r round(weighted.mean(anes$biden.ft[anes$high.religion==1], weight=anes$weight[anes$high.religion==1], na.rm=T),2)`. The probability of seeing a difference as extreme as `r round(t1$statistic,2)` in our sample if the true difference in the population was 0 is `r format.pval(t1$p.value, eps=.01, nsmall=2)`. 
+
+
+
+```{r, echo=F, fig.show="hold",out.width="32%"}
+#Visualize Main
+plot(density(anes$biden.ft[anes$high.religion==0], na.rm=T),
+     lwd=2, col="forestgreen", ylim=c(0,0.04), xlim=c(0,100),
+     main="Pooled")
+points(density(anes$biden.ft[anes$high.religion==1],na.=T), 
+       lwd=2, col="purple", type="l")
+abline(v=mean(anes$biden.ft[anes$high.religion==0], na.rm=T), lty=2, col="forestgreen")
+abline(v=mean(anes$biden.ft[anes$high.religion==1], na.rm=T), lty=2, col="purple")
+legend("topright", c("Low Religiosity", "High Religiosity"), lty=c(1,1), lwd=c(2,2), 
+       col=c("forestgreen", "purple"))
+
+#Visualize conservative
+plot(density(anes$biden.ft[anes$high.religion==0 & anes$conservative==1], na.rm=T),
+     lwd=2, col="forestgreen", ylim=c(0,0.04), xlim=c(0,100),
+     main="Conservatives")
+points(density(anes$biden.ft[anes$high.religion==1 & anes$conservative==1],na.=T), 
+       lwd=2, col="purple", type="l")
+abline(v=mean(anes$biden.ft[anes$high.religion==0 & anes$conservative==1], na.rm=T), lty=2, col="forestgreen")
+abline(v=mean(anes$biden.ft[anes$high.religion==1 & anes$conservative==1], na.rm=T), lty=2, col="purple")
+legend("topright", c("Low Religiosity", "High Religiosity"), lty=c(1,1), lwd=c(2,2), 
+       col=c("forestgreen", "purple"),)
+
+#Visualize liberal
+plot(density(anes$biden.ft[anes$high.religion==0 & anes$liberal==1], na.rm=T),
+     lwd=2, col="forestgreen", ylim=c(0,0.04), xlim=c(0,100),
+     main="Liberals")
+points(density(anes$biden.ft[anes$high.religion==1 & anes$liberal==1],na.=T), 
+       lwd=2, col="purple", type="l")
+abline(v=mean(anes$biden.ft[anes$high.religion==0 & anes$liberal==1], na.rm=T), lty=2, col="forestgreen")
+abline(v=mean(anes$biden.ft[anes$high.religion==1 & anes$liberal==1], na.rm=T), lty=2, col="purple")
+legend("topright", c("Low Religiosity", "High Religiosity"), lty=c(1,1), lwd=c(2,2), 
+       col=c("forestgreen", "purple"), bg="white")
+
+#the relationship is much smaller once taking into account ideology
+round(tr$statistic,2)
+```
+
+The center and right figures displays this same relationship for individuals who are liberal (1,2,3 on the ideology scale) and conservative (5,6,7 on the ideology scale). By looking within these categories we can investigate the degree to which the relationship between religiosity and feelings towards Biden is altered based on the ideology of the individual.
+
+For conservatives there is still a negative relationship between religiosity and feelings towards Biden, but at `r round(tr$statistic,2)` the relationship is much smaller once taking into account ideology. The probability of getting a difference this extreme in our sample if the true difference in the population was 0 is `r format.pval(tr$p.value, eps=.01, nsmall=2)`. While we still reject the null hypothesis of no difference in the population for the mean feeling towards Biden for these two groups, clearly once taking into account the fact that being a conservative likely causes both higher religiosity and lower feelings towards Biden, the relationship is reduced. 
+
+The relationship between religiosity and views towards Biden is completely different for for liberals. Liberals with a high degree of religiosity actually feel *warmer* about Biden than liberals with a low degree of religiosity. Highly religious individuals feel `r round(tl$statistic,2)` points warmer about Biden. The probability of seeing a difference this extreme in our sample if the true difference in the population was 0 is `r format.pval(tl$p.value, eps=.01, nsmall=2)`. 
+
+
+# Regression Analysis
+
+A simple difference in means analysis lent initial support to the hypothesis that the relationship between religiosity and feelings towards Biden depends on ideology. But that analysis simplified key variables and didn't allow the use of control variables. Both of these issues can be dealth with through OLS regression. 
+
+In the analysis below I treat both religiosity and ideology as continuous variables. This means that I am assuming that the jumps in the scale (e.g. jumps in religion from being "Moderately important" to "A little important"; or jumps in ideology from "Extremely liberal" to "liberal") as being even. These scales were presented to the respondents as 5 and 7 point scales, so it seems defensible that individuals would look at them as being equal steps between low and high religiosity, and liberal to conservative values. 
+
+Presidential elections are highly structured by the state an individual lives in. Because of the electoral college, the intensity and nature of the election changes if an individual is in Tennessee or Pennsylvania. This means that the errors we make in regression might be systematically correlated to states: ideology and religiosity might predict feelings better in states like Pennsylvania, because those individuals are incentivized to pay attention to politics. Because of this, in all specifications below I use robust standard errors clustered by state.
+
+```{r, echo=F}
+m1 <- lm(biden.ft ~  religiosity, data=anes, weights= anes$weight)
+m1.vcov <- vcovCL(m1, cluster=anes$state)
+m1.se <- sqrt(diag(m1.vcov))
+m1.se
+
+m2 <- lm(biden.ft ~ ideo7 , data=anes, weights= anes$weight)
+m2.vcov <- vcovCL(m2, cluster=anes$state)
+m2.se <- sqrt(diag(m2.vcov))
+m2.se
+
+m3 <- lm(biden.ft ~ religiosity + ideo7 , data=anes, weights= anes$weight)
+m3.vcov <- vcovCL(m3, cluster=anes$state)
+m3.se <- sqrt(diag(m3.vcov))
+m3.se
+```
+
+
+To begin, Models 1-3 in Table 1 display the direct effects of religiosity and ideology on feelings towards Biden. 
+
+```{r, echo=F, results = "asis", out.width="100%"}
+stargazer(m1, m2,m3,
+          se=list(m1.se,m2.se,m3.se),
+          dep.var.labels = "Biden Feeling Thermometer",
+          covariate.labels = c("Religiosity","Ideology"),
+          title = "Direct Effects",
+          digits=2,
+          float=T,
+          single.row = T,
+          column.sep.width = "1pt",
+          font.size = "small",
+          header = F,
+          style="ajps",
+          omit.stat = c("rsq","f", "ser"),
+          star.cutoffs = c(.05),
+          notes.append = FALSE,
+          notes = c("OLS regression weighted to US adult population..", "Robust standard errors clustered by state. *p<0.05"))
+```
+
+
+Model 1 shows the bi-variate impact of religiosity on feelings towards Biden. As seen above, this relationship is negative. Each category an individual moves from low religiosity to high religiosity shifts feelings towards Biden by `r round(coef(m1)["religiosity"],2)` points. Moving from the lowest to the highest category of religiosity would lead to a predicted shift of `r round(coef(m1)["religiosity"],2)*4` points. Model 2 looks at the direct relationship between ideology and feelings towards Biden. Again, this relationship is in the expected direction. Each category an individual moves from liberal to conservative decreases feelings towards Biden by `r round(coef(m2)["ideo7"],2)` points. Shifting from the most liberal to most conservative category is associated with an extremely large `r round(coef(m2)["ideo7"],2)*6` point drop in feelings towards Biden. Model 3 looks at the direct effect of these variables while holding constant the other. There is still a negative relationship between each variable and feelings towards Biden, but the effect of  religiosity is highly attenuated. This makes sense, as ideology most certainly is a common cause of both high religiosity and cold feelings towards Biden. Each of these relationships between the two key variables and feelings towards Biden are of a sufficient size that we reject the null hypothesis that the true relationships in the population are zero. 
+
+
+```{r, echo=F}
+m4 <- lm(biden.ft ~ religiosity*ideo7 , data=anes, weights= anes$weight)
+m5 <- lm(biden.ft ~ religiosity*ideo7 + rep + dem + female + age + college + white +black, data=anes, weights= anes$weight)
+```
+
+
+The primary interest, however, is determining how the relationship between religiosity and feelings towards Biden changes across levels of ideology. To do so we run a regression where the two variables are interacted. These regressions are presented in Table 2. The coefficient on the interaction term represents how the effect of religiosity changes across levels of ideology. When ideology increases by one unit the effect of religiosity decreases by `r round(coef(m4)["religiosity:ideo7"],2)`. The probability of seeing an interaction effect this extreme if the true interaction effect in the population was 0 is `r format.pval(summary(m4)$coefficients["religiosity:ideo7",4], eps=.01, nsmall=2)`. 
+
+
+```{r, echo=F, results = "asis", out.width="100%"}
+
+
+stargazer(m4,m5,
+          dep.var.labels = "Biden Feeling Thermometer",
+          covariate.labels = c("Religiosity","Ideology","Republican","Democrat",
+                               "Female","Age","College","White","Black",
+                               "Religiosity*Ideology"),
+          title = "Interactive Effects",
+          digits=2,
+          float=T,
+          single.row = T,
+          column.sep.width = "1pt",
+          font.size = "small",
+          header = F,
+          style="ajps",
+          omit.stat = c("rsq","f", "ser"),
+          star.cutoffs = c(.05),
+          notes.append = FALSE,
+          notes = c("OLS regression weighted to US adult population.", "Robust standard errors clustered by state. *p<0.05"))
+```
+
+
+Our practical interest the effect of religiosity. The coefficient on religiosity is not particularly helpful here, as it represents the effect of religiosity when ideology is equal to zero (which it cannot be). To unravel the marginal effect of religiosity, Table 3 displays the effects across levels of ideology. For individuals who are "Extremely liberal" religiosity has a *positive* effect on their feelings towards Joe Biden. For these individuals, a one-unit shift in their religiosity leads to a 5.54 unit shift in feelngs towards Biden. As individuals become more conservative this relationship becomes smaller. Indeed, for individuals who are "Somewhat conservative" the effect of religiosity is very close to zero. For individuals who are "Conservative" and "Extremely conservative", increased religiosity leads to colder feelings towards Biden. For "Extremely conservative" individuals, a one unit shift in their religiosity leads to a 3 unit decrease in their feelings towards Biden. 
+
+
+
+```{r, echo=F, results="hide"}
+ideo.levels <- seq(1,7)
+ideo.levels
+
+coef(m4)["religiosity"]
+
+effect <- coef(m4)["religiosity"] + coef(m4)["religiosity:ideo7"]*ideo.levels
+effect
+```
+
+\begin{centering}
+\begin{table}[]
+\caption{Marginal Effect of Religiosity, by Ideology}
+\begin{tabular}{l|ccccccc}
+\textbf{Ideology}              & Very Liberal & 2    & 3    & Moderate    & 5     & 6     & Very Conservative \\
+\hline
+\textbf{Effect of Religiosity} & 5.54         & 4.12 & 2.70 & 1.27 & -0.15 & -1.58 & -2.99            
+\end{tabular}
+\end{table}
+\end{centering}
+
+The final consideration made in Model 2 in Table 2 is whether there are ommited variables that might explain this relationship between ideology, religiosity, and feelings towards Biden. I have included a number of potential individual charecteristics that might explain this relationship. For example, individuals who identify as being a part of the Republican party likely have increased religiosity, more conservative attitudes, and more negative feelings about Biden. The same might be true for older individuals. Another important consideration is race: Black Americans are stalwart Democratic voters, but generally have higher levels of religiosity than White Democratic voters. After taking into account these other variables the relationship between religiosity and feelings towards Biden is somewhat smaller, but still statistically significant. After taking into account these other variables, the effect of increasesed religiosity for individuals who are "Extremely liberal" is to increase warm feelings towards Biden by  `r round(coef(m5)["religiosity"] + coef(m5)["religiosity:ideo7"] *1 ,2)`, and for individuals who are "Extremely conservative" the effect is to decrease warm feelings by `r round(coef(m5)["religiosity"] + coef(m5)["religiosity:ideo7"] *7 ,2)`.
+
+# Conclusion
+
+There is not a singular, simple, relationship between religiosity and vote choice in the 2020 election. 
+
+In previous elections relgiosity was a strong predictor of voting for Republicans due to their socially conservative stance on issues like abortion and LGBT+ rights. The combination of Donald Trumps weak moral standing and Joe Biden's public and devout Catholicism, the relationship between the importance of religion in someone's life and support for candidates now works in both directions. If an individual is a liberal, than an increased religiosity is associated with more support for Biden. If an individual is a conservative, than an increased religiosity is associated with less support for Biden. 
+
+Furthe research in this topic might look at how religious denominations structure this relationship, as well as the degree to which high support among religious liberals is driven by Black voters.

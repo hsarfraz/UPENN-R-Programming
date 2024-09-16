@@ -1,0 +1,261 @@
+---
+title: "SARFRAZ_HW7_310"
+author: "Hussain Sarfraz"
+date: "2/22/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(sandwich)
+```
+
+# Question 1
+
+## Part 1
+
+I have explained what each parameter means in the table below.
+
+Parameters        | What it Means
+-------------     | -------------
+`numsims <- 1000` | `numsims` is the number of simulations that the for loop is going to run. The job of the simulations is to essentially prove that robust standard errors are more accurate in increasing the standard errors of a regression that has heteroscedasticity. The standard error of the regression is increased so it can better represent the current situation of the regression and graph.  
+`numobs <- 500`   | `numobs` sets the number of rows in the matrix that is created. The **first column** of the matrix represents the x-values which are uniformly distributed (between 0 and 1). The **second column** of the matrix represents the error term which is the difference in the calculated y-value and actual y-value (it is like the grey region in a geom_smooth() function). It essentially represents the variance associated with x (variance of residual). The **third column** represents the y-output.
+`alpha <- 1` and `beta <- 2`  | In this situation, `alpha` and `beta` do not represent type 1 and 2 errors respectively. `alpha` represents the y-intercept($b$). `beta` represents the slope($m$). We want to see if the slope (beta) falls under the confidence intervals. If beta does fall in the confidence intervals that means that robust standard errors are more accurate than OLS standard errors.
+`lb <- .025` and `ub <- .975` | `lb` and `ub` creates a 95% confidence interval to see if there is a 95% chance that beta (the slope) will fall into the interval
+
+A brief summary of what the variables mean:
+
+Variable       | What it Means (from equation $y=mx+b$)
+-------------  | -------------
+$\beta$        | $m$ <- slope  
+$\alpha$       | $b$ <- y-intercept
+
+## Part 2
+
+**line 26** (`data[,2] <- rnorm(numobs, mean=0, sd = data[,1])`) creates heteroscadasticity. I have explained the specific parts in the tables below:
+
+Code           | What it Means
+-------------  | -------------
+`sd = data[,1]`  | This part of the code creates heteroscadasticity because it is saying that as X increases the Standard Deviation increases which causes a greater variance of residual which results in greater heteroscadasticity.
+
+In summary, line 26 is creating the error term which highlights the variance of the residual. Adding the error term to the $y=mx+b$ equation in **line 29** (`data[,3] <- alpha + beta*data[,1] + data[,2]`) would increase the distance/variance between the data points and regression line (the distance is also referred to as residual hence the term variance of residual).
+
+## Part 3
+
+**Line 49**: `withinCI <- ((lower_bound_ols < beta) & (upper_bound_ols > beta))`
+
+The `withinCI` variable can take on the confidence intervals, with OLS standard errors. It checks if the beta/slope ($\beta/m$) does not fall into the rejection region (meaning we failed to reject the null hypothesis). 
+
+If `withinCI` is true then that means OLS standard errors are not accurate in increasing the standard errors of a regression that has heteroscedasticity.
+
+## Part 4
+
+`numwithinCIols` and `numwithinCIrobust` are both vectors that store in TRUE and FALSE values.
+
+> **Line 52**: `numwithinCIols <- numwithinCIols + withinCI`
+
+`numwithinCIols` stores in the TRUE values each time we fail to reject the null hypothesis of our **OLS standard error**. This means it is **less** likely that beta ($\beta/m$) is going to be the slope of the regression line. 
+
+A FALSE value is stored each time we reject the null hypothesis of our **OLS standard error**. This means that beta ($\beta/m$) is **more** likely to be the slope of the regression line. 
+
+> **Line 67**: `numwithinCIrobust <- numwithinCIrobust + withinCI`
+
+`numwithinCIrobust` stores in the TRUE values each time we fail to reject the null hypothesis of our **Robust standard error**. This means it is **less** likely that beta ($\beta/m$) is going to be the slope of the regression line.
+
+A FALSE value is stored each time we reject the null hypothesis of our **Robust standard error**. This means that beta ($\beta/m$) is **more** likely to be the slope of the regression line.
+
+## Part 5
+
+I have listed the `p-values` that I got for the `numwithinCIols` and `numwithinCIrobust` columns below:
+
+**NOTE**: In my equation below $percentage$ is referring to the outputs I got from the simulation that I ran below.
+
+Code                | P-value ($1-Percentage$)
+-------------       | -------------
+`numwithinCIols`    | $1-0.931=0.069$ 
+`numwithinCIrobust` | $1-0.952=0.048$
+
+The p-value for `numwithinCIols` is $0.069$ which is a value greater than $0.05$. This means that the values were false **less than** $95\%$ of the time (our p-value is greater than $0.05$).
+
+The p-value for `numwithinCIrobust` was $0.048$ which is a value less than $0.05$. The values were false **more than** $95\%$ of the time (our p-value is less than $0.05$).
+
+This means that **robust standard errors** are more accurate in increasing the standard errors to accurately represent the standard error of a regression that has heteroscadasticity.
+
+```{r}
+# Sets the seed
+set.seed(12221979)
+#
+# Parameters for simulation
+#
+numsims <- 1000
+numobs <- 500
+alpha <- 1
+beta <- 2
+lb <- .025
+ub <- .975
+
+# Initializes a matrix with numobs rows and two columns
+data <- matrix(-9, nrow = numobs, ncol = 3)
+# Sets the value of the modeled variable
+data[,1] <- runif(numobs, min = 0, max = 1)
+
+numwithinCIols <- 0
+numwithinCIrobust <- 0
+
+for (s in 1:numsims) {
+
+  #Construct the value of the error term
+  data[,2] <- rnorm(numobs, mean=0, sd = data[,1])
+
+  # Construct the value of the outcome variable
+  data[,3] <- alpha + beta*data[,1] + data[,2]
+
+  data.df <- as.data.frame(data)
+  #plot(data.df$V1, data.df$V3) # I am commenting so I can only see the result and not the plots
+  temp <- lm(V3 ~ V1, data = data.df)
+
+
+  # Extracts the slope coefficient on the modeled variables
+  betahat <- temp$coefficients[2]
+
+  # Extracts the ols standard error on the slope coefficient on the modeled variables
+  tempvar <- vcov(temp)
+  beta_se_ols <- tempvar[2, 2]^(1/2)
+
+  # Constructs the lower bound on the CI on beta using the OLS standard error
+  lower_bound_ols <- betahat + beta_se_ols*qt(lb, numobs - 2)
+  # Constructs the upper bound on the CI on beta using the OLS standard error
+  upper_bound_ols <- betahat + beta_se_ols*qt(ub, numobs - 2)
+
+  # Is the true beta within the confidence interval construted using OLS standard errors
+  withinCI <- ((lower_bound_ols < beta) & (upper_bound_ols > beta))
+
+  # Keeps running total of whether true beta is within the ols confidence interval
+  numwithinCIols <- numwithinCIols + withinCI
+
+  # Extracts the White standard error on the slope coefficient on the modeled variables
+  tempvar <- vcovHC(temp, type="HC1")
+  beta_se_robust <- tempvar[2, 2]^(1/2)
+
+  # Constructs the lower bound on the CI on beta using the OLS standard error
+  lower_bound_robust <- betahat + beta_se_robust*qt(lb, numobs - 2)
+  # Constructs the upper bound on the CI on beta using the OLS standard error
+  upper_bound_robust <- betahat + beta_se_robust*qt(ub, numobs - 2)
+
+  # Is the true beta within the confidence interval construted using robust standard errors
+  withinCI <- ((lower_bound_robust < beta) & (upper_bound_robust > beta))
+
+  # Keeps running total of whether true beta is within the robust confidence interval
+  numwithinCIrobust <- numwithinCIrobust + withinCI
+}
+
+print(numwithinCIols / numsims)
+print(numwithinCIrobust / numsims)
+```
+
+## Part 6
+
+
+I have listed the `p-values` that I got for the `numwithinCIols` and `numwithinCIrobust` columns below, when the graph was **heteroscedastistic** (**These p-values are from the previous bullet point in part 5**):
+
+**NOTE**: In my equation below $percentage$ is referring to the outputs I got from the simulation that I ran below.
+
+Code                | P-value ($1-Percentage$)
+-------------       | -------------
+`numwithinCIols`    | $1-0.931=0.069$ 
+`numwithinCIrobust` | $1-0.952=0.048$
+
+
+I have listed the `p-values` that I got for the `numwithinCIols` and `numwithinCIrobust` columns below, after changing the graph to be **homoscedastistic** (**These p-values are from the current bullet point in part 6**):
+
+Code                | P-value ($1-Percentage$)
+-------------       | -------------
+`numwithinCIols`    | $1-0.948=0.052$ 
+`numwithinCIrobust` | $1-0.947=0.053$
+
+The percentage for `numwithinCIols` and `numwithinCIrobust` were exactly the same with just a difference of $1\%$. The values I am referring to are $0.948$ and $0.947$. 
+
+The p-values are also similar and is $0.052$ which is a value greater than $0.05$. This means that the values were false **less than** $95\%$ of the time (our p-value is greater than $0.05$). This means that our values for both variables were false **less than** $95\%$ of the time (our p-value is greater than $0.05$). But one thing I would like to point out is that the p-values were close to $0.05$ which means that the p-value was close to being statistically significant.
+
+Now since the percentage and p-value for both variables are exactly the same this shows us that in a homoscedastic graph it does not matter if we use the OLS or Robust standard errors to our standard deviation. This proves my conslusion in **part 5** that there is no harm in using **robus standard errors**, even if the graph is already homoscedastistic because adding the robust standard error does not make much of a difference. 
+
+> What I changed in the code
+
+line 18: `[,1] <- runif(numobs, min = 0, max = 1)`
+
+I changed the error term/standard deviation (variance of residual) to be from $0-1$ to $0.50-0.55$. This made the standard deviation (variance of residual) smaller for every point.
+
+Changed Result: `data[,1] <- runif(numobs, min = 0.5, max = 0.55)`
+
+```{r}
+# Sets the seed
+set.seed(12221979)
+#
+# Parameters for simulation
+#
+numsims <- 1000
+numobs <- 500
+alpha <- 1
+beta <- 2
+lb <- .025
+ub <- .975
+
+# Initializes a matrix with numobs rows and two columns
+data <- matrix(-9, nrow = numobs, ncol = 3)
+# Sets the value of the modeled variable
+data[,1] <- runif(numobs, min = 0.5, max = 0.55)
+
+numwithinCIols <- 0
+numwithinCIrobust <- 0
+
+for (s in 1:numsims) {
+
+  #Construct the value of the error term
+  data[,2] <- rnorm(numobs, mean=0, sd = data[,1])
+
+  # Construct the value of the outcome variable
+  data[,3] <- alpha + beta*data[,1] + data[,2]
+
+  data.df <- as.data.frame(data)
+  #plot(data.df$V1, data.df$V3) # I am commenting so I can only see the result and not the plots
+  temp <- lm(V3 ~ V1, data = data.df)
+
+
+  # Extracts the slope coefficient on the modeled variables
+  betahat <- temp$coefficients[2]
+
+  # Extracts the ols standard error on the slope coefficient on the modeled variables
+  tempvar <- vcov(temp)
+  beta_se_ols <- tempvar[2, 2]^(1/2)
+
+  # Constructs the lower bound on the CI on beta using the OLS standard error
+  lower_bound_ols <- betahat + beta_se_ols*qt(lb, numobs - 2)
+  # Constructs the upper bound on the CI on beta using the OLS standard error
+  upper_bound_ols <- betahat + beta_se_ols*qt(ub, numobs - 2)
+
+  # Is the true beta within the confidence interval construted using OLS standard errors
+  withinCI <- ((lower_bound_ols < beta) & (upper_bound_ols > beta))
+
+  # Keeps running total of whether true beta is within the ols confidence interval
+  numwithinCIols <- numwithinCIols + withinCI
+
+  # Extracts the White standard error on the slope coefficient on the modeled variables
+  tempvar <- vcovHC(temp, type="HC1")
+  beta_se_robust <- tempvar[2, 2]^(1/2)
+
+  # Constructs the lower bound on the CI on beta using the OLS standard error
+  lower_bound_robust <- betahat + beta_se_robust*qt(lb, numobs - 2)
+  # Constructs the upper bound on the CI on beta using the OLS standard error
+  upper_bound_robust <- betahat + beta_se_robust*qt(ub, numobs - 2)
+
+  # Is the true beta within the confidence interval construted using robust standard errors
+  withinCI <- ((lower_bound_robust < beta) & (upper_bound_robust > beta))
+
+  # Keeps running total of whether true beta is within the robust confidence interval
+  numwithinCIrobust <- numwithinCIrobust + withinCI
+}
+
+print(numwithinCIols / numsims)
+print(numwithinCIrobust / numsims)
+```
+

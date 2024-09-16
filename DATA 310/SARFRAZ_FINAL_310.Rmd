@@ -1,0 +1,560 @@
+---
+title: "SARFRAZ_FINAL_310"
+author: "Hussain Sarfraz"
+date: "3/5/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+load('C:/Users/hussainsarfraz/Desktop/DATA 310/ANES20Datafor310.Rdata')
+
+#Packages
+library(survey)
+library(stargazer)
+library(sandwich)
+library(tidyverse)
+library(textutils)
+```
+
+# defining independent and dependent variables
+
+```{r cars}
+### defining independent and dependent variables ###
+##Biden Feeling Thermometer - DEPENDENT VARIABLE
+anes$biden.ft <- anes$V201151
+
+anes$biden.ft[anes$biden.ft %in% c(-9,-4,998)] <- NA
+summary(anes$biden.ft)
+
+##BLM Movement Feeling Thermometer - INDEPENDENT VARIABLE
+anes$blm.ft <- anes$V202174 
+
+anes$blm.ft[anes$blm.ft %in% c(-9,-7,-6,-5,-4,998,999)] <- NA
+summary(anes$blm.ft)
+### creating new variables for difference of means 
+#blm.ft
+anes$blm.ft.category <- NA
+anes$blm.ft.category[anes$blm.ft>=50] <- 1
+anes$blm.ft.category[anes$blm.ft<50] <- 0
+
+#blm.support
+anes$blm.support<- NA
+anes$blm.support[anes$blm.ft>=50] <- 1
+anes$blm.support[is.na(anes$blm.support)] <- 0
+# unique(anes$blm.support)
+
+#blm.notsupport
+anes$blm.notsupport<- NA
+anes$blm.notsupport[anes$blm.ft<50] <- 1
+anes$blm.notsupport[is.na(anes$blm.notsupport)] <- 0
+# unique(anes$blm.support)
+
+##Trump Feeling Thermometer - INDEPENDENT VARIABLE
+anes$trump.ft <- anes$V201152
+
+anes$trump.ft[anes$trump.ft %in% c(-9,-7,-6,-5,-4,998,999)] <- NA
+summary(anes$trump.ft)
+
+##Respondent liberal/conservative placement - INDEPENDENT VARIABLE
+anes$respondent.LC.placement <- anes$V201200 
+
+anes$respondent.LC.placement[anes$respondent.LC.placement %in% c(-9,-8,99)] <- NA
+summary(anes$respondent.LC.placement)
+#table(anes$respondent.LC.placement)
+
+anes %>%
+  filter(respondent.LC.placement == 4) %>%
+  nrow() #1818 rows are being removed, converted to NA
+
+### creating new variables for difference of means 
+anes$liberal<- NA
+anes$liberal[anes$respondent.LC.placement %in% c(1,2,3)] <- 1
+anes$liberal[!(anes$respondent.LC.placement %in% c(1,2,3))] <- 0
+
+anes$moderate<- NA
+anes$moderate[anes$respondent.LC.placement %in% c(4)] <- 1
+anes$moderate[!(anes$respondent.LC.placement %in% c(4))] <- 0
+
+anes$conservative<- NA
+anes$conservative[anes$respondent.LC.placement %in% c(5,6,7)] <- 1
+anes$conservative[!(anes$respondent.LC.placement %in% c(5,6,7))] <- 0
+
+##Respondent race/ethnicity - INDEPENDENT VARIABLE
+anes$respondent.race <- anes$V201549x
+
+anes$respondent.race[anes$respondent.race %in% c(-9,-8)] <- NA
+summary(anes$respondent.race)
+#table(anes$respondent.race)
+### creating new variables for difference of means 
+#res.race.category
+
+anes$res.race.category <- NA
+anes$res.race.category[anes$respondent.race %in% c(1)] <- 1
+anes$res.race.category[anes$respondent.race %in% c(2,3,4,5,6)] <- 0
+#anes$res.race.category[!(anes$respondent.race %in% c(1))] <- 0
+
+unique(anes$res.race.category)
+table(anes$res.race.category)
+
+#res.white
+anes$res.white <- NA
+anes$res.white[anes$respondent.race %in% c(1)] <- 1
+anes$res.white[is.na(anes$res.white)] <- 0
+
+#res.nonwhite
+anes$res.nonwhite <- NA
+anes$res.nonwhite[anes$respondent.race %in% c(2,3,4,5,6)] <- 1
+anes$res.nonwhite[is.na(anes$res.nonwhite)] <- 0
+
+##Opinion on best way to deal with urban unrest and rioting - INDEPENDENT VARIABLE
+anes$urban.unrest.opinion <- anes$V201429
+
+anes$urban.unrest.opinion[anes$urban.unrest.opinion %in% c(-9,-8,99)] <- NA
+summary(anes$urban.unrest.opinion)
+#table(anes$urban.unrest.opinion)
+
+##Opinion on building wall border with Mexico - INDEPENDENT VARIABLE
+anes$mexico.border.opinion <- anes$V201424
+
+anes$mexico.border.opinion[anes$mexico.border.opinion %in% c(-9,-8)] <- NA
+summary(anes$mexico.border.opinion)
+#table(anes$mexico.border.opinion)
+
+##Opinion on U.S gov. policy towards unauthorized immigrants - INDEPENDENT VARIABLE
+anes$us.immigrant.opinion <- anes$V201417
+
+anes$us.immigrant.opinion[anes$us.immigrant.opinion %in% c(-9,-8)] <- NA
+summary(anes$us.immigrant.opinion)
+#table(anes$us.immigrant.opinion)
+
+##Respondent age - INDEPENDENT VARIABLE
+anes$age <- anes$V201507x
+
+anes$age[anes$age==-9] <- NA
+summary(anes$age)
+#table(anes$age)
+
+#Weight
+anes$weight<- anes$V200010a
+
+#Restrict to variables we care about
+anes <- anes[,63:81]
+
+#Create weight object
+anes.w <- svydesign(ids = ~1,
+                    data=anes,
+                    weights = anes$weight)
+```
+
+# Describing Main Variables
+
+```{r mylatextable, results = "asis"}
+stargazer(subset(anes,
+                 select = c(biden.ft,blm.ft,respondent.LC.placement,respondent.race,trump.ft,urban.unrest.opinion,mexico.border.opinion,us.immigrant.opinion,age)),
+                 type = 'latex',
+           title = "Summary Statistic of Variables",
+          covariate.labels = c('Joe Biden Feeling Thermometer',
+                               'Black Lives Matter Feeling Thermometer',
+                               'Liberal/Conservative Scale',
+                               'Respondents Self-Identified Race',
+                               'Trump Feeling Thermometer',
+                               'Urban Unrest Opinion',
+                               'Mexico Border Opinion',
+                               'U.S Immigration Opinion',
+                               'Respondents Age'))
+
+
+
+stargazer(anes, type = 'latex')
+
+# stargazer(subset(anes, 
+#                  alabama.court$race == 'B',
+#                  select = c(amountremain,amountdue,amountpaid)),
+#                  type = 'latex')
+
+```
+
+## Graph of main variables (Biden Feeling Thermometer and BLM)
+```{r}
+anes %>% 
+  select(biden.ft, blm.ft) %>%
+  gather(key = 'which.ft', value = 'values') %>%
+  ggplot() + 
+  geom_density(aes(x=values,color=which.ft,fill=which.ft),alpha=0.3) +
+  scale_fill_manual(values = c( "#1b98e0","red"),
+                    name = "Color Legend",
+                    labels = c("Biden Feeling Thermometer", "BLM Feeling Thermometer")) +
+  scale_color_manual(values = c( "#1b98e0","red"),
+                    name = "Color Legend",
+                    labels = c("Biden Feeling Thermometer", "BLM Feeling Thermometer")) +
+  xlab("Feeling Thermometer Score") +
+  ylab('Density') +
+  ggtitle("Joe Biden and Black Lives Matter (BLM) Feeling Thermometers") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+    theme(axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 10))
+```
+
+#Trump Feeling thermometer and BLM
+```{r}
+anes %>% 
+  select(trump.ft, blm.ft) %>%
+  gather(key = 'which.ft', value = 'values') %>%
+  ggplot() + 
+  geom_density(aes(x=values,color=which.ft,fill=which.ft),alpha=0.3) +
+  scale_fill_manual(values = c( "purple","red"),
+                    name = "Color Legend",
+                    labels = c("Trump Feeling Thermometer", "BLM Feeling Thermometer")) +
+  scale_color_manual(values = c( "purple","red"),
+                    name = "Color Legend",
+                    labels = c("Trump Feeling Thermometer", "BLM Feeling Thermometer")) +
+  xlab("Feeling Thermometer Score") +
+  ylab('Density') +
+  ggtitle("Trump and Black Lives Matter (BLM) Feeling Thermometers") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+    theme(axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 10))
+```
+
+#Graph of liberal-conservative scale
+```{r}
+anes %>%
+  ggplot()+
+  geom_bar(aes(x=respondent.LC.placement)) +
+  labs(title="Respondents Self-Placement of being Liberal-Conservative",  
+       x="Liberal-Conservative Scale", 
+       y = "Number of Respondents") +
+scale_x_continuous(breaks=c(1,2,3,4,5,6,7)) + 
+  xlab(paste("\n<<< More Liberal", 
+             spaces(50), "More Conservative >>>")) +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 10))
+```
+
+#Respondents Self-Identified Race
+```{r}
+anes %>%
+  ggplot()+
+  geom_bar(aes(x=respondent.race)) +
+  labs(title="Respondents Self-Identified Race",  
+       x="Respondents Race", 
+       y = "Number of Respondents") +
+  scale_x_continuous(breaks=c(1,2,3,4,5,6),
+                     labels = c('White','Black','Hispanic','Asian',' Native American','Mix')) + 
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 10))
+```
+
+
+#performing 3 t-tests
+```{r}
+#biden.ft,blm.ft.category
+t3 <- svyttest(biden.ft ~ blm.ft.category, anes.w)
+t3
+
+#Among conservatives (biden.ft, res.LC.category&res.race.category, blm.ft.category) - CONSERVATIVE, WHITE
+anes.w.r3LW <- svydesign(ids = ~1,
+                      data=anes[anes$conservative==1 & anes$res.white==1,],
+                      weights = anes$weight[anes$conservative==1 & anes$res.white==1])
+t3CW <- svyttest(biden.ft ~ blm.ft.category, anes.w.r3LW)
+t3CW
+
+#Among conservatives (biden.ft, res.LC.category&res.race.category, blm.ft.category) - CONSERVATIVE, NON-WHITE
+anes.w.l3LW <- svydesign(ids = ~1,
+                      data=anes[anes$conservative==1 & anes$res.nonwhite==1,],
+                      weights = anes$weight[anes$conservative==1 & anes$res.nonwhite==1])
+t3CNW <- svyttest(biden.ft ~ blm.ft.category, anes.w.l3LW)
+t3CNW
+
+#Among liberals (biden.ft, res.LC.category&res.race.category, blm.ft.category) - LIBERAL, WHITE
+anes.w.l..3LW <- svydesign(ids = ~1,
+                      data=anes[anes$liberal==1 & anes$res.white==1,],
+                      weights = anes$weight[anes$liberal==1 & anes$res.white==1])
+
+tl3LW <- svyttest(biden.ft ~ blm.ft.category, anes.w.l..3LW)
+tl3LW
+
+#Among liberals (biden.ft, res.LC.category&res.race.category, blm.ft.category) - LIBERAL, NON-WHITE
+anes.w.l..3LW <- svydesign(ids = ~1,
+                      data=anes[anes$liberal==1 & anes$res.nonwhite==1,],
+                      weights = anes$weight[anes$liberal==1 & anes$res.nonwhite==1])
+
+tl3LNW <- svyttest(biden.ft ~ blm.ft.category, anes.w.l..3LW)
+tl3LNW
+```
+
+
+#calculating means, extreme difference and probabilities of variables
+```{r}
+#mean rating for individuals who do not support the BLM movement
+round(weighted.mean(anes$biden.ft[anes$blm.ft.category==0], weight=anes$weight[anes$blm.ft.category==0], na.rm=T),2)
+#mean rating for individuals who do support the BLM movement
+round(weighted.mean(anes$biden.ft[anes$blm.ft.category==1], weight=anes$weight[anes$blm.ft.category==1], na.rm=T),2)
+#probability of seeing extreme difference (48.4) of...
+round(t3$statistic,2) 
+#...in our sample if the true difference if the population was 0 is...
+format.pval(t3$p.value, eps=.01, nsmall=2)
+
+#extreme difference for conservative-WHITE
+round(t3CW$statistic,2)
+#probability of getting extreme difference if the population was 0 is...
+format.pval(t3CW$p.value, eps=.01, nsmall=2)
+
+#extreme difference for conservative-NONWHITE
+round(t3CNW$statistic,2)
+#probability of getting extreme difference for if the population was 0 is...
+format.pval(t3CNW$p.value, eps=.01, nsmall=2)
+
+#extreme difference for liberal-WHITE
+round(tl3LW$statistic,2)
+#probability of getting extreme difference for if the population was 0 is...
+format.pval(tl3LW$p.value, eps=.01, nsmall=2)
+
+#extreme difference for liberal-NONWHITE
+round(tl3LNW$statistic,2)
+#probability of getting extreme difference if the population was 0 is...
+format.pval(tl3LNW$p.value, eps=.01, nsmall=2)
+
+```
+
+
+#creating 6 graphs to show the difference in means
+
+```{r}
+#biden.ft -- blm.ft.category  CATEGORY: res.LC.category & res.race.category
+#Visualize Main 
+plot(density(anes$biden.ft[anes$blm.ft.category==0], na.rm=T),
+     lwd=2, col="forestgreen", ylim=c(0,0.04), xlim=c(0,100),
+     main="Pooled")
+points(density(anes$biden.ft[anes$blm.ft.category==1],na.=T), 
+       lwd=2, col="purple", type="l")
+abline(v=mean(anes$biden.ft[anes$blm.ft.category==0], na.rm=T), lty=2, col="forestgreen")
+abline(v=mean(anes$biden.ft[anes$blm.ft.category==1], na.rm=T), lty=2, col="purple")
+legend("topright", c("Does not Support BLM", "Does Support BLM"), lty=c(1,1), lwd=c(2,2), 
+       col=c("forestgreen", "purple"))
+
+#Visualize conservative -WHITE
+plot(density(anes$biden.ft[anes$blm.ft.category==0 & anes$conservative==1 & anes$res.white == 1], na.rm=T),
+     lwd=2, col="forestgreen", ylim=c(0,0.04), xlim=c(0,100),
+     main="White Conservatives")
+points(density(anes$biden.ft[anes$blm.ft.category==1 & anes$conservative==1 & anes$res.white == 1],na.=T), 
+       lwd=2, col="purple", type="l")
+abline(v=mean(anes$biden.ft[anes$blm.ft.category==0 & anes$conservative==1 & anes$res.white == 1], na.rm=T), lty=2, col="forestgreen")
+abline(v=mean(anes$biden.ft[anes$blm.ft.category==1 & anes$conservative==1 & anes$res.white == 1], na.rm=T), lty=2, col="purple")
+legend("topright", c("Does not Support BLM", "Does Support BLM"), lty=c(1,1), lwd=c(2,2), 
+       col=c("forestgreen", "purple"),)
+
+#Visualize conservative -NON-WHITE
+plot(density(anes$biden.ft[anes$blm.ft.category==0 & anes$conservative==1 & anes$res.nonwhite == 1], na.rm=T),
+     lwd=2, col="forestgreen", ylim=c(0,0.04), xlim=c(0,100),
+     main="Non-White Conservatives")
+points(density(anes$biden.ft[anes$blm.ft.category==1 & anes$conservative==1 & anes$res.nonwhite == 1],na.=T), 
+       lwd=2, col="purple", type="l")
+abline(v=mean(anes$biden.ft[anes$blm.ft.category==0 & anes$conservative==1 & anes$res.nonwhite == 1], na.rm=T), lty=2, col="forestgreen")
+abline(v=mean(anes$biden.ft[anes$blm.ft.category==1 & anes$conservative==1 & anes$res.nonwhite == 1], na.rm=T), lty=2, col="purple")
+legend("topright", c("Does not Support BLM", "Does Support BLM"), lty=c(1,1), lwd=c(2,2), 
+       col=c("forestgreen", "purple"),)
+
+#Visualize liberal -WHITE
+plot(density(anes$biden.ft[anes$blm.ft.category==0 & anes$liberal==1 & anes$res.white == 1], na.rm=T),
+     lwd=2, col="forestgreen", ylim=c(0,0.04), xlim=c(0,100),
+     main="White Liberals")
+points(density(anes$biden.ft[anes$blm.ft.category==1 & anes$liberal==1 & anes$res.white == 1],na.=T), 
+       lwd=2, col="purple", type="l")
+abline(v=mean(anes$biden.ft[anes$blm.ft.category==0 & anes$liberal==1 & anes$res.white == 1], na.rm=T), lty=2, col="forestgreen")
+abline(v=mean(anes$biden.ft[anes$blm.ft.category==1 & anes$liberal==1 & anes$res.white == 1], na.rm=T), lty=2, col="purple")
+legend("topright", c("Does not Support BLM", "Does Support BLM"), lty=c(1,1), lwd=c(2,2), 
+       col=c("forestgreen", "purple"), bg="white")
+
+#Visualize liberal -NON-WHITE
+plot(density(anes$biden.ft[anes$blm.ft.category==0 & anes$liberal==1 & anes$res.nonwhite == 1], na.rm=T),
+     lwd=2, col="forestgreen", ylim=c(0,0.04), xlim=c(0,100),
+     main="Non-White Liberals")
+points(density(anes$biden.ft[anes$blm.ft.category==1 & anes$liberal==1 & anes$res.nonwhite == 1],na.=T), 
+       lwd=2, col="purple", type="l")
+abline(v=mean(anes$biden.ft[anes$blm.ft.category==0 & anes$liberal==1 & anes$res.nonwhite == 1], na.rm=T), lty=2, col="forestgreen")
+abline(v=mean(anes$biden.ft[anes$blm.ft.category==1 & anes$liberal==1 & anes$res.nonwhite == 1], na.rm=T), lty=2, col="purple")
+legend("topright", c("Does not Support BLM", "Does Support BLM"), lty=c(1,1), lwd=c(2,2), 
+       col=c("forestgreen", "purple"), bg="white")
+```
+
+
+#setting up the regression
+
+```{r}
+#biden.ft, blm.ft
+m1 <- lm(biden.ft ~  blm.ft, data=anes, weights= anes$weight)
+m1.vcov <- vcovCL(m1, cluster=anes$state)
+m1.se <- sqrt(diag(m1.vcov))
+
+
+#biden.ft, respondent.LC.placement
+m2 <- lm(biden.ft ~ respondent.LC.placement, data=anes, weights= anes$weight)
+m2.vcov <- vcovCL(m2, cluster=anes$state)
+m2.se <- sqrt(diag(m2.vcov))
+
+
+#biden.ft, res.race.category
+m3 <- lm(biden.ft ~ res.race.category, data=anes, weights= anes$weight)
+m3.vcov <- vcovCL(m3, cluster=anes$state)
+m3.se <- sqrt(diag(m3.vcov))
+
+#biden.ft, blm.ft, respondent.LC.placement, res.race.category
+m4 <- lm(biden.ft ~ blm.ft + respondent.LC.placement + res.race.category, data=anes, weights= anes$weight)
+m4.vcov <- vcovCL(m3, cluster=anes$state)
+m4.se <- sqrt(diag(m3.vcov))
+```
+
+#making the table
+```{r, echo=F, results = "asis", out.width="100%"}
+stargazer(m1, m2,m3, m4,
+          se=list(m1.se,m2.se,m3.se,m4.se),
+          dep.var.labels = "Biden Feeling Thermometer",
+          covariate.labels = c("BLM Feeling Thermometer","Ideology", "Respondent Race"),
+          title = "Direct Effects",
+          digits=2,
+          float=T,
+          single.row = T,
+          column.sep.width = "1pt",
+          font.size = "small",
+          header = F,
+          style="ajps",
+          omit.stat = c("rsq","f", "ser"),
+          star.cutoffs = c(.05),
+          notes.append = FALSE,
+          notes = c("OLS regression weighted to US adult population..", "Robust standard errors clustered by state. *p<0.05"))
+```
+
+#performing regression 
+
+```{r}
+#biden.ft, blm.ft
+summary(lm(biden.ft ~ blm.ft,
+           data = anes,
+           weight = anes$weight))
+
+#biden.ft, respondent.LC.placement
+summary(lm(biden.ft ~ respondent.LC.placement,
+           data = anes,
+           weight = anes$weight))
+
+#biden.ft, respondent.race
+summary(lm(biden.ft ~ respondent.race,
+           data = anes,
+           weight = anes$weight))
+
+#biden.ft, blm.ft, respondent.LC.placement, respondent.race
+summary(lm(biden.ft ~ blm.ft + respondent.LC.placement + respondent.race,
+           data = anes,
+           weight = anes$weight))
+
+
+
+summary(lm(biden.ft ~ blm.ft + respondent.LC.placement + respondent.race + urban.unrest.opinion + mexico.border.opinion + us.immigrant.opinion + age,
+           data = anes,
+           weight = anes$weight))
+```
+
+#regression with interaction term
+
+```{r}
+m4 <- lm(biden.ft ~ blm.ft*res.race.category*respondent.LC.placement, data=anes, weights= anes$weight)
+m5 <- lm(biden.ft ~ blm.ft*res.race.category*respondent.LC.placement + urban.unrest.opinion + mexico.border.opinion + us.immigrant.opinion + age, data=anes, weights= anes$weight)
+```
+
+#interaction term regression graph
+```{r, echo=F, results = "asis", out.width="100%"}
+stargazer(m4,m5,
+          dep.var.labels = "Biden Feeling Thermometer",
+          covariate.labels = c("BLM Feeling Thermometer","Race","Ideology","Urban Unrest Opinion",
+                               "Mexico Border Opinion","US Immigration Opinion","Age","BLM*Race","BLM*Ideology","Race*Ideology","BLM*Race*Ideology"),
+          title = "Interactive Effects",
+          digits=2,
+          float=T,
+          single.row = T,
+          column.sep.width = "1pt",
+          font.size = "small",
+          header = F,
+          style="ajps",
+          omit.stat = c("rsq","f", "ser"),
+          star.cutoffs = c(.05),
+          notes.append = FALSE,
+          notes = c("OLS regression weighted to US adult population.", "Robust standard errors clustered by state. *p<0.05"))
+
+#The probability of seeing an interaction effect this extreme if the true interaction effect in the population was 0 is < 0.01 
+format.pval(summary(m4)$coefficients["blm.ft:res.race.category:respondent.LC.placement",4], eps=.01, nsmall=2)
+```
+
+#assessing the coefficiants
+
+```{r}
+ideo.levels <- seq(1,7)
+#blm.ft:respondent.LC.placement
+effect.blm <- coef(m4)["blm.ft"] + coef(m4)["blm.ft:respondent.LC.placement"]*ideo.levels
+effect.blm
+#blm.ft:respondent.LC.placement
+effect.race <- coef(m4)["res.race.category"] + coef(m4)["res.race.category:respondent.LC.placement"]*ideo.levels
+effect.race
+
+two.lev <- seq(1,2)
+#blm.ft:res.race.category
+effect.ra1 <- coef(m4)["blm.ft"] + coef(m4)["blm.ft:res.race.category"]*two.lev
+effect.ra1
+```
+#biden feeling thermometer and ideology
+
+\begin{centering}
+\begin{table}[]
+\caption{Marginal Effect of BLM Support, by Ideology}
+\begin{tabular}{l|ccccccc}
+\textbf{Ideology}              & Very Liberal & 2    & 3    & Moderate    & 5     & 6     & Very Conservative \\
+\hline
+\textbf{BLM Support} & 0.74224032         & 0.61689218 & 0.49154403 & 0.36619589 & 0.24084774 & 0.11549960 & -0.00984855            
+\end{tabular}
+\end{table}
+\end{centering}
+
+#race and ideology
+
+\begin{centering}
+\begin{table}[]
+\caption{Marginal Effect of Race, by Ideology}
+\begin{tabular}{l|ccccccc}
+\textbf{Ideology}              & Very Liberal & 2    & 3    & Moderate    & 5     & 6     & Very Conservative \\
+\hline
+\textbf{Effect of Race} & 1.576609         & -1.805567 & -5.187743 & -8.569920 & -11.952096 & -15.334272 & -18.716449            
+\end{tabular}
+\end{table}
+\end{centering}
+
+#BLM and race
+
+\begin{centering}
+\begin{table}[]
+\caption{Marginal Effect of BLM Support, by Race}
+\begin{tabular}{l|ccccccc}
+\textbf{Ideology}              & Non-White & White  \\
+\hline
+\textbf{Effect of BLM} & 0.5735768         &  0.2191901
+\end{tabular}
+\end{table}
+\end{centering}
