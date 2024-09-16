@@ -1,0 +1,97 @@
+---
+title: "410finaldisplay"
+author: "Hussain Sarfraz"
+date: '2022-05-08'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(survey)
+library(stargazer)
+library(sandwich)
+library(tidyverse)
+library(textutils)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r}
+setwd("C:/Users/hussainsarfraz/Desktop/DATA 410/SARFRAZ_410_FINAL_TEST")
+lea.dataset <- read.csv("LEA_data.csv", header = TRUE)
+philly.dataset <- read.csv("Philly_schools (1).csv", header = TRUE, sep=",")
+
+#lea.dataset empty column removal
+unique(lea.dataset$spp_attendance_rate)
+lea.dataset$spp_attendance_rate <- NULL
+
+unique(lea.dataset$pssa_prof_reading_total_all)
+match('pssa_prof_reading_total_all', names(lea.dataset))
+
+unique(lea.dataset[,47])
+unique(lea.dataset[,48])
+unique(lea.dataset[,49])
+unique(lea.dataset[,50])
+unique(lea.dataset[,51])
+unique(lea.dataset[,52])
+unique(lea.dataset[,53])
+unique(lea.dataset[,54])
+
+lea.dataset[ , 47:54] <- NULL
+
+#philly.dataset empty column removal
+unique(philly.dataset$ZIP_PLUS_4)
+philly.dataset$ZIP_PLUS_4 <- NULL
+
+```
+
+```{r mylatextable, results = "asis"}
+stargazer(subset(philly.dataset,
+                 select = c(Attendance,
+                   African_American,
+                            White,
+                            Asian,
+                            Latino,
+                            Other,
+                            Total_suspensions,
+                            Average_salary,
+                            Drugs,
+                            Morals,
+                            Assaults,
+                            Weapons,
+                   Thefts,
+                   Low_income_family)),
+          type = 'latex',
+          title = "Summary Statistic of Variables",
+          covariate.labels = c('Attendance Rates',
+            'African American Students',
+                               'White Students',
+                               'Asian Students',
+                               'Latino Students',
+                               'Students of other races',
+                               'Number of Total Suspensions',
+                               'Average Teacher Salary',
+                               'Drug-related crimes',
+                               'Moral misconduct-related crimes',
+                               'Assault-related crimes',
+                               'Weapon-related crimes',
+                               'Theft-related crimes',
+                               'Percantage of Low-income families attending school'))
+```
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
