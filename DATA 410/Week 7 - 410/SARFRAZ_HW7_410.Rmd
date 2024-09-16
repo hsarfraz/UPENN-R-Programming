@@ -1,0 +1,320 @@
+---
+title: "SARFRAZ_HW7_410"
+author: "Hussain Sarfraz"
+date: '2022-05-01'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(sqldf)
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+```
+
+## Setting working directory and loading at first few rows of dataset
+
+```{r}
+setwd("C:/Users/hussainsarfraz/Desktop/DATA 410/Week 7 - 410")
+# The code below gives us a sneak peak of the data set for the first few rows 
+#read.table("oesm.csv", sep=";", header = TRUE, fill = TRUE, nrows = 5)
+```
+
+## Question 1
+
+* I set the database name `conemp.db` through the function `dbconnect()`. I then store this in the object `reqphl`.
+* I have used the if-else statement to remove a existing table that might have the name `oesm`
+* I have used the function `dbwritetable()` to create a table called `oesm`
+
+```{r}
+# 1. Begin SQL processing by creating a new database called 'conemp'
+# Then add a table called 'oesm' (A best practice here is to use an
+# if statement to delete a table called 'oesm' if one already exists.)
+{
+  reqphl <- dbConnect(SQLite(), dbname = "conemp.db")
+  
+  if (dbExistsTable(reqphl, "oesm"))
+    dbRemoveTable(reqphl, "oesm")
+  
+  dbWriteTable(
+    reqphl,
+    "oesm",
+    "oesm.csv",
+    sep = ";",
+    header = TRUE,
+    row.names = FALSE
+  ) 
+  dbDisconnect(reqphl)
+}
+```
+
+## Question 2
+
+1. I am re-connecting to the database
+2. I then start to use SQL commands to get specific information from the data set
+3. I have used the `fetch()` function to display the first 10 rows from my SQL command
+4. `dbClearResult()` clears the result so I can perform more SQL commands on the dataset
+
+```{r}
+# 2. Display the first 10 rows of all of the data in your table.
+reqphl.two <- dbConnect(SQLite(), dbname = "conemp.db")
+res <- dbSendQuery(reqphl.two, "
+                   SELECT *
+                   FROM oesm")
+fetch(res, n = 10)
+dbClearResult(res)
+```
+
+## Question 3
+
+1. Used the `SELECT` SQL command to display specific column names 
+2. Used the `FROM` SQL command to pick the table that has the stored values
+3. Used the `WHERE` SQL command to **filter** out rows that equal **major** under the `grouping` column
+
+```{r}
+# 3. Select a subset of columns, 'occtitle', 'h_mean', 'area_title' for 
+# all of the observations where the grouping variable is 'major.'
+res <- dbSendQuery(reqphl.two,
+                   "
+                   SELECT occtitle , h_mean , area_title
+                   FROM oesm
+                   WHERE (grouping=='major')")
+fetch(res, n = 10)
+dbClearResult(res)
+```
+
+## Question 4
+
+1. I have used the `SELECT` along with the`DISTINCT` SQL command to display all the unique values of the column `naics`. **NOTE:** I am only displaying the first 10 rows because the output is too large
+2. I have also displayed a count of all the unique values to summarize the data. The count of all the unique values in **470**
+
+```{r}
+# 4. Display all of the unique values of the variable 'naics'
+res <- dbSendQuery(reqphl.two, "
+                   SELECT DISTINCT naics
+                   FROM oesm")
+fetch(res, n = 10)
+dbClearResult(res)
+
+#displaying the count of all the rows since the output is too large
+res <- dbSendQuery(reqphl.two, "
+                   SELECT count(DISTINCT naics)
+                   FROM oesm")
+fetch(res, n = 10)
+dbClearResult(res)
+
+```
+
+## Question 5
+
+1. I have used the `SELECT` SQL command to count all the rows in the data set. **NOTE:** I am using a asterisk to tell SQL to count all the rows in the data set
+2. I have also used the `GROUP BY` SQL command to group all the rows by year and get the total row count for each year
+
+```{r}
+# 5. Count all of the observations for each year in the dataset.
+yearcount <- dbSendQuery(reqphl.two, "
+                     SELECT year,COUNT(*)
+                     FROM oesm
+                     GROUP BY year")
+
+fetch(yearcount, n = 10)
+dbClearResult(yearcount)
+```
+
+## Question 6
+
+1. I have used the `SELECT` along with the `MIN/MAX` SQL commands to find the maximum and minimum median annual salary values. **NOTE:** I used the command `CAST(a_mean as INT)` to convert the values under the column `a_mean` to a integer since the maximum median annual salaries were not being displayed.
+2. I have also used the `WHERE` SQL command to let SQL know that it needs to filter out the **NA** values and not include it in the calculation of the maximum and minimum
+3. I have also used the `GROUP BY` SQL command to group the maximum and minimum median annual salary values by year
+
+```{r}
+# 6. Find minimum and maximum of median annual salary (a_mean) for
+# each year
+salary.min.max <- dbSendQuery(reqphl.two, "
+                     SELECT year, MIN(a_mean), MAX(CAST(a_mean as INT))
+                     FROM oesm
+                     WHERE (a_mean IS NOT 'NA')
+                     GROUP BY year
+                                 ")
+
+fetch(salary.min.max, n = -1)
+dbClearResult(salary.min.max)
+```
+
+## Question 7
+
+1. I have used the `dbSendQuery()` function to add a table called `tabletwo` in the `reqphl.two` database. **NOTE:** The if-else statement removes the table `tabletwo` from the `reqphl.two` database. I did this because it is good practice to make sure the tables are removed to avoid errors in the future where I might use the same table name in the database. I also used the `SELECT` and `FROM` SQL commands to transfer specific data from the `oesm` table onto this new table (`tabletwo`)
+2. I then use the `dbSendQuery()` function again to display the whole table and display the first 10 rows since the output is too big. I have included the total row count which is **1395**
+
+```{r}
+#removing the table before doing the code as best practice
+{
+if (dbExistsTable(reqphl.two, "tabletwo"))
+  dbRemoveTable(reqphl.two, "tabletwo")
+}
+
+#creating a new table in the 'reqphl.two' database
+dbSendQuery(reqphl.two, "
+                   CREATE TABLE tabletwo AS
+                   SELECT DISTINCT occcode, occtitle
+                   FROM oesm
+                   ")
+
+#displaying the table
+newcopy <- dbSendQuery(reqphl.two, "
+                   SELECT *
+                   FROM tabletwo
+                   ")
+
+fetch(newcopy, n = 10)
+dbClearResult(newcopy)
+
+#Getting the count of the newly created table
+newcopy <- dbSendQuery(reqphl.two, "
+                   SELECT COUNT(*)
+                   FROM tabletwo
+                   ")
+
+fetch(newcopy, n = -1)
+dbClearResult(newcopy)
+```
+
+## Question 8
+
+I was interested to see the top 10 jobs with the **highest** median annual salary and the top 10 jobs with the **lowest** median annual salary. I then wanted to see if there was a change between the median salaries from 2014-2015. The questions I wanted to explore were:
+
+* Are there any specific high paying jobs that had a decrease in salary?
+* What about low paying jobs?
+* If there is any change (decrease/increase) why is this occurring?
+
+> Top 10 jobs that have the highest median salaries
+
+When looking at the top 10 jobs that have the highest annual median salaries I noticed that all of the jobs had a slight increase in salary. Most of these jobs were related to business operations, medical professions, and IT. The increase in annual median salary means that these jobs are most probably are going to be in demand in the coming years which would cause a further increase in annual median salary. I would like to investigate and see what factors caused this increase. Was there a increase in companies or a increase in revenue among certain companies? This could explain why there is a salary increase in these job fields when compared to other professions. 
+
+```{r}
+options(scipen=999)
+median.salary <- dbSendQuery(reqphl.two, "
+                   SELECT year, occtitle , sum(a_mean)
+                   FROM oesm
+                   WHERE (a_mean IS NOT 'NA')
+                   GROUP BY year , occtitle
+                                 ")
+
+median.salaryDB <- as.data.frame(fetch(median.salary, n = -1))
+
+top.ten.2015 <- median.salaryDB %>%
+  filter(year == 2015) %>%
+  arrange(desc(`sum(a_mean)`)) %>%
+  transmute(top.ten.careers = occtitle) %>%
+  head(10)
+
+median.salaryDB %>%
+  filter(occtitle == top.ten.2015[1,]|
+         occtitle == top.ten.2015[2,]|
+         occtitle == top.ten.2015[3,]|
+         occtitle == top.ten.2015[4,]|
+         occtitle == top.ten.2015[5,]|
+         occtitle == top.ten.2015[6,]|
+         occtitle == top.ten.2015[7,]|
+         occtitle == top.ten.2015[8,]|
+         occtitle == top.ten.2015[9,]|
+         occtitle == top.ten.2015[10,]
+         ) %>%
+  mutate(`sum(a_mean)` = `sum(a_mean)`/1000000) %>%
+  pivot_wider(names_from = occtitle, values_from = `sum(a_mean)`) %>%
+    tidyr::gather("id", "value", 2:11) %>% 
+  ggplot(., aes(year, value))+
+  geom_point()+
+  xlab("Year") +
+  ylab("Median Annual Salary (millions)") +
+  ggtitle("Top 10 jobs that have the highest annual median salaries") +
+  scale_x_continuous(breaks=c(2014,2015)) +
+  geom_smooth(method = "lm", se=FALSE, color="black")+
+  facet_wrap(~id) +
+  theme_bw() +
+  theme(axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 10,hjust = 0.5),
+        strip.text = element_text(size=5)
+        ) 
+```
+
+> Top 10 jobs that have the lowest median salaries
+
+When looking at the top 10 jobs that have the **lowest** annual median salaries I noticed that some jobs had a decrease in salary while some had a increase; some did not increase nor decrease. 
+The jobs that had a **increase** were in fields related to farming, construction, funeral services, and clothing. The increase in these job fields means that there has been a increase in demand for these professions. I would like to investigate things such as the increase in farming production or number of deaths to see if there is any other data that can explain the increase in annual median salaries. I am also curious to see the changes in the annual median salaries for these careers in 2016-2022.
+
+The jobs that had a **decrease** were in fields related to cooking, fishing, shoe making. The decrease in these job fields means that there has been a decrease in demand for these professions. One job that had a drastic decrease was **Cooks, Private Household** and I am curious to see why this occurred. Could it be that in 2015 many people started to cook at home or ordered take-aways? Also, is there a increase in automation in the fishing or shoe manufacturing industries? Looking at these questions could help explain the decrease in salary amoung these job fields.
+
+The jobs that had a **no change** were in fields related to shoe making and postal services. No salary change in these job fields mean that the demand for these jobs did not increase not decrease. I would like to see if this relationship changes in the following years 2016-2022.
+
+Jobs that had a **increase** in annual median salary:
+
+* Fabric menders
+* Farm Labor Contractors 
+* Locomotive Firers
+* Segmental Pavers
+* Funeral Service Workers
+
+Jobs that had a **decrease** in annual median salary:
+
+* Cooks, Private Household
+* Fishing and Hunting Workers 
+* Shoe Machine Operators and Tenders
+
+Jobs that had a **no change** in annual median salary:
+
+* Postal Service Workers
+* Shoe and Leather Workers 
+
+```{r}
+top.less.2015 <- median.salaryDB %>%
+  filter(year == 2015) %>%
+  arrange(`sum(a_mean)`) %>%
+  transmute(top.ten.careers = occtitle) %>%
+  head(10)
+
+median.salaryDB %>%
+  filter(occtitle == top.less.2015[1,]|
+           occtitle == top.less.2015[2,]|
+           occtitle == top.less.2015[3,]|
+           occtitle == top.less.2015[4,]|
+           occtitle == top.less.2015[5,]|
+           occtitle == top.less.2015[6,]|
+           occtitle == top.less.2015[7,]|
+           occtitle == top.less.2015[8,]|
+           occtitle == top.less.2015[9,]|
+           occtitle == top.less.2015[10,]
+  ) %>%
+  mutate(`sum(a_mean)` = `sum(a_mean)`/100000) %>%
+  pivot_wider(names_from = occtitle, values_from = `sum(a_mean)`) %>%
+  tidyr::gather("id", "value", 2:11) %>% 
+  ggplot(., aes(year, value))+
+  geom_point()+
+  xlab("Year") +
+  ylab("Median Annual Salary (100,000's)") +
+  ggtitle("Top 10 jobs that have the lowest annual median salaries") +
+  scale_x_continuous(breaks=c(2014,2015)) +
+  geom_smooth(method = "lm", se=FALSE, color="black")+
+  facet_wrap(~id) +
+  theme_bw() +
+  theme(axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 10,hjust = 0.5),
+        strip.text = element_text(size=6))
+```
+
+## SQL Commands Summary
+
+SQL Command   | What function it resembles in R
+------------- | -------------
+`SELECT` and `WHERE` commands    | `filter()` function in R
+`SELECT` and `GROUP` commands    | `group_by()` function in R
+`SELECT` with the `MIN/MAX` commands        | `summarize()` function in R 
+`SELECT` with the `DISTINCT` commands        | `unique()` function in R 
+`SELECT` with the `COUNT` commands        | `count()` function in R 
