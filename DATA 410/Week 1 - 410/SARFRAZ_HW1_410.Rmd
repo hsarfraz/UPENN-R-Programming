@@ -1,0 +1,102 @@
+---
+title: "SARFRAZ_HW1_410"
+author: "Hussain Sarfraz"
+date: "3/22/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(leaflet)
+library(tidyverse)
+library(ggmap)
+library(rgdal)
+```
+
+# Homework 1 - 410
+
+## Step 1: Setting working directory and uploading/editing excel file
+
+* I used the `setwd()` function to set my working directory
+* I then used the `read_csv()` function to read in the excel file that contained the information for each zip code (the name of the excel file is `US_map_data`)
+* I then categorized the continuous variables in the `Risk_category` to **categorical** variables. I did this so I can fill in the map shape file colors with 4 single colors instead of a mix of 2 colors
+
+```{r}
+############# setting the working directory and loading state info. dataset
+setwd("C:/Users/hussainsarfraz/Desktop/DATA 410")
+US_map_data <- read_csv('place_data.csv')
+
+US_map_data$Risk_category <- US_map_data$Risk
+US_map_data$Risk_category[US_map_data$Risk_category<=24]  <- 1
+US_map_data$Risk_category[US_map_data$Risk_category>24 & US_map_data$Risk_category<=49] <- 2
+US_map_data$Risk_category[US_map_data$Risk_category>49 & US_map_data$Risk_category<=74] <- 3
+US_map_data$Risk_category[US_map_data$Risk_category>74 & US_map_data$Risk_category<=98] <- 4
+```
+
+## Step 2: Reading in the shapefiles shared 
+
+* I used the `readOGR()` function to read in the shape files that were shared with me. I am doing this to **merge** the zip codes in the shape files with the zip codes in the excel file. This would help in displaying the map data.
+
+```{r}
+############# Reading in the shapefiles shared with me (from census website)
+states <- readOGR("Zipcodes_Poly", layer = "Zipcodes_Poly", encoding = "UTF-8")
+# names(states@data) #this shows all the column names in the 'states' object
+# head(states@data) #this shows the data values stored under each column. Gives us a brief look of the dataset
+
+############# Merging the excel file with shape codes file through zip codes column
+states@data <- data.frame(states@data, US_map_data[match(states@data$CODE, US_map_data$CODE),])
+```
+
+## Step 3: Creating the pop-up 
+
+* I used the `paste0()` function to create the information that was displayed on the pop-up that is on my map. I stored this information in the `state_popup` object and will use this object later with creating my map in **step: 4**
+
+```{r}
+############# Creating the map pop-up 
+state_popup <- paste0("<strong>Risk Index: </strong>",
+                      states@data$Risk,"%",
+                      '<br>',
+                      "<strong>Party: </strong>", 
+                      states@data$Poverty,"%", 
+                      '<br>',
+                      "<strong>Education: </strong>", 
+                      states@data$Education,"%",
+                      '<br>',
+                      "<strong>Unemployment: </strong>",
+                      states@data$Unemployment,"%",
+                      '<br>',
+                      "<strong>Crime: </strong>",
+                      states@data$Crime,"%",
+                      '<br>',
+                      "<strong>ACEs: </strong>",
+                      states@data$ACEs,"%")
+```
+
+## Step 4: Creating a color palette and map
+
+* I used the `colorFactor()` function to create my color palette and specified the column that needs to be used for the color assignment. 
+* I then made my map using `leaflet()`
+
+```{r}
+############# Creating a color scheme
+factpal <- colorFactor(c("#ffdc87", "#ff9639","#ef404c","#d30020"),
+                       states@data$Risk_category)
+# factpal(c(1,2,3,4)) #used to check if the colors were correctly assigned to the variables used the 'Risk_category' column
+
+############# Creating a map
+leaflet(states) %>% 
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(stroke = TRUE, 
+              smoothFactor = 0.2, 
+              fillOpacity = .8,
+              color = 'black',
+              fillColor = ~factpal(Risk_category),
+              weight = 1, 
+              popup = state_popup) %>%
+  addLegend("bottomright", 
+            colors =c(c("#ffdc87", "#ff9639","#ef404c","#d30020")),
+            labels= c("0-24", "25-49" , "50-74" , "75-98"),  
+            title= "Risk: Lowest to Highest",
+            opacity = .8) 
+```

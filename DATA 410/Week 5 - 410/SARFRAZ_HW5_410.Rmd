@@ -1,0 +1,178 @@
+---
+title: "SARFRAZ_HW5_410"
+author: "Hussain Sarfraz"
+date: "4/18/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+> Setting working directory and loading dataset
+
+* `setwd()` is used to set the working directory that the dataset is in
+* `read.csv()` is used to load in the csv file
+
+```{r}
+setwd("C:/Users/hussainsarfraz/Desktop/DATA 410/Week 5 - 410")
+df <- read.csv("clerylog.csv", header = TRUE, sep=",")
+```
+
+# Question 1
+
+My first step was to use the `grep()` function to see the `Nature` columns to get a sense of the different types of crimes. I noticed that one of the drug offences were called `Possession <1 oz Marijuana`. This meant that I couldn't remove all the numbers under the `Nature` column and needed to make sure that I kept the description for the **Marijuana Possession** crime accurate.
+
+**NOTE:** I commented out this line of code since it just shows the list of crimes under the `Nature` column that have a number in their description.
+
+```{r}
+########Problem 1:Clean up classifications in the nature variable
+########          Remove the level of offenses (ie. the numbers 1, 2)
+
+##looking at all the offences that have a number
+#grep('[0-9]',df$Nature, value = TRUE) # 'Possession <1 oz Marijuana' crime number should not be removed
+```
+
+My second step was to convert the number one in `Possession <1 oz Marijuana` to words so the description does not get changed. I double-checked if I can successfully isolate the crime without mixing it up with another crime by using the `grep()` function. I then used the `gsub()` function to replace the number 1 into words so the description of the crime does not get altered.
+
+After I did this I then replaced all the numbers under the `Nature` column with a blank.
+
+```{r}
+##all the cases of Marijuana
+#grep('1 oz',df$Nature, value = TRUE)#I am seeing if I can correctly isolate the Marijuana Possession crime without bringing in other variables
+df$Nature <- gsub("1 oz","one oz", df$Nature)#I am replacing the part of the description that says '1 oz' to 'one oz'
+grep('one',df$Nature, value = TRUE) #checking if replace was successful
+
+##removing all offence levels now
+df$Nature <- gsub("[0-9]","", df$Nature)
+```
+
+# Question 2
+
+## Part A
+
+I then used the `grep()` function to display all theft-related crimes. I just searched for crimes that had the word **theft** in them. I also used the `ignore.case =` command to left R know that it should display the words of **theft** that have a upper and lower case letter in it (so the word search should not be case-sensitive). 
+
+I then used the `grepl()` function to create a new-column/dummy-variable that would show **TRUE** if a crime was related to theft (**included** the words Theft in its description) and **FALSE** if a crime was not related to theft (**did not** include the words Theft in its description). 
+
+**NOTE:** I used this same process/logic when solving **2.b** and **2.c**
+
+```{r}
+######## A. Create a dummy variable that indicates if each row is a theft or not. 
+##lists all theft-related crimes
+#grep('theft',df$Nature, value = TRUE, ignore.case = TRUE)
+
+##creating dummy variable
+df$theft.dummy<- grepl('theft',df$Nature, ignore.case = TRUE)
+```
+
+## Part B
+
+**NOTE:** For detailed descriptions please look at **2.a** since I used the same reasoning when solving for **2.b**
+
+For this question I inputted the word **dui** in the `grep()` and `grepl()` function to create the dummy variable.
+
+```{r}
+######## B. Create a dummy variable that indicates if each row is a DUI
+##lists all DUI's
+#grep('dui',df$Nature, value = TRUE, ignore.case = TRUE)
+
+##creating dummy variable
+df$DUI.dummy<- grepl('dui',df$Nature, ignore.case = TRUE)
+```
+
+## Part C
+
+**NOTE:** For detailed descriptions please look at **2.a** since I used the same reasoning when solving for **2.c**
+
+For this question I inputted the word **drug** and a list of drug names that I know of and saw under `Nature` column in the `grep()` and `grepl()` function to create the dummy variable.
+
+```{r}
+######## C. Create a dummy variable that indicates if each row is a drug offense
+##lists all drug-related crimes
+#grep('drug|marijuana|heroin|meth|cocaine',df$Nature, value = TRUE, ignore.case = TRUE)
+
+##creating dummy variable
+df$drug.dummy<- grepl('drug|marijuana|heroin|meth|cocaine',df$Nature, ignore.case = TRUE)
+```
+
+# Question 3
+
+For this question I used the `gregexpr()` expression and stored the information to the `drug.matches` object. I then used this object in the `regmatches()` function and created a new column called `three.drug` which would display **character(0)** if the nature of the crime was not related to a drug. The name of the drug (**marijuana,heroin,meth,cocaine**) or the word **drug** would be displayed under column `three.drug` if the nature of the crime was drug related.
+
+I then used a **ifelse()** statement which would assign a **TRUE** value if the value under the `three.drug` column was not equal to `character(0)` (meaning the name of the drug (**marijuana,heroin,meth,cocaine**) or the word **drug** was displayed under column `three.drug`). A **FALSE** value would be assigned if the value under the column `three.drug` was equal to `character(0)`.
+
+```{r}
+########Problem  3: Use gregexpr() to  find observations that are associated
+########            with either heroin, marijuana, or meth
+drug.matches <- gregexpr('drug|marijuana|heroin|meth|cocaine',df$Nature, ignore.case = TRUE)
+df$three.drug <- regmatches(df$Nature, drug.matches)
+
+df$threecheck.drug <- ifelse((df$three.drug != 'character(0)'),TRUE,FALSE)
+```
+
+# Question 4
+
+For this question I created a new column called `date.occured.only` which copied all the dates and times from the `Date.Time.Occurred` column. I then removed the time from the `date.occured.only` column. I made sure to include the spaces to specifically remove the time and not any other number (such as the year since some years were written as 4-digit numbers). I also had to remove the time again since some times had a colon(**:**) in them. I also made sure to include the times that had one digit instead of 2 in them (ex. 1:00 or 01:00).
+
+```{r}
+########Problem 4: Create a new column with JUST the date (or date range) the crime occurred
+df$date.occured.only <- df$Date.Time.Occurred
+
+##removing time
+#grep(' [0-9]{4}',df$date.occured.only, value = TRUE) #viewing all variables that have time
+df$date.occured.only <- gsub(' [0-9]{4}','',df$date.occured.only)
+
+#grep(' [0-9]{2}:[0-9]{2}| [0-9]{1}:[0-9]{2}',df$date.occured.only, value = TRUE) #viewing all variables that have time with a colon + one or two digits as the first number
+df$date.occured.only <- gsub(' [0-9]{2}:[0-9]{2}| [0-9]{1}:[0-9]{2}','',df$date.occured.only)
+```
+
+After I removed the time I had to remove the dash on the dates that did not have a range. I first used the `gsub()` function to view all rows that have a dash (note that I searched for a dash only. When I would be replacing the dash I would include spaces around the dash to represent dates with a range and dates without a range).
+
+To replace the dashes on dates without a range I first isolated the dashes that had two spaces around them since this only displayed the dates that had a range. I then replaced those dashes with a **@** symbol and then replaced the leftover dashes with a blank since the remaining dashes only belonged to dates that did not have a range (the dates with a range now have a **@** symbol instead of a dash).
+
+After I did this I then replaced the **@** symbol with a dash so the dates with a range can be easier to read. I then did some minor tweaks and also checked to see if there were any words under the `date.occured.only` column and noticed that the word **'report pending'** was used twice so I replaced this word with **NA** since this was not a date and I only wanted to display dates and date ranges on this column. I did notice that one value had the year **2014** written instead of a date. I kept this value since a year a something used in a date but I have also included the code that I would use to convert the **2014** into a **NA** value if I needed too. 
+
+```{r}
+#removing dash
+#grep('-',df$date.occured.only, value = TRUE) #viewing dates that have a dash (both, dates with and without a range)
+
+#dates with a range
+#grep(' - ',df$date.occured.only, value = TRUE) #viewing dates with a range ONLY
+df$date.occured.only <- gsub(' - ','@',df$date.occured.only)
+
+#dates without a range
+#grep(' -',df$date.occured.only, value = TRUE) #viewing dashes WITHOUT a date range
+df$date.occured.only <- gsub(' -','',df$date.occured.only)
+
+#adding a '-' to dates with a range
+df$date.occured.only <- gsub('@','-',df$date.occured.only) #I replaced @ with a dash
+df$date.occured.only <- gsub('- ','-',df$date.occured.only) #I noticed one dash had a additional space and just removed that space so all the dashes can look consistent
+
+#checking and removing 'report pending' status
+#grep('[a-z]',df$date.occured.only, value = TRUE,ignore.case = TRUE) #displaying all values that are words
+df$date.occured.only <- gsub('[a-z]',NA,df$date.occured.only,ignore.case = TRUE)
+
+#now 2014 is a year but no specifc date was given. I left it in since the year is a part of the date
+
+#here is the code if I needed to remove it
+# grep('[0-9]{3}',df$date.occured.only, value = TRUE,ignore.case = TRUE)
+# table(nchar(df$date.occured.only) == 4)
+# 
+# date.character.count <- nchar(df$date.occured.only) == 4
+# df$date.occured.only <- ifelse((date.character.count == TRUE),NA,df$date.occured.only)
+```
+
+# Displaying the columns created
+
+Problem 1    : `Nature` column
+Problem 2.A  : `theft.dummy` column
+Problem 2.B  : `DUI.dummy` column
+Problem 2.C  : `drug.dummy` column
+Problem 3    : `threecheck.drug` column
+Problem 4    : `date.occured.only` column
+
+```{r}
+df[, c('Nature', 'theft.dummy', 'DUI.dummy','drug.dummy','threecheck.drug','date.occured.only')]
+```
+

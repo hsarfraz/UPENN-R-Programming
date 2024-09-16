@@ -1,0 +1,57 @@
+Name,FIPS State Numeric Code,Official USPS Code,ACE,name2,First,Second,Third,Fourth,name3,zed,one,threemore
+Alabama,1,AL,4,Alabama ,Economic Hardship (25) ,Divorce (23) ,Alcohol (11) ,Mental Illness (10) ,Alabama ,48,40,12
+Alaska,2,AK,4,Alaska,Economic Hardship (29) ,Divorce (24) ,Alcohol (15) ,Mental Illness (11) ,Alaska ,51,35,14
+Arizona,4,AZ,4,Arizona ,Economic Hardship (34) ,Divorce (24) ,Alcohol (16) ,Violence (11) ,Arizona ,44,40,15
+Arkansas,5,AR,4,Arkansas ,Economic Hardship (33) ,Divorce (26) ,Alcohol (13) ,Mental Illness (11) ,Arkansas ,45,41,14
+California,6,CA,1,California ,Economic Hardship (22) ,Divorce (17) ,Alcohol (11) ,Violence (8) ,California ,57,33,9
+Colorado,8,CO,2,Colorado ,Economic Hardship (23) ,Divorce (21) ,Alcohol (10) ,Mental Illness (9) ,Colorado ,57,33,10
+Connecticut,9,CT,1,Connecticut ,Economic Hardship (22) ,Divorce (16) ,Alcohol (8) ,Mental Illness (8) ,Connecticut ,61,32,7
+Delaware,10,DE,3,District of Columbia ,Economic Hardship (24) ,Violence (17) ,Divorce (15) ,Incarceration (8) ,District of Columbia ,51,37,11
+District of Columbia,11,DC,3,Delaware ,Economic Hardship (25) ,Divorce (21) ,Violence (12) ,Alcohol (7) ,Delaware ,52,35,13
+Georgia,13,GA,2,Georgia ,Economic Hardship (26) ,Divorce (19) ,Violence (8) Domestic Violence (7) and Incarceration (8),Domestic Violece (7),Georgia ,53,38,9
+Hawaii,15,HI,2,Hawaii ,Economic Hardship (21) ,Divorce (17) ,Violence (11) and Alcohol (11),Domestic Violence (8) ,Hawaii ,56,35,9
+Idaho,16,ID,4,Idaho ,Economic Hardship (27) ,Divorce (25) ,Alcohol (14) ,Mental Illness (13) ,Idaho ,50,35,15
+Illinois,17,IL,1,Illinois ,Economic Hardship (23) ,Divorce (16) ,Alcohol (9) ,Violence (8) ,Illinois ,59,32,9
+Indiana,18,IN,4,Indiana ,Economic Hardship (28) ,Divorce (24) ,Alcohol (13) ,Incarceration (11) and Mental Illness (11),Indiana ,49,36,15
+Iowa,19,IA,3,Iowa ,Divorce (22) ,Economic Hardship (22) ,Alcohol (13) and Mental Illness (13),Domestic Violence (8) ,Iowa ,55,33,12
+Kansas,20,KS,3,Kansas ,Economic Hardship (28) ,Divorce (22) ,Mental Illness (10) and Alcohol (10) ,Violence (8) ,Kansas ,54,34,12
+Maryland,24,MD,1,Maryland ,Economic Hardship (20) ,Divorce (17) ,Alcohol (8) and Violence (8),Mental Illness (7) ,Maryland ,61,31,8
+Minnesota,27,MN,2,Minnesota ,Economic Hardship (22) ,Divorce (20) ,Alcohol (13) ,Mental Illness (9) ,Minnesota ,56,34,10
+Mississippi,28,MS,4,Mississippi ,Economic Hardship (32) ,Divorce (22) ,Alcohol (13) ,Violence (12) ,Mississippi ,46,39,15
+Montana,30,MT,4,Montana ,Economic Hardship (28) ,Divorce (26) ,Alcohol (19) ,Mental Illness (14) ,Montana ,48,35,17
+Nevada,32,NV,4,Nevada ,Economic Hardship (30) ,Divorce (23) ,Alcohol (13) ,Mental Illness (10) ,Nevada ,47,40,13
+New Jersey,34,NJ,1,New Jersey ,Economic Hardship (22) ,Divorce (15) ,Alcohol (9) ,Mental Illness (6) ,New Jersey ,61,32,7
+New Mexico,35,NM,4,New Mexico ,Economic Hardship (28) ,Divorce (25) ,Alcohol (17) ,Violence (12) ,New Mexico ,47,39,14
+North Dakota,38,ND,2,North Dakota ,Economic Hardship (22) ,Divorce (20) ,Alcohol (13) ,Mental Illness (10) ,North Dakota ,58,32,10
+Oklahoma,40,OK,4,Oklahoma ,Economic Hardship (30) Divorce (30) ,Alcohol (17) ,Violence (13) ,Mental Illness (12) ,Oklahoma ,45,38,17
+Pennsylvania,42,PA,3,Pennsylvania ,Economic Hardship (25) ,Divorce (19) ,Alcohol (10) Mental Illness (10) and Violence (10) ,Domestic Violence (8) ,Pennsylvania ,54,34,12
+South Carolina,45,SC,3,South Carolina ,Economic Hardship (27) ,Divorce (23) ,Alcohol (11) ,Mental Illness (10) ,South Carolina ,49,39,12
+South Dakota,46,SD,2,South Dakota ,Economic Hardship (21) ,Divorce (19) ,Alcohol (12) ,Incarceration (8) ,South Dakota ,58,30,11
+Utah,49,UT,4,Utah ,Economic Hardship (24) ,Divorce (17) ,Mental Illness (10)  and Alcohol (10),Domestic Violence (7) ,Utah ,59,31,9
+Vermont,50,VT,2,Vermont ,Divorce (26) ,Economic Hardship (25) ,Alcohol (15) ,Mental Illness (11) ,Vermont ,50,38,11
+West Virginia,54,WV,4,West Virginia ,Economic Hardship (29) ,Divorce (28) ,Alcohol (14) ,Mental Illness (12) ,West Virginia ,48,36,16
+Wyoming,56,WY,3,Wyoming ,Economic Hardship (25) Divorce (25) ,Alcohol (13) and Mental Illness (13),Violence (10) ,Incarceration (9) ,Wyoming ,52,34,15
+American Samoa,0,0,2,0,0,0,0,0,0,0,0,0
+Puerto Rico,0,0,2,0,0,0,0,0,0,0,0,0
+Florida,12,FL,3,Florida ,Economic Hardship (30) ,Divorce (20) ,Alcohol (9) ,Incarceration (8) ,Florida ,49,42,9
+Kentucky,21,KY,4,Kentucky ,Economic Hardship (30) ,Divorce (29) ,Alcohol (14) ,Incarceration (13) ,Kentucky ,46,37,16
+Louisiana,22,LA,4,Louisiana ,Economic Hardship (27) ,Divorce (23) ,Mental Illness (10) Alcohol (10) and Violence (10) ,Incarceration (8) ,Louisiana ,50,38,12
+Maine,23,ME,2,Maine ,Economic Hardship (29) ,Divorce (27) ,Alcohol (14) ,Mental Illness (13) ,Maine ,48,37,15
+Massachusetts,25,MA,2,Massachusetts ,Economic Hardship (22) ,Divorce (19) ,Alcohol (11) ,Mental Illness (9) ,Massachusetts ,58,33,9
+Michigan,26,MI,4,Michigan ,Divorce (26) ,Economic Hardship (25) ,Alcohol (13) ,Mental Illness (11) ,Michigan ,51,35,14
+Missouri,29,MO,3,Missouri ,Economic Hardship (28) ,Divorce (23) ,Alcohol (11) and Mental Illness (11),Violence (8) ,Missouri ,52,35,12
+Nebraska,31,NE,2,Nebraska ,Economic Hardship (22) ,Divorce (21) ,Alcohol (12) ,Incarceration (9) ,Nebraska ,56,32,11
+New Hampshire,33,NH,2,New Hampshire ,Economic Hardship (23) ,Divorce (22) ,Alcohol (12) ,Mental Illness (11) ,New Hampshire ,55,33,12
+New York,36,NY,1,New York ,Economic Hardship (22) ,Divorce (15) ,Violence (10) ,Domestic Violence (7) ,New York ,58,34,8
+North Carolina,37,NC,3,North Carolina ,Economic Hardship (27) ,Divorce (21) ,Mental Illness (10) Violence (10) and Alcohol (10) ,Domestic Violence (9) ,North Carolina ,52,36,12
+Ohio,39,OH,4,Ohio ,Economic Hardship (27) ,Divorce (23) ,Violence (13) ,Alcohol (12) ,Ohio ,50,36,14
+Oregon,41,OR,4,Oregon ,Economic Hardship (29) ,Divorce (23) ,Alcohol (17) ,Mental Illness (14) ,Oregon ,50,35,15
+Rhode Island,44,RI,3,Rhode Island ,Economic Hardship (29) ,Divorce (19) ,Alcohol (12) ,Mental Illness (11) ,Rhode Island ,53,37,11
+Tennessee,47,TN,4,Tennessee ,Economic Hardship (31) ,Divorce (25) ,Alcohol (12) ,Mental Illness (11) ,Tennessee ,48,38,13
+Texas,48,TX,2,Texas ,Economic Hardship (29) ,Divorce (20) ,Alcohol (10) ,Mental Illness (8) ,Texas ,54,36,10
+Virginia,51,VA,1,Virginia ,Economic Hardship (21) ,Divorce (18) ,Alcohol (8) and Mental Illness (8) ,Violence (7) ,Virginia ,58,34,8
+Washington,53,WA,3,Washington ,Economic Hardship (25) ,Divorce (21) ,Alcohol (12) and Mental Illness (12),Violence (9) ,Washington ,53,36,11
+Wisconsin,55,WI,2,Wisconsin ,Economic Hardship (25) ,Divorce (20) ,Alcohol (10) and Mental Illness (10),Violence (8) ,Wisconsin ,54,35,11
+Guam,0,0,2,0,0,0,0,0,0,0,0,0
+Commonwealth of the Northern Mariana Islands,0,0,2,0,0,0,0,0,0,0,0,0
+United States Virgin Islands,0,0,2,0,0,0,0,0,0,0,0,0

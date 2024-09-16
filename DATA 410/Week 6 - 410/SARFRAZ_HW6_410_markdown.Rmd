@@ -1,0 +1,130 @@
+---
+title: "SARFRAZ_HW6_410"
+author: "Hussain Sarfraz"
+date: '2022-04-24'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidytext)
+library(wordcloud2)
+library(wordcloud)
+library(dplyr)
+```
+
+# Trump Likes Wordcloud
+
+```{r}
+setwd("C:/Users/hussainsarfraz/Desktop/DATA 410/Week 6 - 410/SARFRAZ_HW6_410")
+
+clinton.likes <- read.csv("redacted_2016_clinton_likes.csv", header = TRUE)
+clinton.dislikes <- read.csv("redacted_clinton_2016_dislikes.csv", header = TRUE)
+trump.likes <- read.csv("redacted_trump_2016.csv", header = TRUE)
+trump.dislikes <- read.csv("redacted_trump_2016_dislikes.csv", header = TRUE)
+
+###### TRUMP LIKES  
+    names(trump.likes)[1] <- 'Respondent ID'
+    names(trump.likes)[2] <- 'What do you like about Trump?'
+    
+    trump.likes.words <-trump.likes %>% 
+      unnest_tokens(word, `What do you like about Trump?`) 
+    
+    trump.likes.wordsC <- trump.likes.words %>% 
+      anti_join(stop_words) %>%
+      count(word, sort= TRUE)
+    
+    
+    
+    pal <- brewer.pal(6,"Dark2")
+
+      wordcloud(words = trump.likes.wordsC$word,
+                freq  = trump.likes.wordsC$n,
+                max.words = 100,
+                random.order = FALSE,
+                colors = pal)
+    
+      wordcloud2(data=trump.likes.wordsC)
+ 
+```
+
+# Trump Dis-likes Wordcloud
+
+```{r}
+###### TRUMP DIS-LIKES 
+    names(trump.dislikes)[1] <- 'Respondent ID'
+    names(trump.dislikes)[2] <- 'What do you dis-like about Trump?'
+    
+    trump.dislikes.words <-trump.dislikes %>% 
+      unnest_tokens(word, `What do you dis-like about Trump?`) 
+    
+    trump.dislikes.wordsC <- trump.dislikes.words %>% 
+      anti_join(stop_words) %>%
+      count(word, sort= TRUE)
+    
+    pal <- brewer.pal(6,"Dark2")
+
+      wordcloud(words = trump.dislikes.wordsC$word,
+                freq  = trump.dislikes.wordsC$n,
+                max.words = 100,
+                random.order = FALSE,
+                colors = pal)
+    
+      wordcloud2(data=trump.dislikes.wordsC)
+    
+    
+```
+
+# Clinton Likes Wordcloud
+
+```{r}
+###### CLINTON LIKES  
+    names(clinton.likes)[1] <- 'Respondent ID'
+    names(clinton.likes)[2] <- 'What do you like about Clinton?'
+    
+    clinton.likes.words <-clinton.likes %>% 
+      unnest_tokens(word, `What do you like about Clinton?`) 
+    
+    clinton.likes.wordsC <- clinton.likes.words %>% 
+      anti_join(stop_words) %>%
+      count(word, sort= TRUE)
+    
+    pal <- brewer.pal(6,"Dark2")
+
+      wordcloud(words = clinton.likes.wordsC$word,
+                freq  = clinton.likes.wordsC$n,
+                max.words = 100,
+                random.order = FALSE,
+                colors = pal)
+    
+      wordcloud2(data=clinton.likes.wordsC)
+    
+    
+```
+
+# Clinton Dis-likes Wordcloud
+
+```{r}
+###### CLINTON DISLIKES 
+    
+    names(clinton.dislikes)[1] <- 'Respondent ID'
+    names(clinton.dislikes)[2] <- 'What do you dis-like about Clinton?'
+    
+    clinton.dislikes.words <-clinton.dislikes %>% 
+      unnest_tokens(word, `What do you dis-like about Clinton?`) 
+    
+    clinton.dislikes.wordsC <- clinton.dislikes.words %>% 
+      anti_join(stop_words) %>%
+      count(word, sort= TRUE)
+    
+    pal <- brewer.pal(6,"Dark2")
+
+      wordcloud(words = clinton.dislikes.wordsC$word,
+                freq  = clinton.dislikes.wordsC$n,
+                max.words = 100,
+                random.order = FALSE,
+                colors = pal)
+    
+      wordcloud2(data=clinton.dislikes.wordsC)
+```
+
