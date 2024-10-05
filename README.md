@@ -6,3 +6,13 @@ This repository contains my R Programming assignmnets from my university classes
 * DATA 210: Learning intermediate data analytic concepts in R
 * DATA 310: Exploring statisitcal techniques and concepts that need to be implemented in Data Analytics
 * DATA 410: Using R Shiny to create websites that show various data visualisations (charts, spatial, etc.)
+
+# DATA 101: Introduction to Data Analytics
+
+# DATA 210: Intermediate Data Analytics
+
+# DATA 310: Introduction to Statistical Methods
+
+## Week 1: Measurement and Description
+
+# DATA 410: Advanced Topics in Data Analytics
