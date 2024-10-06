@@ -55,7 +55,8 @@ Forms of Validity
 * Content Validity: Does a measure include what is necessary from a theoretical standpoint?
 * Construct Validity: Does the measure relate to what we would expect it to relate to from a theoretical perspective?
 
-Measurement Error: The phrase we use to refer the difference between a construct of interest and the variable we're using to measure the construct of interest 
+Measurement Error
+* The phrase we use to refer the difference between a construct of interest and the variable we're using to measure the construct of interest 
 
 Reasons why measurement error is concerning:
 1. Can cause us to systematically misunderstand a construct of interest when the measurement error is systemically in one direction
