@@ -15,4 +15,11 @@ This repository contains my R Programming assignmnets from my university classes
 
 ## Week 1: Measurement and Description
 
+The process of statistical data analysis
+1. Collecting Data for a Variable (weeks 1 & 3)
+2. Describe the values of the veriable for the observed cases (week 1)
+3. Make predictions about the likely values of the variable, for the un-observed cases (weeks 2-4)
+4. Make predictions about the likely values of a variable, for the un-observed cases, given the variables we have observed/gathered for those cases (weeks 4-7)
+5. Understand how the value of a variable is likely to change because another variable, or variables, changed (week 8)
+
 # DATA 410: Advanced Topics in Data Analytics
