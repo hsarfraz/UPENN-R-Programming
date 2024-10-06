@@ -27,6 +27,10 @@ Vocabulary for Statistics
 * Unit: The object on which a construct of interest is defined
 * Population: The collection of units over which a construct of interest is defined
 * Sample: The subset of units in the population for which we observe data
+* Variable: A measure of a specific construct of interest for all sampled units
+    * Dependent Variable: A variable with an outcome that the data scientist is trying to understand
+    * Independent Variable: A variable with an outcome that the data scientist takes as a given that relates to the dependent variable
+* Data: A collection of variables for sampled units
 
 
 # DATA 410: Advanced Topics in Data Analytics
