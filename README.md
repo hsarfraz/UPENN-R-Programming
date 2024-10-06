@@ -38,5 +38,28 @@ Stages of measurement
 2. Sampling units, from the set of cases, to collect this information from (ex. assigning the units to take the survey)
 3. Recording the information available about the sampled units (ex. recording the survey responses provided by the sampled units)
 
+Data Relibility and Validity
+* Reliability: If we repeatedly measure the same thing, will we get the same (or similar) answer each time?
+* Validity: Does the measure accurately capture the construct of interest?
+   * A reliable and valid measurement is needed for a variable to represent the construct of interest
+   * Reliability is a harder thing to address, especially when people might be changing their mind
+   * Assessing validity is usually more challenging than reliability because it's often more of a theoretical than a empirical/observable question
+ 
+Reasons why a measure might not be reliable
+1. Confusing of challenging survey question
+2. Survey satisficing (when respondents complete a survey fast and select what they think is the best without giving much thought)
+3. Non-attitudes (when you ask repondants to fill a survey of something that they are not interested in)
+
+Forms of Validity
+* Face Validity: Does the measure appear to be measuring what we want it to measure?
+* Content Validity: Does a measure include what is necessary from a theoretical standpoint?
+* Construct Validity: Does the measure relate to what we would expect it to relate to from a theoretical perspective?
+
+Measurement Error: The phrase we use to refer the difference between a construct of interest and the variable we're using to measure the construct of interest 
+
+Reasons why measurement error is concerning:
+1. Can cause us to systematically misunderstand a construct of interest when the measurement error is systemically in one direction
+3. Can make it more difficult to document a statistical relationship, even when the measurement error is arbitrary
+
 
 # DATA 410: Advanced Topics in Data Analytics
