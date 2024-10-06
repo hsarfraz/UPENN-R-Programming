@@ -22,4 +22,11 @@ The process of statistical data analysis
 4. Make predictions about the likely values of a variable, for the un-observed cases, given the variables we have observed/gathered for those cases (weeks 4-7)
 5. Understand how the value of a variable is likely to change because another variable, or variables, changed (week 8)
 
+Vocabulary for Statistics 
+* Construct of Interest: A theoretical quantity or theme which describes a characteristic/outcome and is non-measurable. An example is self-esteem
+* Unit: The object on which a construct of interest is defined
+* Population: The collection of units over which a construct of interest is defined
+* Sample: The subset of units in the population for which we observe data
+
+
 # DATA 410: Advanced Topics in Data Analytics
