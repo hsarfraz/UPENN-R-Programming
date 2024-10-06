@@ -31,6 +31,12 @@ Vocabulary for Statistics
     * Dependent Variable: A variable with an outcome that the data scientist is trying to understand
     * Independent Variable: A variable with an outcome that the data scientist takes as a given that relates to the dependent variable
 * Data: A collection of variables for sampled units
+* Measurement: The process of translating a construct of interest into a variable
+
+Stages of measurement
+1. Specifying the information to be collected (ex. writing a survey)
+2. Sampling units, from the set of cases, to collect this information from (ex. assigning the units to take the survey)
+3. Recording the information available about the sampled units (ex. recording the survey responses provided by the sampled units)
 
 
 # DATA 410: Advanced Topics in Data Analytics
