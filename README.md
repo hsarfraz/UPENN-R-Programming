@@ -62,5 +62,17 @@ Reasons why measurement error is concerning:
 1. Can cause us to systematically misunderstand a construct of interest when the measurement error is systemically in one direction
 3. Can make it more difficult to document a statistical relationship, even when the measurement error is arbitrary
 
+Descriptive Statistics: The process of describing the values of observed variables in a sample of data
+
+The two common things that we want to know about a sample
+1. What is the central tendency? (measured through mean, median, mode)
+2. How much variability is there from this central tendency? (looking at how the data is spread out)
+
+Central Tendency
+* The central tendency of a variable is the information about the typical value, of the a variabe, within a sample
+* The most instinctive measure of central tendency is the sample mean
+
+$$ \hat{y} = { y~1 + y~2 + ... + y~n \over n} $$
+
 
 # DATA 410: Advanced Topics in Data Analytics
