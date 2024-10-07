@@ -80,4 +80,19 @@ $$ \overline{y} = { y_1 + y_2 + ... + y_n \over n} = {1 \over n}{\sum_{i=1}^n y_
 
 $$ \overline{y} = { w_1y_1 + w_2y_2 + ... + w_ny_n \over w_1+w_2+...+w_n} = {\sum_{i=1}^n w_iy_i \over \sum_{i=1}^n w_i}$$
 
+Nice properties of the weighted sample mean
+* Intuitive: Averages are used all the time so naturally means are effective in understanding data. (ex. basket ball fans talk about the batting averages or calculating the average number of people who visit a store)
+* Uses information from all observations $i$ such that $w_i > 0$
+   * This means that the value of $y_i$ affects the value of the sample mean if $w_i > 0$ (the weights need to be greater than zero to see a change in the sample mean)
+* Sample means have a lot of nice statistical properties that will be discussed throughout the course
+
+Potential issues with the weighted sample mean
+* Often equals a value that the variable in question could never take on
+   * For example, the average roll of a dice could be 6.94 in a sample or the average number of people entering a store could be 30.4
+* Issues with bottom- or top-coded data
+   * Sometimes it might be unclear what values need to be assigned during the mean calculation. For example, some surveys might report that everyone with an income of more than $200 k makes $200 k+ or some people's age might be registered as 30+
+   * Having bottom- or top- coded data might make it hard for a analyst to gain further insights on a particular group of units/respondents. Looking back at the previous example, it would be hard to see how much money the upper class makes or identify a relationship with the dependent variable and individuals of a specific age
+* Sensitive to extreme values/outliers
+   * For examplem the average income in a sample will change drastically if Oprah's income is included in the sample
+
 # DATA 410: Advanced Topics in Data Analytics
