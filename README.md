@@ -76,6 +76,6 @@ $$ \overline{y} = { y_1 + y_2 + ... + y_n \over n} = {1 \over n}{\sum_{i=1}^n y_
 
 * Sometimes it is useful to think about the sample mean as a special case of a weighted sample mean:
 
-$$ \overline{y} = { w_1y_1 + w_2y_2 + ... + w_ny_n \over n} = {1 \over n}{\sum_{i=1}^n y_i}$$
+$$ \overline{y} = { w_1y_1 + w_2y_2 + ... + w_ny_n \over w_1+w_2+...+w_n} = {\sum_{i=1}^n w_iy_i \over \sum_{i=1}^n w_i}$$
 
 # DATA 410: Advanced Topics in Data Analytics
