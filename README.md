@@ -70,9 +70,9 @@ The two common things that we want to know about a sample
 
 Central Tendency
 * The central tendency of a variable is the information about the typical value, of the a variabe, within a sample
-* The most instinctive measure of central tendency is the sample mean
+* The most instinctive measure of central tendency is the sample mean (formula below)
 
-$$ \hat{y} = { y~1 + y~2 + ... + y~n \over n} $$
+$$ \hat{y} = { y~1~ + y~2~ + ... + y~n~ \over n} $$
 
 
 # DATA 410: Advanced Topics in Data Analytics
