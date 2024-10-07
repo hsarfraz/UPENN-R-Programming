@@ -76,6 +76,7 @@ Central Tendency
 $$ \overline{y} = { y_1 + y_2 + ... + y_n \over n} = {1 \over n}{\sum_{i=1}^n y_i}$$
 
 * Sometimes it is useful to think about the sample mean as a special case of a **weighted sample mean**:
+   * To illustrate the effect of the weight lets suppose that $w_i=2w_j$ then the value of unit $i$ is two times more influential in determining the weighted sample mean than the value of unit $j$
 
 $$ \overline{y} = { w_1y_1 + w_2y_2 + ... + w_ny_n \over w_1+w_2+...+w_n} = {\sum_{i=1}^n w_iy_i \over \sum_{i=1}^n w_i}$$
 
