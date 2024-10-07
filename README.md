@@ -68,7 +68,7 @@ The two common things that we want to know about a sample
 1. What is the central tendency? (measured through mean, median, mode)
 2. How much variability is there from this central tendency? (looking at how the data is spread out)
 
-Central Tendency
+Central Tendency (measured through mean, median, mode)
 * The central tendency of a variable is the information about the typical value, of the a variabe, within a sample
 * The most instinctive measure of central tendency is the **sample mean** (formula below). y is the observation for each unit, in the sample, while n is the total number of units.
   * The sample mean is a special case of a weighted sample mean (defined below) in which all units have the same weight of one. This means that all the units are equally influential because $w_1 = w_2 = ... = w_n = 1$
