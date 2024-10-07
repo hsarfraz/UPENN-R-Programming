@@ -72,7 +72,7 @@ Central Tendency
 * The central tendency of a variable is the information about the typical value, of the a variabe, within a sample
 * The most instinctive measure of central tendency is the sample mean (formula below)
 
-$$ \hat{y} = { y_{1} + y<sup>2</sup> + ... + y<sup>n</sup> \over n} $$
+$$ \hat{y} = { y_{1} + y_{2} + ... + y_{n} \over n} $$
 
 
 # DATA 410: Advanced Topics in Data Analytics
