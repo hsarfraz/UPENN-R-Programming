@@ -70,12 +70,12 @@ The two common things that we want to know about a sample
 
 Central Tendency
 * The central tendency of a variable is the information about the typical value, of the a variabe, within a sample
-* The most instinctive measure of central tendency is the sample mean (formula below). y is the observation for each unit, in the sample, while n is the total number of units.
-      * The sample mean is a special case of a weighted sample mean (defined below) in which all units have the same weight of one. This means that all the units are equally influential because $w_1 = w_2 = ... = w_n = 1$
+* The most instinctive measure of central tendency is the **sample mean** (formula below). y is the observation for each unit, in the sample, while n is the total number of units.
+  * The sample mean is a special case of a weighted sample mean (defined below) in which all units have the same weight of one. This means that all the units are equally influential because $w_1 = w_2 = ... = w_n = 1$
 
 $$ \overline{y} = { y_1 + y_2 + ... + y_n \over n} = {1 \over n}{\sum_{i=1}^n y_i}$$
 
-* Sometimes it is useful to think about the sample mean as a special case of a weighted sample mean:
+* Sometimes it is useful to think about the sample mean as a special case of a **weighted sample mean**:
 
 $$ \overline{y} = { w_1y_1 + w_2y_2 + ... + w_ny_n \over w_1+w_2+...+w_n} = {\sum_{i=1}^n w_iy_i \over \sum_{i=1}^n w_i}$$
 
