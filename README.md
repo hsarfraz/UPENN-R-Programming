@@ -93,6 +93,6 @@ Potential issues with the weighted sample mean
    * Sometimes it might be unclear what values need to be assigned during the mean calculation. For example, some surveys might report that everyone with an income of more than $200 k makes $200 k+ or some people's age might be registered as 30+
    * Having bottom- or top- coded data might make it hard for a analyst to gain further insights on a particular group of units/respondents. Looking back at the previous example, it would be hard to see how much money the upper class makes or identify a relationship with the dependent variable and individuals of a specific age
 * Sensitive to extreme values/outliers
-   * For examplem the average income in a sample will change drastically if Oprah's income is included in the sample
+   * For example the average income in a sample will change drastically if Oprah's income is included in the sample
 
 # DATA 410: Advanced Topics in Data Analytics
