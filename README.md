@@ -98,6 +98,7 @@ Potential issues with the weighted sample mean
    * For example the average income in a sample will change drastically if Oprah's income is included in the sample
  
 Median (a ordered sample)
+
 A ordered sample is a sample such that if $i<j$ then $y_i \le y_j$
 
 # DATA 410: Advanced Topics in Data Analytics
