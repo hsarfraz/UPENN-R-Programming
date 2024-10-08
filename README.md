@@ -70,6 +70,8 @@ The two common things that we want to know about a sample
 
 Central Tendency (measured through mean, median, mode)
 * The central tendency of a variable is the information about the typical value, of the a variabe, within a sample
+
+Sample mean and weighted sample mean
 * The most instinctive measure of central tendency is the **sample mean** (formula below). y is the observation for each unit, in the sample, while n is the total number of units.
   * The sample mean is a special case of a weighted sample mean (defined below) in which all units have the same weight of one. This means that all the units are equally influential because $w_1 = w_2 = ... = w_n = 1$
 
@@ -94,5 +96,8 @@ Potential issues with the weighted sample mean
    * Having bottom- or top- coded data might make it hard for a analyst to gain further insights on a particular group of units/respondents. Looking back at the previous example, it would be hard to see how much money the upper class makes or identify a relationship with the dependent variable and individuals of a specific age
 * Sensitive to extreme values/outliers
    * For example the average income in a sample will change drastically if Oprah's income is included in the sample
+ 
+Median (a ordered sample)
+A ordered sample is a sample such that if $i<j$ then $y_i \le y_j$
 
 # DATA 410: Advanced Topics in Data Analytics
