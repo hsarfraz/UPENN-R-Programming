@@ -107,6 +107,46 @@ A Ordered Sample & Sample Median
    * $x%$ of the values in the sample are $\le P_x$
    * $100 - x$ percent of the values are $\ge P_x$
 * The 50th percentile or the **sample median**, is the observation (or observations) that falls in the middle of an ordered sample
-   * Since we know the percentile $x$, and we also know the sample size $n$ we can solve for the value, of the unit $i$, and see what value is the median. The formula that we use to solve for $i$ is the same one shown above, but now the $n$ is moved to the other side of the equation (ex. $i = {x * n\over 100}$) 
+   * Since we know the percentile $x$, and we also know the sample size $n$ we can solve for the value, of the unit $i$, and see what value is the median. The formula that we use to solve for $i$ is the same one shown above, but now the $n$ is moved to the other side of the equation (ex. $i = {x * n\over 100}$)
+ 
+  Nice properties of the sample median
+  * Pretty Intuitive
+     * Half of the values are higher and half of the values are lower
+  * Almost always takes on a value that the variable in question could take on
+  * Often still observed in situations with bottom- or top- coded data (ex. where some values are registered as 200 k + or 60+)
+  * Not affected by extreme values or miscoded values
+ 
+  Potential issues with the sample median:
+  * Doesn't use all available information
+     * The same sample median occurs when the sample is -1, 5, 9 as 4, 5, 9
+  * Can be uninformative in some situations (ex. binary data)
+  * Computational and statistical issues that are beyond the scope of this class
+ 
+  Outliers: Refers to an observation in a sample for which a variable takes on a value that is substantially different than normal
 
+  Outliers matter for 2 reasons:
+  1. Could be evidence for data error
+  2. Inclusion/exclusion has important consequences of sample mean (deciding whether to include or remove the outliers can make a huge impact on the sample mean)
+ 
+  Skew of a sample
+  * The skew of a sample refers to whether the non-erroneous outliers tend to be larger or smaller than the sample mean
+  * The **difference** between the **sample mean** and **sample median** often inform us about the skew
+     * Sample mean $<$ sample median generally indicates that the distribution of a variable is left skewed (ex. the outliers are small).
+     * Sample mean $>$ sample median generally indicates that the distribution of a variable is right skewed (ex. the outliers are big. Think of the income example and how including Oprah's income in the sample would skew the distribution by a lot)
+
+    The influence of outliers on sample mean vs. sample median
+    * A general principle is that sample means have a greater influence on outliers as opposed to sample medians. So when thinking about whether you should describe a variable withe a with a mean of median you should ask yourself if you want your statistic to be influenced by outliers and to what extent?
+    * ex. if you want to learn more about the total income in a country then you would want outliers to be a part of your statistic (using sample mean) but if you want to obtain the income of a typical individual, then you can remove the outliers (using sample median).
+
+   Mode: The value that occurs most commonly in the data
+
+  Reasons why the mode is discussed less than the mean and median
+  1. Not necessarily unique
+  2. Relatively useless with many continous variables
+ 
+  But mode is still a useful concept to know because
+  1. It provides a sense of the a typical response. Especially when the most common values are not next to each other (ex. **bimodal variables/distributions** which have 2 peaks)
+  2. 
+   
+    
 # DATA 410: Advanced Topics in Data Analytics
