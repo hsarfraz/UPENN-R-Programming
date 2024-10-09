@@ -97,8 +97,8 @@ Potential issues with the weighted sample mean
 * Sensitive to extreme values/outliers
    * For example the average income in a sample will change drastically if Oprah's income is included in the sample
  
-Median (a ordered sample)
-
-A ordered sample is a sample such that if $i<j$ then $y_i \le y_j$
+A Ordered Sample & Sample Median
+* A ordered sample is a sample such that if $i<j$ then $y_i \le y_j$
+* In a ordered sample the subscripts now have more meaning (they take on a specific order)
 
 # DATA 410: Advanced Topics in Data Analytics
