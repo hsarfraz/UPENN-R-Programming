@@ -101,10 +101,12 @@ A Ordered Sample & Sample Median
 * A ordered sample is a sample such that if $i<j$ then $y_i \le y_j$
 * In a ordered sample the subscripts now have more meaning (they take on a specific order)
 * $P_x = Y_i$ is the xth percentile of a sample ${1 \over n} = {x \over 100}$
-   * Remember that $i$ represents the refers to the i-th observation of the unit, in the sample.
+   * $i$ refers to the i-th observation of the unit, in the sample.
    * $n$ refers to the total number of units in the sample
    * $x$ refers to the unit's percentage in the sample
    * $x%$ of the values in the sample are $\le P_x$
    * $100 - x$ percent of the values are $\ge P_x$
+* The 50th percentile or the **sample median**, is the observation (or observations) that falls in the middle of an ordered sample
+   * Since we know the percentile $x$, and we also know the sample size $n$ we can solve for the value, of the unit $i$, and see what value is the median. The formula that we use to solve for $i$ is the same one shown above, but now the $n$ is moved to the other side of the equation (ex. $i = {x \over 100 * n}$) 
 
 # DATA 410: Advanced Topics in Data Analytics
