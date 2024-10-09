@@ -100,6 +100,11 @@ Potential issues with the weighted sample mean
 A Ordered Sample & Sample Median
 * A ordered sample is a sample such that if $i<j$ then $y_i \le y_j$
 * In a ordered sample the subscripts now have more meaning (they take on a specific order)
-* $P_x = Y_i$ is the $x$th percentile of a sample ${1 \over n} = {x \over 100}$
+* $P_x = Y_i$ is the xth percentile of a sample ${1 \over n} = {x \over 100}$
+   * Remember that $i$ represents the refers to the i-th observation of the unit, in the sample.
+   * $n$ refers to the total number of units in the sample
+   * $x$ refers to the unit's percentage in the sample
+   * $x%$ of the values in the sample are $\le P_x$
+   * $100 - x$ percent of the values are $\ge P_x$
 
 # DATA 410: Advanced Topics in Data Analytics
