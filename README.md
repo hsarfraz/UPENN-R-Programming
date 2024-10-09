@@ -107,6 +107,6 @@ A Ordered Sample & Sample Median
    * $x%$ of the values in the sample are $\le P_x$
    * $100 - x$ percent of the values are $\ge P_x$
 * The 50th percentile or the **sample median**, is the observation (or observations) that falls in the middle of an ordered sample
-   * Since we know the percentile $x$, and we also know the sample size $n$ we can solve for the value, of the unit $i$, and see what value is the median. The formula that we use to solve for $i$ is the same one shown above, but now the $n$ is moved to the other side of the equation (ex. $i = {x \over 100 * n}$) 
+   * Since we know the percentile $x$, and we also know the sample size $n$ we can solve for the value, of the unit $i$, and see what value is the median. The formula that we use to solve for $i$ is the same one shown above, but now the $n$ is moved to the other side of the equation (ex. $i = {x * n\over 100}$) 
 
 # DATA 410: Advanced Topics in Data Analytics
